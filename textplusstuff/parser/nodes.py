@@ -46,9 +46,9 @@ class MarkdownFlavoredTextNode(BaseNode):
         return to_return
 
 
-class RichTextContentNode(BaseNode):
+class TextPlusStuffContentNode(BaseNode):
     """
-    {% richtext '%(app_label)s:%(model)s:%(pk)d:%(rendition_key)s:%(field)s' %}
+    {% textplusstuff '%(app_label)s:%(model)s:%(pk)d:%(rendition_key)s:%(field)s' %}
     """
     node_args = (
         'content_type__app_label',
@@ -88,13 +88,13 @@ class RichTextContentNode(BaseNode):
 
     def __repr__(self):
         return force_str(
-            "<RichTextContentNode: %s>" % self.node_id,
+            "<TextPlusStuffContentNode: %s>" % self.node_id,
             'ascii',
             errors='replace'
         )
 
-    def get_richtextlink_instance(self):
-        from .models import RichTextLink
+    def get_textplusstufflink_instance(self):
+        from .models import TextPlusStuffLink
         try:
             ct = ContentType.objects.get(
                 app_label=self.node_mapping.get('app_label'),
@@ -104,23 +104,23 @@ class RichTextContentNode(BaseNode):
             raise
         else:
             try:
-                node_content = RichTextLink.objects.get(
+                node_content = TextPlusStuffLink.objects.get(
                     content_type=ct,
                     object_id=self.node_mapping.get('instance_pk'),
                     field=self.node_mapping.get('field', '')
                 )
-            except RichTextLink.DoesNotExist:
+            except TextPlusStuffLink.DoesNotExist:
                 node_content = None
 
             return node_content
 
     def render(self):
-        # TODO: Each RichTextContentNode will need to refer to the
-        # soon-to-be-coded richtext.registry to retrieve its context
+        # TODO: Each TextPlusStuffContentNode will need to refer to the
+        # soon-to-be-coded textplusstuff.registry to retrieve its context
         # and template so a true rendering can be accomplished.
         return '|'.join([
             "%s=%s" % (key, str(value))
             for key, value in self.node_mapping.iteritems()
         ])
 
-__all__ = ('MarkdownFlavoredTextNode', 'RichTextContentNode')
+__all__ = ('MarkdownFlavoredTextNode', 'TextPlusStuffContentNode')

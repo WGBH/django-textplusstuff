@@ -6,22 +6,22 @@ from django.utils.translation import ugettext_lazy as _
 # Importing signals into models.py so they'll be
 # 'seen' by django.contrib.messages
 from .signals import (
-    construct_RichTextLink_attachments,
-    delete_attached_RichTextLink_instances
+    construct_TextPlusStuffLink_attachments,
+    delete_attached_TextPlusStuffLink_instances
 )
 
 
-class RichTextLink(models.Model):
+class TextPlusStuffLink(models.Model):
     """
     Creates a polymorphic relationship between two model instances:
         1. `parent_content_object`: A model instance with
-            a RichTextField (`field`)
+            a TextPlusStuffField (`field`)
         2. `content_object`: A model instance that 'powers'
-            a rendition within a RichTextField
+            a rendition within a TextPlusStuffField
     """
     parent_content_type = models.ForeignKey(
         ContentType,
-        related_name="richtextlink_parent_link"
+        related_name="textplusstufflink_parent_link"
     )
     parent_object_id = models.PositiveIntegerField()
     parent_content_object = generic.GenericForeignKey(
@@ -40,8 +40,8 @@ class RichTextLink(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Rich Text Content Link'
-        verbose_name = 'Rich Text Content Links'
+        verbose_name = 'Text Plus Stuff Link'
+        verbose_name = 'Text Plus Stuff Links'
 
     def __unicode__(self):
         doesnotexist_string = '<DoesNotExist>'

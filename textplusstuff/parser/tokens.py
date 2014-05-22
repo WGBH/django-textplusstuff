@@ -3,11 +3,11 @@ RICHTEXTNODE_TOKEN = 2
 
 TOKEN_TYPES = {
     MARKDOWN_FLAVORED_TEXT_TOKEN: 'MarkdownFlavoredText',
-    RICHTEXTNODE_TOKEN: 'RichTextContentNode'
+    RICHTEXTNODE_TOKEN: 'TextPlusStuffContentNode'
 }
 
 
-class RichTextToken(object):
+class TextPlusStuffToken(object):
 
     def __init__(self, token_type, contents):
         # token_type must be MARKDOWN_FLAVORED_TEXT_TOKEN

@@ -1,10 +1,10 @@
 from .nodes import (
     MarkdownFlavoredTextNode,
-    RichTextContentNode
+    TextPlusStuffContentNode
 )
 
 
-class RichTextParser(object):
+class TextPlusStuffParser(object):
     def __init__(self, tokens):
         self.tokens = tokens
 
@@ -23,7 +23,7 @@ class RichTextParser(object):
             if token.token_type == 1:   # MARKDOWN_FLAVORED_TEXT_TOKEN
                 node_class = MarkdownFlavoredTextNode
             elif token.token_type == 2:  # RICHTEXTNODE_TOKEN
-                node_class = RichTextContentNode
+                node_class = TextPlusStuffContentNode
 
             self.extend_nodelist(
                 nodelist=nodelist,

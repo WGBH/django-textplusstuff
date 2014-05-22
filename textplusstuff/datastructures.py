@@ -3,13 +3,13 @@ from django.utils.safestring import mark_safe
 
 from .parser import (
     MarkdownFlavoredTextNode,
-    RichTextContentNode,
-    RichTextLexer,
-    RichTextParser
+    TextPlusStuffContentNode,
+    TextPlusStuffLexer,
+    TextPlusStuffParser
 )
 
 
-class RichText(object):
+class TextPlusStuff(object):
 
     def __init__(self, raw_text, field=None):
         if raw_text is None:
@@ -18,17 +18,17 @@ class RichText(object):
             raw_text_processed = force_text(raw_text)
         except UnicodeDecodeError:
             raise UnicodeDecodeError(
-                "RichText can only be initialized with either "
+                "TextPlusStuff can only be initialized with either "
                 "unicode or UTF-8 strings."
             )
         else:
             self.raw_text = raw_text_processed
         # Initialize lexer
-        lexer = RichTextLexer(raw_val=raw_text_processed)
+        lexer = TextPlusStuffLexer(raw_val=raw_text_processed)
         # Use the lexer to create tokens
         tokens = lexer.tokenize()
         # Pass tokens to parser and parse
-        self.nodelist = RichTextParser(tokens=tokens).parse()
+        self.nodelist = TextPlusStuffParser(tokens=tokens).parse()
 
     def render(self, text_output_format='html', include_content_nodes=True):
         """"""
@@ -36,7 +36,7 @@ class RichText(object):
         for node in self.nodelist:
             if isinstance(node, MarkdownFlavoredTextNode):
                 final_output += node.render(render_as=text_output_format)
-            elif isinstance(node, RichTextContentNode):
+            elif isinstance(node, TextPlusStuffContentNode):
                 if (not include_content_nodes) or (
                     text_output_format in ['plain_text', 'markdown']
                 ):
@@ -68,4 +68,4 @@ class RichText(object):
             include_content_nodes=False
         )
 
-__all__ = ('RichText')
+__all__ = ('TextPlusStuff')

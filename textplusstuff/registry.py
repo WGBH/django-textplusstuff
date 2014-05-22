@@ -1,13 +1,13 @@
-class RichTextModelConfig(object):
+class TextPlusStuffModelConfig(object):
     model = None
 
     def __init__(self, model):
         self.model = model
 
     rendition_template_config = [
-        'name':{
-            'template':None,
-            'context_method':'build_context',
+        'name': {
+            'template': None,
+            'context_method': 'build_context',
 
         }
     ]

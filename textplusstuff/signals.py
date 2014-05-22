@@ -2,59 +2,59 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
-from .datastructures import RichText
-from .fields import RichTextField
-from .parser import RichTextContentNode
+from .datastructures import TextPlusStuff
+from .fields import TextPlusStuffField
+from .parser import TextPlusStuffContentNode
 
 
 @receiver(post_save)
-def construct_RichTextLink_attachments(sender, instance, **kwargs):
+def construct_TextPlusStuffLink_attachments(sender, instance, **kwargs):
     """
-    Creates/Updates/Deletes RichTextLink instances for any `instance`
-    that has one or more RichTextField fields.
+    Creates/Updates/Deletes TextPlusStuffLink instances for any `instance`
+    that has one or more TextPlusStuffField fields.
     """
 
-    richtext_fields = [
+    textplusstuff_fields = [
         field.name
         for field in instance._meta.fields
-        if field.__class__ is RichTextField
+        if field.__class__ is TextPlusStuffField
     ]
-    if richtext_fields:
-        from .models import RichTextLink
+    if textplusstuff_fields:
+        from .models import TextPlusStuffLink
         parent_ct = ContentType.objects.get_for_model(instance.__class__)
-        for field in richtext_fields:
-            # First, find any previously created RichTextLink instances
+        for field in textplusstuff_fields:
+            # First, find any previously created TextPlusStuffLink instances
             # attached to this field on this particular instance
             previously_attached_instances = [
-                richtextlink_instance
-                for richtextlink_instance in RichTextLink.objects.filter(
+                textplusstufflink_instance
+                for textplusstufflink_instance in TextPlusStuffLink.objects.filter(
                     parent_content_type=parent_ct,
                     parent_object_id=instance.pk,
                     field=field
                 ).select_related('parent_content_type', 'content_type')
             ]
 
-            # Next, pull the content assigned to the RichTextField field and...
-            current_richtextfield_val = getattr(instance, field)
-            # ...ensure that it is a RichText instance
-            if not isinstance(current_richtextfield_val, RichText):
-                # If not, convert it to RichText
-                richtext_instance = RichText(
-                    raw_text=current_richtextfield_val
+            # Next, pull the content assigned to the TextPlusStuffField field and...
+            current_textplusstufffield_val = getattr(instance, field)
+            # ...ensure that it is a TextPlusStuff instance
+            if not isinstance(current_textplusstufffield_val, TextPlusStuff):
+                # If not, convert it to TextPlusStuff
+                textplusstuff_instance = TextPlusStuff(
+                    raw_text=current_textplusstufffield_val
                 )
             else:
-                richtext_instance = current_richtextfield_val
+                textplusstuff_instance = current_textplusstufffield_val
 
-            # Now, build a list of all RichTextContentNode
+            # Now, build a list of all TextPlusStuffContentNode
             # instances associated with it
-            richtextlink_nodes = [
+            textplusstufflink_nodes = [
                 node
-                for node in richtext_instance.nodelist
-                if isinstance(node, RichTextContentNode)
+                for node in textplusstuff_instance.nodelist
+                if isinstance(node, TextPlusStuffContentNode)
             ]
 
             # Now, iterate through each node...
-            for node in richtextlink_nodes:
+            for node in textplusstufflink_nodes:
                 # ...to get its node_mapping so...
                 node_mapping = node.node_mapping
                 # You can get its child ContentType instance and...
@@ -70,15 +70,15 @@ def construct_RichTextLink_attachments(sender, instance, **kwargs):
                     'parent_content_type': parent_ct,
                     'parent_object_id': instance.pk,
                 }
-                # ...either creating or retrieving a RichTextLink instance
-                richtextlink_instance, created = RichTextLink.objects.get_or_create(
+                # ...either creating or retrieving a TextPlusStuffLink instance
+                textplusstufflink_instance, created = TextPlusStuffLink.objects.get_or_create(
                     **get_or_create_kwargs
                 )
                 # Finally...
                 try:
-                    # Remove the RichTextLink instance you just got/created
+                    # Remove the TextPlusStuffLink instance you just got/created
                     # from `previously_attached_instances`
-                    previously_attached_instances.remove(richtextlink_instance)
+                    previously_attached_instances.remove(textplusstufflink_instance)
                 except ValueError:
                     # Unless it wasn't in there to begin with (which is fine)
                     pass
@@ -91,22 +91,22 @@ def construct_RichTextLink_attachments(sender, instance, **kwargs):
 
 
 @receiver(post_delete)
-def delete_attached_RichTextLink_instances(sender, instance, **kwargs):
+def delete_attached_TextPlusStuffLink_instances(sender, instance, **kwargs):
     """
-    Deletes any RichTextLink instances attached to `instance` after
+    Deletes any TextPlusStuffLink instances attached to `instance` after
     `instance` is deleted.
     """
-    richtext_fields = [
+    textplusstuff_fields = [
         field.name
         for field in instance._meta.fields
-        if field.__class__ is RichTextField
+        if field.__class__ is TextPlusStuffField
     ]
-    if richtext_fields:
-        from .models import RichTextLink
+    if textplusstuff_fields:
+        from .models import TextPlusStuffLink
         instance_ct = ContentType.objects.get_for_model(instance.__class__)
-        attached_richtextlink_instances = RichTextLink.objects.filter(
+        attached_textplusstufflink_instances = TextPlusStuffLink.objects.filter(
             parent_content_type=instance_ct,
             parent_object_id=instance.pk
         )
-        attached_richtextlink_instances.delete()
+        attached_textplusstufflink_instances.delete()
     return
