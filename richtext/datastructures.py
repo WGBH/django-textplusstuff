@@ -8,6 +8,7 @@ from .parser import (
     RichTextParser
 )
 
+
 class RichText(object):
 
     def __init__(self, raw_text, field=None):
@@ -36,7 +37,9 @@ class RichText(object):
             if isinstance(node, MarkdownFlavoredTextNode):
                 final_output += node.render(render_as=text_output_format)
             elif isinstance(node, RichTextContentNode):
-                if (not include_content_nodes) or (text_output_format in ['plain_text', 'markdown']):
+                if (not include_content_nodes) or (
+                    text_output_format in ['plain_text', 'markdown']
+                ):
                     pass
                 else:
                     final_output += node.render()
@@ -45,15 +48,24 @@ class RichText(object):
     @property
     def as_html(self):
         return mark_safe(
-            self.render(text_output_format='html', include_content_nodes=True)
+            self.render(
+                text_output_format='html',
+                include_content_nodes=True
+            )
         )
 
     @property
     def as_plaintext(self):
-        return self.render(text_output_format='plain_text', include_content_nodes=False)
+        return self.render(
+            text_output_format='plain_text',
+            include_content_nodes=False
+        )
 
     @property
     def as_markdown(self):
-        return self.render(text_output_format='markdown', include_content_nodes=False)
+        return self.render(
+            text_output_format='markdown',
+            include_content_nodes=False
+        )
 
 __all__ = ('RichText')

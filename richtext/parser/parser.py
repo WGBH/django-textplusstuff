@@ -3,6 +3,7 @@ from .nodes import (
     RichTextContentNode
 )
 
+
 class RichTextParser(object):
     def __init__(self, tokens):
         self.tokens = tokens
@@ -21,7 +22,7 @@ class RichTextParser(object):
 
             if token.token_type == 1:   # MARKDOWN_FLAVORED_TEXT_TOKEN
                 node_class = MarkdownFlavoredTextNode
-            elif token.token_type == 2: # RICHTEXTNODE_TOKEN
+            elif token.token_type == 2:  # RICHTEXTNODE_TOKEN
                 node_class = RichTextContentNode
 
             self.extend_nodelist(

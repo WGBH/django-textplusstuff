@@ -6,6 +6,7 @@ from .datastructures import RichText
 from .fields import RichTextField
 from .parser import RichTextContentNode
 
+
 @receiver(post_save)
 def construct_RichTextLink_attachments(sender, instance, **kwargs):
     """
@@ -38,7 +39,9 @@ def construct_RichTextLink_attachments(sender, instance, **kwargs):
             # ...ensure that it is a RichText instance
             if not isinstance(current_richtextfield_val, RichText):
                 # If not, convert it to RichText
-                richtext_instance = RichText(raw_text=current_richtextfield_val)
+                richtext_instance = RichText(
+                    raw_text=current_richtextfield_val
+                )
             else:
                 richtext_instance = current_richtextfield_val
 
@@ -61,11 +64,11 @@ def construct_RichTextLink_attachments(sender, instance, **kwargs):
                 )
                 # ...build out a set of kwargs used for...
                 get_or_create_kwargs = {
-                    'content_type':ct,
-                    'object_id':node_mapping.get('object_id'),
-                    'field':field,
-                    'parent_content_type':parent_ct,
-                    'parent_object_id':instance.pk,
+                    'content_type': ct,
+                    'object_id': node_mapping.get('object_id'),
+                    'field': field,
+                    'parent_content_type': parent_ct,
+                    'parent_object_id': instance.pk,
                 }
                 # ...either creating or retrieving a RichTextLink instance
                 richtextlink_instance, created = RichTextLink.objects.get_or_create(
@@ -80,11 +83,12 @@ def construct_RichTextLink_attachments(sender, instance, **kwargs):
                     # Unless it wasn't in there to begin with (which is fine)
                     pass
 
-            # Any instances that weren't removed in the above forloop are now 'orphans'
-            # and can be safetly deleted.
+            # Any instances that weren't removed in the above forloop are now
+            # 'orphans' and can be safetly deleted.
             for previously_attached_instance in previously_attached_instances:
                 previously_attached_instance.delete()
     return
+
 
 @receiver(post_delete)
 def delete_attached_RichTextLink_instances(sender, instance, **kwargs):
@@ -106,4 +110,3 @@ def delete_attached_RichTextLink_instances(sender, instance, **kwargs):
         )
         attached_richtextlink_instances.delete()
     return
-

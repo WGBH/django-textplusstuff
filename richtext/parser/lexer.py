@@ -13,7 +13,10 @@ from .tokens import (
 # Example:
 # {% richtext 'carousel:carousel:4:full_width:content' %}
 
-richtext_re = re.compile("""\{\%\s*richtext\s*.*?(?P<richtext_token>[a-z-0-9:]+).*?\s*\%\}""")
+richtext_re = re.compile(
+    """\{\%\s*richtext\s*.*?(?P<richtext_token>[a-z-0-9:]+).*?\s*\%\}"""
+)
+
 
 class RichTextLexer(object):
 
@@ -51,14 +54,14 @@ class RichTextLexer(object):
         """
         if in_tag:
             token = RichTextToken(
-                        token_type=RICHTEXTNODE_TOKEN,
-                        contents=token_string
-                    )
+                token_type=RICHTEXTNODE_TOKEN,
+                contents=token_string
+            )
         else:
             token = RichTextToken(
-                        token_type=MARKDOWN_FLAVORED_TEXT_TOKEN,
-                        contents=token_string
-                    )
+                token_type=MARKDOWN_FLAVORED_TEXT_TOKEN,
+                contents=token_string
+            )
         token.lineno = self.lineno
         self.lineno += token.contents.count('\n')
         return token

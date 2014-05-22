@@ -3,10 +3,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+# Importing signals into models.py so they'll be
+# 'seen' by django.contrib.messages
 from .signals import (
     construct_RichTextLink_attachments,
     delete_attached_RichTextLink_instances
 )
+
 
 class RichTextLink(models.Model):
     """

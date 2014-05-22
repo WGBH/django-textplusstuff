@@ -6,6 +6,7 @@ TOKEN_TYPES = {
     RICHTEXTNODE_TOKEN: 'RichTextContentNode'
 }
 
+
 class RichTextToken(object):
 
     def __init__(self, token_type, contents):
