@@ -26,10 +26,19 @@ class InvalidRenditionType(Exception):
     pass
 
 
-class ModelStuff(object):
+class ImproperlyConfiguredStuff(ImproperlyConfigured):
+    pass
+
+
+class Stuff(object):
+    pass
+
+
+class ModelStuff(Stuff):
     verbose_name = None
     verbose_name_plural = None
     description = ""
+    serializer_class = None
 
     def __init__(self, model):
         if self.verbose_name is None:
@@ -75,18 +84,42 @@ class StuffRegistry(object):
         self._stuff_registry = {}
         self.name = name
 
-    def add(self, model, stuff_cls=None, groups=[]):
+    def verify_stuff_cls(self, stuff_cls):
+        invalid_stuff_msg = ''
+        if not hasattr(stuff_cls, 'renditions'):
+            invalid_stuff_msg = (
+                "%s does not have any renditions! (All Stuff must have at "
+                "least one renditiom)."
+            ) % stuff_cls.__name__
+        if invalid_stuff_msg:
+            raise ImproperlyConfiguredStuff(invalid_stuff_msg)
+
+    def verify_groups(self, groups, stuff_cls):
+        """
+
+        """
+        for group in groups:
+            if group not in STUFFGROUPS:
+                raise NonExistantGroup(
+                    "You tried registering %s with a group (%s) that is "
+                    "not defined in settings.TEXTPLUSSTUFF_STUFFGROUPS." % (
+                        stuff_cls.__name__,
+                        group
+                    )
+                )
+
+    def add(self, model, stuff_cls, groups=[]):
         """
         Registers the given model(s) with the given Stuff class.
         """
-        if not stuff_cls:
-            stuff_cls = ModelStuff
         if model in self._stuff_registry:
             raise AlreadyRegistered(
                 'The model %s is already registered with the TextPlusStuff '
                 'registry.' % model.__name__
             )
         else:
+            self.verify_stuff_cls(stuff_cls)
+            self.verify_groups(groups, stuff_cls)
             self._stuff_registry[model] = (stuff_cls, groups)
 
     def remove(self, model):
@@ -112,7 +145,7 @@ class StuffRegistry(object):
             """
             View to list all StuffGroups for this project.
             """
-            booboo = STUFF_REGISTRY
+            registered_stuff = STUFF_REGISTRY
 
             def prepare_stuffgroups(self):
                 if STUFFGROUPS:
@@ -138,42 +171,31 @@ class StuffRegistry(object):
 
             def get_generated_stuffgroups(self):
                 stuffgroups = self.prepare_stuffgroups()
-                for model, tup in self.booboo.iteritems():
+                for model, tup in self.registered_stuff.iteritems():
                     stuff_cls, groups = tup
                     for group in groups:
-                        try:
-                            stuffgroups[group]['stuff'].append({
-                                'name': stuff_cls.verbose_name,
-                                'description': stuff_cls.description or '',
-                                'renditions': [
-                                    {
-                                        'name': rendition.verbose_name,
-                                        'description': rendition.description,
-                                        'list_url': 'http://ebay.com'
-                                    }
-                                    for rendition in stuff_cls.renditions
-                                    if isinstance(rendition, Rendition)
-                                ],
-                                'list_url': 'http://google.com/'
-                            })
-                        except KeyError:
-                            raise NonExistantGroup(
-                                "You tried associating %s with the %s group "
-                                "but that group not yet been defined in "
-                                "settings.TEXTPLUSSTUFF_STUFFGROUPS" % (
-                                    stuff_cls.__name__,
-                                    group
-                                )
-                            )
+                        stuffgroups[group]['stuff'].append({
+                            'name': stuff_cls.verbose_name,
+                            'description': stuff_cls.description or '',
+                            'renditions': [
+                                {
+                                    'name': rendition.verbose_name,
+                                    'description': rendition.description,
+                                    'list_url': 'http://ebay.com',
+                                    'type': rendition.rendition_type
+                                }
+                                for rendition in stuff_cls.renditions
+                                if isinstance(rendition, Rendition)
+                            ],
+                            'list_url': 'http://google.com/'
+                        })
                 return stuffgroups
 
             def get(self, request, format=None):
                 """
                 Return a list of all StuffGroups.
                 """
-                x = self.get_generated_stuffgroups()
-                print x
-                return Response(x)
+                return Response(self.get_generated_stuffgroups())
 
         return ListStuffGroups.as_view()
 
