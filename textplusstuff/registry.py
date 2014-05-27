@@ -2,56 +2,28 @@ import copy
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from django.conf.urls import patterns, url, include
+from django.utils import six
 from django.utils.text import slugify
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.reverse import reverse_lazy as reverse
+from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField
+
+from .exceptions import (
+    AlreadyRegistered,
+    NotRegistered,
+    NonExistantGroup,
+    InvalidRenditionType,
+    ImproperlyConfiguredStuff
+)
+from .views import (
+    ListStuffView,
+    RetrieveStuffView
+)
 
 STUFFGROUPS = getattr(settings, 'TEXTPLUSSTUFF_STUFFGROUPS', {})
-
-
-class AlreadyRegistered(Exception):
-    pass
-
-
-class NotRegistered(Exception):
-    pass
-
-
-class NonExistantGroup(Exception):
-    pass
-
-
-class InvalidRenditionType(Exception):
-    pass
-
-
-class ImproperlyConfiguredStuff(ImproperlyConfigured):
-    pass
-
-
-class Stuff(object):
-    pass
-
-
-class ModelStuff(Stuff):
-    verbose_name = None
-    verbose_name_plural = None
-    description = ""
-    serializer_class = None
-
-    def __init__(self, model):
-        if self.verbose_name is None:
-            self.verbose_name = model._meta.verbose_name
-        if self.verbose_name_plural is None:
-            self.verbose_name_plural = model._meta.verbose_name_plural
-        self.model = model
-
-    def get_list_context(self):
-        pass
-
-    def get_instance_context(self):
-        pass
 
 
 class Rendition(object):
@@ -72,6 +44,98 @@ class Rendition(object):
 
     def render(self, context):
         pass
+
+
+class Stuff(object):
+    pass
+
+
+class ModelStuff(Stuff):
+    """
+    {app_name}/{model_name}/
+        list/
+        detail/{pk}/
+    """
+    verbose_name = None
+    verbose_name_plural = None
+    description = ""
+    serializer_class = None
+    renditions = []
+
+    def __init__(self, model):
+        if self.verbose_name is None:
+            self.verbose_name = model._meta.verbose_name
+        if self.verbose_name_plural is None:
+            self.verbose_name_plural = model._meta.verbose_name_plural
+        self.model = model
+
+    def get_list_serializer(self):
+        """"""
+        class ListSerializer(ModelSerializer):
+            url = HyperlinkedIdentityField(
+                view_name='textplusstuff:%s-detail' % self.get_url_name_key(),
+                lookup_field='pk'
+            )
+
+            class Meta:
+                model = self.model
+                fields = self.list_display + ('url',)
+
+        return ListSerializer
+
+    def list_view(self):
+        """
+        Returns a view that lists out all instances of self.model
+        """
+        return ListStuffView.as_view(
+            model=self.model,
+            serializer_class=self.get_list_serializer()
+        )
+
+    def detail_view(self):
+        """
+        Returns a view that returns a single instance of self.model
+
+        Proposed response template:
+        {
+            'context': {context_here},
+            'renditions': {
+                {short_name}: {
+                    'verbose_name':,
+                    'description':,
+                    'token':{% token_hurr %},
+                }
+            }
+        }
+        """
+        return RetrieveStuffView.as_view(
+            model=self.model,
+            serializer_class=self.serializer_class,
+            renditions=self.renditions
+        )
+
+    def get_url_name_key(self):
+        return "%s-%s" % (
+            self.model._meta.app_label,
+            self.model._meta.model_name
+        )
+
+    def get_urls(self):
+        url_name_key = self.get_url_name_key()
+        urlpatterns = patterns(
+            '',
+            url(
+                r'^list/$',
+                self.list_view(),
+                name='%s-list' % url_name_key
+            ),
+            url(
+                r'^detail/(?P<pk>\w+)/$',
+                self.detail_view(),
+                name='%s-detail' % url_name_key
+            ),
+        )
+        return urlpatterns
 
 
 class StuffRegistry(object):
@@ -120,7 +184,7 @@ class StuffRegistry(object):
         else:
             self.verify_stuff_cls(stuff_cls)
             self.verify_groups(groups, stuff_cls)
-            self._stuff_registry[model] = (stuff_cls, groups)
+            self._stuff_registry[model] = (stuff_cls(model), groups)
 
     def remove(self, model):
         """
@@ -181,13 +245,18 @@ class StuffRegistry(object):
                                 {
                                     'name': rendition.verbose_name,
                                     'description': rendition.description,
-                                    'list_url': 'http://ebay.com',
-                                    'type': rendition.rendition_type
+                                    'type': rendition.rendition_type,
+                                    'short_name': rendition.short_name
                                 }
                                 for rendition in stuff_cls.renditions
                                 if isinstance(rendition, Rendition)
                             ],
-                            'list_url': 'http://google.com/'
+                            'instance_list': reverse(
+                                'textplusstuff:%s-list' % (
+                                    stuff_cls.get_url_name_key()
+                                ),
+                                request=self.request
+                            )
                         })
                 return stuffgroups
 
@@ -200,12 +269,6 @@ class StuffRegistry(object):
         return ListStuffGroups.as_view()
 
     def get_urls(self):
-        from django.conf.urls import patterns, url  # , include
-
-        #if settings.DEBUG:
-        #    self.check_dependencies()
-
-        # Admin-site-wide views.
         urlpatterns = patterns(
             '',
             url(
@@ -215,12 +278,18 @@ class StuffRegistry(object):
             ),
         )
 
-        # Add in each model's views.
-        #for model, model_admin in six.iteritems(self._registry):
-        #    urlpatterns += patterns('',
-        #        url(r'^%s/%s/' % (model._meta.app_label, model._meta.model_name),
-        #            include(model_admin.urls))
-        #    )
+        for model, tup in six.iteritems(self._stuff_registry):
+            stuff_config, groups = tup
+            urlpatterns += patterns(
+                '',
+                url(
+                    r'^%s/%s/' % (
+                        model._meta.app_label,
+                        model._meta.model_name
+                    ),
+                    include(stuff_config.get_urls())
+                )
+            )
         return urlpatterns
 
     @property
