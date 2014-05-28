@@ -14,7 +14,7 @@ from .tokens import (
 # {% textplusstuff 'carousel:carousel:4:full_width:content' %}
 
 textplusstuff_re = re.compile(
-    """\{\%\s*textplusstuff\s*.*?(?P<textplusstuff_token>[a-z-0-9:]+).*?\s*\%\}"""
+    """\{\%\s*textplusstuff\s*.*?(?P<textplusstuff_token>[a-z-A-Z-0-9:]+).*?\s*\%\}"""
 )
 
 

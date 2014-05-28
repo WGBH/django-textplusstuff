@@ -52,7 +52,6 @@ def construct_TextPlusStuffLink_attachments(sender, instance, **kwargs):
                 for node in textplusstuff_instance.nodelist
                 if isinstance(node, TextPlusStuffContentNode)
             ]
-
             # Now, iterate through each node...
             for node in textplusstufflink_nodes:
                 # ...to get its node_mapping so...
@@ -68,7 +67,7 @@ def construct_TextPlusStuffLink_attachments(sender, instance, **kwargs):
                     'object_id': node_mapping.get('object_id'),
                     'field': field,
                     'parent_content_type': parent_ct,
-                    'parent_object_id': instance.pk,
+                    'parent_object_id': instance.id,
                 }
                 # ...either creating or retrieving a TextPlusStuffLink instance
                 textplusstufflink_instance, created = TextPlusStuffLink.objects.get_or_create(

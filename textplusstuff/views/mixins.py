@@ -17,6 +17,7 @@ class TextPlusStuffViewNameMixIn(object):
         name = name.split(' ')
         model_verbose_name = self.model._meta.verbose_name._proxy____cast()
         if isinstance(model_verbose_name, Promise):
+            # Catching ugettext_lazy marked text
             model_name = model_verbose_name._proxy____cast()
         elif isinstance(
             model_verbose_name, str
@@ -45,7 +46,7 @@ class TextPlusStuffRetrieveModelMixin(object):
                 {
                     'verbose_name': rendition.verbose_name,
                     'description': rendition.description,
-                    'token': '{%% %(app)s:%(model)s:%(pk)s:%(rend)s %%}' % {
+                    'token': "{%% textplusstuff '%(app)s:%(model)s:%(pk)s:%(rend)s' %%}" % {
                         'app': self.model._meta.app_label,
                         'model': self.model._meta.model_name,
                         'pk': unicode(self.object.pk),

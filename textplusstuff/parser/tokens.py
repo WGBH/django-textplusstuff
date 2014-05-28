@@ -17,5 +17,7 @@ class TextPlusStuffToken(object):
 
     def __str__(self):
         token_name = TOKEN_TYPES[self.token_type]
-        return ('<%s token: "%s...">' %
-                (token_name, self.contents[:50].replace('\n', '')))
+        return '<%s token: "%s...">' % (
+            token_name,
+            self.contents[:10].replace('\n', '')
+        )

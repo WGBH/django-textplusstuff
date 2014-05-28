@@ -227,7 +227,8 @@ class StuffRegistry(object):
                             # OK, this config passed, give it a 'stuff' key
                             # to hold Stuff that is associated with it.
                             stuffgroups[short_name].update({
-                                'stuff': []
+                                'stuff': [],
+                                'short_name': short_name
                             })
                     return stuffgroups
                 else:
@@ -258,12 +259,16 @@ class StuffRegistry(object):
                                 request=self.request
                             )
                         })
-                return stuffgroups
+                return [
+                    stuffgroup
+                    for short_name, stuffgroup in six.iteritems(stuffgroups)
+                ]
 
             def get(self, request, format=None):
                 """
                 Return a list of all StuffGroups.
                 """
+                stuff_groups = self.get_generated_stuffgroups()
                 return Response(self.get_generated_stuffgroups())
 
         return ListStuffGroups.as_view()

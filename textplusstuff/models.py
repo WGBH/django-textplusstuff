@@ -3,12 +3,57 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from .fields import TextPlusStuffField
 # Importing signals into models.py so they'll be
 # 'seen' by django.contrib.messages
 from .signals import (
     construct_TextPlusStuffLink_attachments,
     delete_attached_TextPlusStuffLink_instances
 )
+
+
+class TextPlusStuffDraft(models.Model):
+    """
+    A simple model used to hold 'drafts' of TextPlusStuffField
+    content.
+    """
+    title = models.CharField(
+        _('Draft Title'),
+        max_length=100
+    )
+    user = models.ForeignKey(
+        'auth.User',
+        verbose_name=_('User'),
+        help_text=_(
+            'The user who created this draft.'
+        )
+    )
+    date_created = models.DateTimeField(
+        _('Date Created'),
+        auto_now_add=True,
+        help_text=_('The date this draft was originally created.')
+    )
+    date_modified = models.DateTimeField(
+        _('Date Modified'),
+        auto_now=True,
+        help_text=_('The date this draft was updated.')
+    )
+    content = TextPlusStuffField(
+        _('Content'),
+        blank=True
+    )
+    content_ported = models.BooleanField(
+        _('Content Ported'),
+        default=False,
+        help_text=_(
+            'Signifies whether or not this draft has been used to populate '
+            'a TextPlusStuffField on another model.'
+        )
+    )
+
+    class Meta:
+        verbose_name = _('Text Plus Stuff Draft')
+        verbose_name_plural = _('Text Plus Stuff Drafts')
 
 
 class TextPlusStuffLink(models.Model):
@@ -29,7 +74,7 @@ class TextPlusStuffLink(models.Model):
         'parent_object_id'
     )
     content_type = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField()
+    object_id = models.CharField(max_length=25)
     content_object = generic.GenericForeignKey(
         'content_type',
         'object_id'
@@ -51,7 +96,8 @@ class TextPlusStuffLink(models.Model):
             content_object_string = doesnotexist_string
 
         if self.parent_content_object:
-            parent_content_object_string = self.parent_content_object.__str__()[:20]
+            parent_content_object_string = self.parent_content_object.__str__(
+            )[:20]
         else:
             parent_content_object_string = doesnotexist_string
 
@@ -59,3 +105,10 @@ class TextPlusStuffLink(models.Model):
             parent_content_object_string,
             content_object_string
         )
+
+__all__ = [
+    'construct_TextPlusStuffLink_attachments',
+    'delete_attached_TextPlusStuffLink_instances',
+    'TextPlusStuffDraft',
+    'TextPlusStuffLink'
+]
