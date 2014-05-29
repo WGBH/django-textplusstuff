@@ -1,0 +1,69 @@
+{% extends "rest_framework/base.html" %}
+{% load url from future %}
+{% load rest_framework %}
+{% block bootstrap_theme %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}textplusstuff/darkly/bootstrap.min.css" type="text/css">
+    <style type="text/css">
+        a .str {
+            text-decoration: underline;
+        }
+    </style>
+{% endblock %}
+{% block title %}TextPlusStuff API{% endblock %}
+{% block navbar_2 %}
+<div class="navbar {% block bootstrap_navbar_variant %}navbar-inverse{% endblock %}">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            {#{% block branding %}<a class='brand' rel="nofollow" href="#">TextPlusStuff API <span class="version">alpha</span></a>{% endblock %}#}
+            <ul class="nav pull-right">
+                {% comment %}{% block userlinks %}
+                    {% if user.is_authenticated %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                {{ user }}
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>{% optional_logout request %}</li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li>{% optional_login request %}</li>
+                    {% endif %}
+                {% endblock %}{% endcomment %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block navbar %}
+<div class="navbar navbar-default">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        </button>
+        {% block branding %}<a class="navbar-brand" rel="nofollow" href="{% url 'textplusstuff:index' %}">TextPlusStuff API <span class="version">{{ version }}</span></a>{% endblock %}
+    </div>
+    <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav navbar-right">
+            {% block userlinks %}
+                {% if user.is_authenticated %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            {{ user }}
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>{% optional_logout request %}</li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li>{% optional_login request %}</li>
+                {% endif %}
+            {% endblock %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

@@ -1,7 +1,17 @@
 from django.utils.functional import Promise
 
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.utils import formatting
+
+from .renderers import TextPlusStuffBrowsableAPIRenderer
+
+
+class TextPlusStuffAPIViewMixIn(object):
+    renderer_classes = (
+        JSONRenderer,
+        TextPlusStuffBrowsableAPIRenderer
+    )
 
 
 class TextPlusStuffViewNameMixIn(object):
@@ -52,7 +62,9 @@ class TextPlusStuffRetrieveModelMixin(object):
                         'pk': unicode(self.object.pk),
                         'rend': rendition.short_name
                     },
-                    'path_to_template': rendition.path_to_template
+                    'path_to_template': rendition.path_to_template,
+                    'type': rendition.rendition_type
+
                 }
             )
             for rendition in self.renditions

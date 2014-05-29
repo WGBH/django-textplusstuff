@@ -3,16 +3,21 @@ from rest_framework.generics import (
     RetrieveAPIView
 )
 
-from .mixins import TextPlusStuffRetrieveModelMixin, \
-    TextPlusStuffViewNameMixIn
+from .mixins import (
+    TextPlusStuffRetrieveModelMixin,
+    TextPlusStuffViewNameMixIn,
+    TextPlusStuffAPIViewMixIn
+)
 
 
-class ListStuffView(TextPlusStuffViewNameMixIn,
+class ListStuffView(TextPlusStuffAPIViewMixIn,
+                    TextPlusStuffViewNameMixIn,
                     ListAPIView):
     pass
 
 
-class RetrieveStuffView(TextPlusStuffViewNameMixIn,
+class RetrieveStuffView(TextPlusStuffAPIViewMixIn,
+                        TextPlusStuffViewNameMixIn,
                         TextPlusStuffRetrieveModelMixin,
                         RetrieveAPIView):
     renditions = []

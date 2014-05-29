@@ -9,7 +9,8 @@ from django.utils.text import slugify
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.reverse import reverse_lazy as reverse
-from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField
+from rest_framework.serializers import ModelSerializer, \
+    HyperlinkedIdentityField
 
 from .exceptions import (
     AlreadyRegistered,
@@ -20,7 +21,8 @@ from .exceptions import (
 )
 from .views import (
     ListStuffView,
-    RetrieveStuffView
+    RetrieveStuffView,
+    TextPlusStuffAPIViewMixIn
 )
 
 STUFFGROUPS = getattr(settings, 'TEXTPLUSSTUFF_STUFFGROUPS', {})
@@ -205,7 +207,7 @@ class StuffRegistry(object):
         """
         STUFF_REGISTRY = self._stuff_registry
 
-        class ListStuffGroups(APIView):
+        class ListStuffGroups(TextPlusStuffAPIViewMixIn, APIView):
             """
             View to list all StuffGroups for this project.
             """
@@ -268,7 +270,6 @@ class StuffRegistry(object):
                 """
                 Return a list of all StuffGroups.
                 """
-                stuff_groups = self.get_generated_stuffgroups()
                 return Response(self.get_generated_stuffgroups())
 
         return ListStuffGroups.as_view()
