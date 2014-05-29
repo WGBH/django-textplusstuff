@@ -3,6 +3,7 @@ from django.db.models import SubfieldBase, TextField
 from django.utils.translation import ugettext_lazy as _
 
 from .datastructures import TextPlusStuff
+from .widgets import TextPlusStuffWidget
 
 if 'south' in settings.INSTALLED_APPS:
     from south.modelsinspector import add_introspection_rules
@@ -20,21 +21,32 @@ class TextPlusStuffField(TextField):
         if isinstance(value, TextPlusStuff):
             textplusstuff_instance = value
         else:
-            textplusstuff_instance = TextPlusStuff(raw_text=value, field=self.attname)
+            textplusstuff_instance = TextPlusStuff(
+                raw_text=value, field=self.attname
+            )
 
         return textplusstuff_instance.raw_text
 
     def to_python(self, value):
         """
-        Takes Markdown-flavored (and TextPlusStuffToken-laden text) and returns it
-        as a TextPlusStuff instance.
+        Takes Markdown-flavored (and TextPlusStuffToken-laden text) and
+        returns it as a TextPlusStuff instance.
         """
         if isinstance(value, TextPlusStuff):
             textplusstuff_instance = value
             textplusstuff_instance.field = self.attname
         else:
-            textplusstuff_instance = TextPlusStuff(raw_text=value, field=self.attname)
+            textplusstuff_instance = TextPlusStuff(
+                raw_text=value, field=self.attname
+            )
 
         return textplusstuff_instance
+
+    def formfield(self, **kwargs):
+        formfield = super(TextPlusStuffField, self).formfield(**kwargs)
+        formfield.widget = TextPlusStuffWidget(
+            attrs={'class': 'vLargeTextField textplusstuff'}
+        )
+        return formfield
 
 __all__ = ('TextPlusStuffField')
