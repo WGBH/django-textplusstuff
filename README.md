@@ -86,7 +86,6 @@ _*NOTE:* The instructions below are for alpha development purposes and assume yo
 5. Add textplusstuff-required bits to your project's base `urls.py`:
 
     ```
-    # Base project urls.py
     from django.conf.urls import patterns, include, url
     from django.contrib import admin
 
@@ -122,8 +121,6 @@ To start using textplusstuff you have to register a model as Stuff. The examples
 2. Now open `serializers.py` to create your first serializer. For more information on serializing models [check out django REST frameworks fantastic docs](http://www.django-rest-framework.org/api-guide/serializers#modelserializer).:
 
     ```
-    # serializers.py
-
     from rest_framework.serializers import ModelSerializer
 
     from .models import TestModel
@@ -150,7 +147,6 @@ To start using textplusstuff you have to register a model as Stuff. The examples
 4. Now open the `stuff.py` file you just created and import the model you want to register and the serializer you just created:
 
     ```
-    # someapp/stuff.py
     from textplusstuff import registry
 
     from .models import TestModel
@@ -206,8 +202,6 @@ To start using textplusstuff you have to register a model as Stuff. The examples
 Using a TextPlusStuff field is easy just import it and set it to an attribute. Any options available to a django TextField (like blank=True) can be set on a TextPlusStuffField:
 
     ```
-    # someapp/models.py
-
     from django.db import models
 
     from textplusstuff.fields import TextPlusStuffField
