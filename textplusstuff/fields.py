@@ -14,7 +14,7 @@ if 'south' in settings.INSTALLED_APPS:
 
 class TextPlusStuffField(TextField):
 
-    description = _("Rich Text")
+    description = _("Text Plus Stuff Field")
     __metaclass__ = SubfieldBase
 
     def get_prep_value(self, value):
