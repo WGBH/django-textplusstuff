@@ -42,67 +42,69 @@ _*NOTE:* The instructions below are for alpha development purposes and assume yo
 
 1. Pull down this repo:
 
-    ```
-    $ git clone http://url.to/django-textplusstuff.git
-    ```
+        ```
+        $ git clone http://url.to/django-textplusstuff.git
+        ```
 
 2. Add the folder pointing to the newly cloned repo to your virtual environment:
 
-    ```
-    $ workon VirtualEnvName
-    $ add2virtualenv path/to/django-textplusstuff.git
-    ```
+        ```
+        $ workon VirtualEnvName
+        $ add2virtualenv path/to/django-textplusstuff.git
+        ```
 
 3. Install dependencies:
 
-    ```
-    $ pip install markdown2>= 2.1.0 BeautifulSoup>=3.2.1 djangorestframework==2.3
-    ```
+        ```
+        $ pip install markdown2>= 2.1.0 BeautifulSoup>=3.2.1 djangorestframework==2.3
+        ```
 
 4. Add required settings:
 
     Add `textplusstuff` to `INSTALLED_APPS`:
 
-    ```
-    INSTALLED_APPS = (
-        # Other apps here
-        'rest_framework',
-        'textplusstuff',
-    )
-    ```
+        ```
+        INSTALLED_APPS = (
+            # Other apps here
+            'rest_framework',
+            'textplusstuff',
+        )
+        ```
 
     Add the TEXTPLUSSTUFF_STUFFGROUPS setting with at least one StuffGroup. It can be named whatever you like (the one below is just 'example'):
 
-    ```
-    TEXTPLUSSTUFF_STUFFGROUPS = {
-        'example': {
-            'name': 'Example',
-            'description': "This is an example of a StuffGroup!"
-        },
-    }
-    ```
+        ```
+        TEXTPLUSSTUFF_STUFFGROUPS = {
+            'example': {
+                'name': 'Example',
+                'description': "This is an example of a StuffGroup!"
+            },
+        }
+        ```
+
     _*NOTE:* StuffGroups are used to organize Stuff in the upcoming editor tool and are required when you register Stuff._
 
 5. Add textplusstuff-required bits to your project's base `urls.py`:
 
-    ```
-    from django.conf.urls import patterns, include, url
-    from django.contrib import admin
+        ```
+        # Base project urls.py
+        from django.conf.urls import patterns, include, url
+        from django.contrib import admin
 
-    # Importing required textplusstuff bits
-    from textplusstuff.registry import stuff_registry, findstuff
+        # Importing required textplusstuff bits
+        from textplusstuff.registry import stuff_registry, findstuff
 
-    # Firing off the textplusstuff discovery engine
-    findstuff()
+        # Firing off the textplusstuff discovery engine
+        findstuff()
 
-    urlpatterns = patterns(
-        '',
-        # Admin URLs
-        url(r'^admin/', include(admin.site.urls)),
-        # textplusstuff URLs
-        url(r'^textplusstuff/', include(stuff_registry.urls))
-    )
-    ```
+        urlpatterns = patterns(
+            '',
+            # Admin URLs
+            url(r'^admin/', include(admin.site.urls)),
+            # textplusstuff URLs
+            url(r'^textplusstuff/', include(stuff_registry.urls))
+        )
+        ```
 ## Using textplusstuff
 
 ### Registering Stuff
@@ -111,89 +113,92 @@ To start using textplusstuff you have to register a model as Stuff. The examples
 
 1. Create a file called `serializers.py` within the app that has the model you want to register as stuff:
 
-    ```
-    someproject/
-        someapp/
-            models.py
-            serializers.py # Like this!
-    ```
+        ```
+        someproject/
+            someapp/
+                models.py
+                serializers.py # Like this!
+        ```
 
 2. Now open `serializers.py` to create your first serializer. For more information on serializing models [check out django REST frameworks fantastic docs](http://www.django-rest-framework.org/api-guide/serializers#modelserializer).:
 
-    ```
-    from rest_framework.serializers import ModelSerializer
+        ```
+        # serializers.py
 
-    from .models import TestModel
+        from rest_framework.serializers import ModelSerializer
 
-    class TestModelSerializer(ModelSerializer):
+        from .models import TestModel
 
-        class Meta:
-            model = TestModel
-            fields = (
-                'name',
-            )
-    ```
+        class TestModelSerializer(ModelSerializer):
+
+            class Meta:
+                model = TestModel
+                fields = (
+                    'name',
+                )
+        ```
 
 3. OK, now that we've got a serializer when need to create a file called `stuff.py` within the app that has the model you want to register as Stuff:
 
-    ```
-    someproject/
-        someapp/
-            models.py
-            serializers.py
-            stuff.py # Like this!
-    ```
+        ```
+        someproject/
+            someapp/
+                models.py
+                serializers.py
+                stuff.py # Like this!
+        ```
 
 4. Now open the `stuff.py` file you just created and import the model you want to register and the serializer you just created:
 
-    ```
-    from textplusstuff import registry
+        ```
+        # someapp/stuff.py
+        from textplusstuff import registry
 
-    from .models import TestModel
-    from .serializers import TestModelSerializer
+        from .models import TestModel
+        from .serializers import TestModelSerializer
 
-    class TestModelStuff(registry.ModelStuff):
-        # The queryset used to retrieve instances of TestModel
-        # within the front-end interface. For instance, you could
-        # exclude 'unpublished' instances or anything else you can
-        # query the ORM against
-        queryset = RoadshowTable.objects.all()
+        class TestModelStuff(registry.ModelStuff):
+            # The queryset used to retrieve instances of TestModel
+            # within the front-end interface. For instance, you could
+            # exclude 'unpublished' instances or anything else you can
+            # query the ORM against
+            queryset = RoadshowTable.objects.all()
 
-        # What humans see when they see this stuff
-        verbose_name = 'Test Model'
-        verbose_name_plural = 'Test Models'
-        description = 'Add a Test Model'
+            # What humans see when they see this stuff
+            verbose_name = 'Test Model'
+            verbose_name_plural = 'Test Models'
+            description = 'Add a Test Model'
 
-        # The serializer we just defined, this is what provides the context/JSON
-        # payload for this Stuff
-        serializer_class = TestModelSerializer
+            # The serializer we just defined, this is what provides the context/JSON
+            # payload for this Stuff
+            serializer_class = TestModelSerializer
 
-        # All Stuff must have at least one rendition (specified in
-        # the `renditions` attribute below) which basically
-        # just points to a template and some human-readable metadata.
-        # At present there are only two options for setting rendition_type:
-        # either 'block' (the default) or inline. These will be used by
-        # the front-end editor when placing tokens.
-        renditions = [
-            registry.Rendition(
-                short_name='sidebar_left',
-                verbose_name='Test Model Sidebar',
-                description='Displays a Test Model in the sidebar.',
-                path_to_template='someapp/templates/sidebar_left.html',
-                rendition_type='block'
-            )
-        ]
-        # The attributes used in the list (table) display of the front-end
-        # editing tool.
-        list_display = ('id', 'name')
+            # All Stuff must have at least one rendition (specified in
+            # the `renditions` attribute below) which basically
+            # just points to a template and some human-readable metadata.
+            # At present there are only two options for setting rendition_type:
+            # either 'block' (the default) or inline. These will be used by
+            # the front-end editor when placing tokens.
+            renditions = [
+                registry.Rendition(
+                    short_name='sidebar_left',
+                    verbose_name='Test Model Sidebar',
+                    description='Displays a Test Model in the sidebar.',
+                    path_to_template='someapp/templates/sidebar_left.html',
+                    rendition_type='block'
+                )
+            ]
+            # The attributes used in the list (table) display of the front-end
+            # editing tool.
+            list_display = ('id', 'name')
 
-    # OK, now let's register our Model and its Stuff config:
-    registry.stuff_registry.add(
-        TestModel,
-        TestModelStuff,
-        groups=['image', 'media']
-    )
-    ```
+        # OK, now let's register our Model and its Stuff config:
+        registry.stuff_registry.add(
+            TestModel,
+            TestModelStuff,
+            groups=['image', 'media']
+        )
+        ```
 
     Once you've registered your Stuff you can test if it worked by firing up a webserver and visiting http://localhost:8000/textplusstuff/.
 
@@ -201,27 +206,29 @@ To start using textplusstuff you have to register a model as Stuff. The examples
 
 Using a TextPlusStuff field is easy just import it and set it to an attribute. Any options available to a django TextField (like blank=True) can be set on a TextPlusStuffField:
 
-    ```
-    from django.db import models
+        ```
+        # someapp/models.py
 
-    from textplusstuff.fields import TextPlusStuffField
+        from django.db import models
 
-    class MyModel(models.Model):
-        content = TextPlusStuffField()
-    ```
+        from textplusstuff.fields import TextPlusStuffField
+
+        class MyModel(models.Model):
+            content = TextPlusStuffField()
+        ```
 
 TextPlusStuff fields store rich text as markdown and can serve it back as either raw markdown, plain text (formatting removed), or as HTML (markdown entities converted into HTML tags):
 
-    ```
-    >>> from someapp.models import MyModel
-    >>> instance = MyModel(content='Oh _hello there_!')
-    >>> instance.save()
-    >>> instance.content.as_markdown
-    'Oh _hello there_!'
-    >>> instance.content.as_plaintext
-    'Oh hello there!'
-    >>> instance.content.as_html
-    'Oh <em>hello there</em>!'
-    ```
+        ```
+        >>> from someapp.models import MyModel
+        >>> instance = MyModel(content='Oh _hello there_!')
+        >>> instance.save()
+        >>> instance.content.as_markdown
+        'Oh _hello there_!'
+        >>> instance.content.as_plaintext
+        'Oh hello there!'
+        >>> instance.content.as_html
+        'Oh <em>hello there</em>!'
+        ```
 
 Try pasting some tokens (that you find at /textplusstuff) into a TextPlusStuffField, saving the model instance associated with the field and then call the attributes above to see what happens. At present when a field with tokens is rendeered by `as_html` it will just transform the token in a generic way (to show that the field found/can-process it) but, once I get some time to come back to this the TextPlusStuff field will combine a template referenced in a Rendition with the context provided by its associated serializer and turn it into DOM.
