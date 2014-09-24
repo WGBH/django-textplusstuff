@@ -83,9 +83,7 @@ _*NOTE:* The instructions below are for alpha development purposes and assume yo
     ```
     _*NOTE:* StuffGroups are used to organize Stuff in the upcoming editor tool and are required when you register Stuff._
 
-5. Add urls:
-
-    Add textplusstuff-required bits to your project's base `urls.py`:
+5. Add textplusstuff-required bits to your project's base `urls.py`:
 
     ```
     # Base project urls.py
