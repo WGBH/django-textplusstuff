@@ -13,7 +13,15 @@ class NonExistantGroup(Exception):
     pass
 
 
+class InvalidRendition(Exception):
+    pass
+
+
 class InvalidRenditionType(Exception):
+    pass
+
+
+class InvalidToken(Exception):
     pass
 
 

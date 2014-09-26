@@ -1,3 +1,4 @@
+import collections
 import copy
 
 from django.conf import settings
@@ -17,6 +18,7 @@ from .exceptions import (
     NotRegistered,
     NonExistantGroup,
     InvalidRenditionType,
+    InvalidRendition,
     ImproperlyConfiguredStuff
 )
 from .views import (
@@ -47,6 +49,9 @@ class Rendition(object):
     def render(self, context):
         pass
 
+    def __repr__(self):
+        return "{}".format(self.short_name)
+
 
 class Stuff(object):
     pass
@@ -69,13 +74,43 @@ class ModelStuff(Stuff):
             self.verbose_name = model._meta.verbose_name
         if self.verbose_name_plural is None:
             self.verbose_name_plural = model._meta.verbose_name_plural
+        self._verify_renditions()
         self.model = model
+
+    def _verify_renditions(self):
+        for rendition in self.renditions:
+            if not isinstance(rendition, Rendition):
+                raise InvalidRendition(
+                    "{} is an invalid Rendition. All Renditions must "
+                    "be a subclass of textplusstuff.registry.Rendition".format(
+                        rendition
+                    )
+                )
+        non_unique_renditions = [
+            x
+            for x, y in collections.Counter([
+                rendition.short_name
+                for rendition in self.renditions
+            ]).items()
+            if y > 1
+        ]
+        if non_unique_renditions:
+            raise InvalidRendition(
+                "{} has multiple renditions associated it that use the "
+                "'short_name' {}. 'short_name' values must be unique across "
+                "all renditions associated with a Stuff subclass.".format(
+                    self.__class__.__name__,
+                    non_unique_renditions[0]
+                )
+            )
 
     def get_list_serializer(self):
         """"""
         class ListSerializer(ModelSerializer):
             url = HyperlinkedIdentityField(
-                view_name='textplusstuff:%s-detail' % self.get_url_name_key(),
+                view_name='textplusstuff:{}-detail'.format(
+                    self.get_url_name_key()
+                ),
                 lookup_field='pk'
             )
 
@@ -117,9 +152,9 @@ class ModelStuff(Stuff):
         )
 
     def get_url_name_key(self):
-        return "%s-%s" % (
-            self.model._meta.app_label,
-            self.model._meta.model_name
+        return "{app}-{model}".format(
+            app=self.model._meta.app_label,
+            model=self.model._meta.model_name
         )
 
     def get_urls(self):
@@ -129,12 +164,12 @@ class ModelStuff(Stuff):
             url(
                 r'^list/$',
                 self.list_view(),
-                name='%s-list' % url_name_key
+                name='{}-list'.format(url_name_key)
             ),
             url(
                 r'^detail/(?P<pk>\w+)/$',
                 self.detail_view(),
-                name='%s-detail' % url_name_key
+                name='{}-detail'.format(url_name_key)
             ),
         )
         return urlpatterns
@@ -147,7 +182,7 @@ class StuffRegistry(object):
     """
 
     def __init__(self, name='stuff_registry'):
-        self._stuff_registry = {}
+        self._modelstuff_registry = {}
         self.name = name
 
     def verify_stuff_cls(self, stuff_cls):
@@ -174,11 +209,11 @@ class StuffRegistry(object):
                     )
                 )
 
-    def add(self, model, stuff_cls, groups=[]):
+    def add_modelstuff(self, model, stuff_cls, groups=[]):
         """
         Registers the given model(s) with the given Stuff class.
         """
-        if model in self._stuff_registry:
+        if model in self._modelstuff_registry:
             raise AlreadyRegistered(
                 'The model %s is already registered with the TextPlusStuff '
                 'registry.' % model.__name__
@@ -186,26 +221,26 @@ class StuffRegistry(object):
         else:
             self.verify_stuff_cls(stuff_cls)
             self.verify_groups(groups, stuff_cls)
-            self._stuff_registry[model] = (stuff_cls(model), groups)
+            self._modelstuff_registry[model] = (stuff_cls(model), groups)
 
-    def remove(self, model):
+    def remove_modelstuff(self, model):
         """
         Unregisters the given model.
 
         If a model isn't already registered, this will raise NotRegistered.
         """
-        if model not in self._stuff_registry:
+        if model not in self._modelstuff_registry:
             raise NotRegistered(
                 'The model %s is not registered with the TextPlusStuff '
                 'registry.' % model.__name__)
         else:
-            del self._stuff_registry[model]
+            del self._modelstuff_registry[model]
 
     def index(self):
         """
         Returns the 'front page' response of the TextPlusStuff builder.
         """
-        STUFF_REGISTRY = self._stuff_registry
+        STUFF_REGISTRY = self._modelstuff_registry
 
         class ListStuffGroups(TextPlusStuffAPIViewMixIn, APIView):
             """
@@ -284,14 +319,14 @@ class StuffRegistry(object):
             ),
         )
 
-        for model, tup in six.iteritems(self._stuff_registry):
+        for model, tup in six.iteritems(self._modelstuff_registry):
             stuff_config, groups = tup
             urlpatterns += patterns(
                 '',
                 url(
-                    r'^%s/%s/' % (
-                        model._meta.app_label,
-                        model._meta.model_name
+                    r'^{app}/{model}/'.format(
+                        app=model._meta.app_label,
+                        model=model._meta.model_name
                     ),
                     include(stuff_config.get_urls())
                 )
@@ -322,7 +357,7 @@ def findstuff():
         # Attempt to import the app's sizedimage module.
         try:
             before_import_stuff_registry = copy.copy(
-                stuff_registry._stuff_registry
+                stuff_registry._modelstuff_registry
             )
             import_module('%s.stuff' % app)
         except:
@@ -330,7 +365,7 @@ def findstuff():
             # import as this import will have to reoccur on the next request
             # and this could raise NotRegistered and AlreadyRegistered
             # exceptions (see django ticket #8245).
-            stuff_registry._stuff_registry = before_import_stuff_registry
+            stuff_registry._modelstuff_registry = before_import_stuff_registry
 
             # Decide whether to bubble up this error. If the app just
             # doesn't have a stuff module, we can ignore the error

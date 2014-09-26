@@ -1,7 +1,4 @@
-from .nodes import (
-    MarkdownFlavoredTextNode,
-    TextPlusStuffContentNode
-)
+from .tokens import TOKEN_NODE_MAPPING
 
 
 class TextPlusStuffParser(object):
@@ -20,10 +17,7 @@ class TextPlusStuffParser(object):
         while self.tokens:
             token = self.next_token()
 
-            if token.token_type == 1:   # MARKDOWN_FLAVORED_TEXT_TOKEN
-                node_class = MarkdownFlavoredTextNode
-            elif token.token_type == 2:  # RICHTEXTNODE_TOKEN
-                node_class = TextPlusStuffContentNode
+            node_class = TOKEN_NODE_MAPPING[token.token_type]
 
             self.extend_nodelist(
                 nodelist=nodelist,

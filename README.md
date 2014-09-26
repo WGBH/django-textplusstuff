@@ -175,7 +175,7 @@ To start using textplusstuff you have to register a model as Stuff. The examples
             list_display = ('id', 'name')
 
         # OK, now let's register our Model and its Stuff config:
-        registry.stuff_registry.add(
+        registry.stuff_registry.add_modelstuff(
             TestModel,
             TestModelStuff,
             groups=['image', 'media']

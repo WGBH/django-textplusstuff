@@ -56,12 +56,15 @@ class TextPlusStuffRetrieveModelMixin(object):
                 {
                     'verbose_name': rendition.verbose_name,
                     'description': rendition.description,
-                    'token': "{%% textplusstuff '%(app)s:%(model)s:%(pk)s:%(rend)s' %%}" % {
-                        'app': self.model._meta.app_label,
-                        'model': self.model._meta.model_name,
-                        'pk': unicode(self.object.pk),
-                        'rend': rendition.short_name
-                    },
+                    'token': (
+                        "{{% textplusstuff 'MODELSTUFF__{app}:{model}:"
+                        "{pk}:{rend}' %}}"
+                    ).format(
+                        app=self.model._meta.app_label,
+                        model=self.model._meta.model_name,
+                        pk=self.object.pk,
+                        rend=rendition.short_name
+                    ),
                     'path_to_template': rendition.path_to_template,
                     'type': rendition.rendition_type
 

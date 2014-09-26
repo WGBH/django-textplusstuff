@@ -4,7 +4,7 @@ from django.dispatch import receiver
 
 from .datastructures import TextPlusStuff
 from .fields import TextPlusStuffField
-from .parser import TextPlusStuffContentNode
+from .parser import ModelStuffNode
 
 
 @receiver(post_save)
@@ -45,12 +45,12 @@ def construct_TextPlusStuffLink_attachments(sender, instance, **kwargs):
             else:
                 textplusstuff_instance = current_textplusstufffield_val
 
-            # Now, build a list of all TextPlusStuffContentNode
+            # Now, build a list of all ModelStuffNode
             # instances associated with it
             textplusstufflink_nodes = [
                 node
                 for node in textplusstuff_instance.nodelist
-                if isinstance(node, TextPlusStuffContentNode)
+                if isinstance(node, ModelStuffNode)
             ]
             # Now, iterate through each node...
             for node in textplusstufflink_nodes:

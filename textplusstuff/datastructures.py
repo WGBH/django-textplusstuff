@@ -3,7 +3,7 @@ from django.utils.safestring import mark_safe
 
 from .parser import (
     MarkdownFlavoredTextNode,
-    TextPlusStuffContentNode,
+    ModelStuffNode,
     TextPlusStuffLexer,
     TextPlusStuffParser
 )
@@ -36,7 +36,7 @@ class TextPlusStuff(object):
         for node in self.nodelist:
             if isinstance(node, MarkdownFlavoredTextNode):
                 final_output += node.render(render_as=text_output_format)
-            elif isinstance(node, TextPlusStuffContentNode):
+            elif isinstance(node, ModelStuffNode):
                 if (not include_content_nodes) or (
                     text_output_format in ['plain_text', 'markdown']
                 ):

@@ -1,9 +1,11 @@
-MARKDOWN_FLAVORED_TEXT_TOKEN = 1
-RICHTEXTNODE_TOKEN = 2
+from .nodes import (
+    MarkdownFlavoredTextNode,
+    ModelStuffNode
+)
 
-TOKEN_TYPES = {
-    MARKDOWN_FLAVORED_TEXT_TOKEN: 'MarkdownFlavoredText',
-    RICHTEXTNODE_TOKEN: 'TextPlusStuffContentNode'
+TOKEN_NODE_MAPPING = {
+    'MARKDOWNTEXT': MarkdownFlavoredTextNode,
+    'MODELSTUFF': ModelStuffNode
 }
 
 
@@ -16,8 +18,7 @@ class TextPlusStuffToken(object):
         self.lineno = None
 
     def __str__(self):
-        token_name = TOKEN_TYPES[self.token_type]
         return '<%s token: "%s...">' % (
-            token_name,
+            self.token_type,
             self.contents[:10].replace('\n', '')
         )

@@ -1,10 +1,6 @@
 import re
 
-from .tokens import (
-    MARKDOWN_FLAVORED_TEXT_TOKEN,
-    RICHTEXTNODE_TOKEN,
-    TextPlusStuffToken
-)
+from .tokens import TextPlusStuffToken, TOKEN_NODE_MAPPING
 
 # The below compiled regex (`textplusstuff_re`) matches the following pattern:
 # {% textplusstuff '%(content_type__app_label)s'
@@ -14,7 +10,8 @@ from .tokens import (
 # {% textplusstuff 'carousel:carousel:4:full_width:content' %}
 
 textplusstuff_re = re.compile(
-    """\{\%\s*textplusstuff\s*.*?(?P<textplusstuff_token>[a-z-A-Z-0-9:]+).*?\s*\%\}"""
+    "\{\%\s*textplusstuff\s*.*?"
+    "(?P<textplusstuff_token>[a-z-A-Z-0-9:_]+).*?\s*\%\}"
 )
 
 
@@ -53,13 +50,20 @@ class TextPlusStuffLexer(object):
         markdown-flavored string.
         """
         if in_tag:
-            token = TextPlusStuffToken(
-                token_type=RICHTEXTNODE_TOKEN,
-                contents=token_string
-            )
+            try:
+                token_type, token_string = token_string.split('__')
+            except ValueError:
+                raise Exception(
+                    "{} is a malformed token string!".format(token_string)
+                )
+            else:
+                token = TextPlusStuffToken(
+                    token_type=token_type,
+                    contents=token_string
+                )
         else:
             token = TextPlusStuffToken(
-                token_type=MARKDOWN_FLAVORED_TEXT_TOKEN,
+                token_type='MARKDOWNTEXT',
                 contents=token_string
             )
         token.lineno = self.lineno

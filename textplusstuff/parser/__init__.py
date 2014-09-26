@@ -1,8 +1,10 @@
 from .lexer import TextPlusStuffLexer
-from .parser import (
-    TextPlusStuffParser,
-    MarkdownFlavoredTextNode,
-    TextPlusStuffContentNode
-)
+from .parser import TextPlusStuffParser
+from .nodes import MarkdownFlavoredTextNode, ModelStuffNode
 
-__all__ = ('MarkdownFlavoredTextNode', 'TextPlusStuffContentNode', 'TextPlusStuffLexer', 'TextPlusStuffParser')
+__all__ = [
+    'MarkdownFlavoredTextNode',
+    'ModelStuffNode',
+    'TextPlusStuffLexer',
+    'TextPlusStuffParser'
+]
