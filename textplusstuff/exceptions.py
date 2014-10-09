@@ -27,3 +27,7 @@ class InvalidToken(Exception):
 
 class ImproperlyConfiguredStuff(ImproperlyConfigured):
     pass
+
+
+class MissingRendition(Exception):
+    pass

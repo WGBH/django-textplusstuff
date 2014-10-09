@@ -1,13 +1,11 @@
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
-from django.template.loader import get_template
-from django.template import Context
 from django.utils.encoding import force_str
 
 from BeautifulSoup import BeautifulSoup
 from markdown2 import Markdown
 
-from ..exceptions import InvalidToken, NotRegistered
+from ..exceptions import InvalidToken, NotRegistered, MissingRendition
 from ..registry import stuff_registry
 
 
@@ -167,7 +165,9 @@ class ModelStuffNode(BaseNode):
         model_cls = self.get_model_class()
         # Step 2: Find the model in stuff_registry._modelstuff_registry
         try:
-            stuff_config, groups = stuff_registry._modelstuff_registry[model_cls]
+            stuff_config, groups = stuff_registry._modelstuff_registry[
+                model_cls
+            ]
         except KeyError:
             raise NotRegistered(
                 "The model ({}) associated with this token (uid: {}) is not "
@@ -196,16 +196,28 @@ class ModelStuffNode(BaseNode):
                 # Step 4: Grab the rendition instance associated with the token
                 #         and combine its template with the context provided by
                 #         the serializer.
-                rendition = next(
-                    r
-                    for r in stuff_config.renditions
-                    if r.short_name == self.node_mapping.get('rendition_key')
-                )
-                template = get_template(rendition.path_to_template)
-                context = Context({
-                    'context': stuff_config.serializer_class(instance).data,
-                })
-                # Step 5: Then return it bruh.
-                return template.render(context)
+                try:
+                    rendition = stuff_config._renditions.get(
+                        self.node_mapping.get('rendition_key')
+                    )
+                except KeyError:
+                    raise MissingRendition(
+                        "The rendition (short_name: '{rendition_short_name}') "
+                        "associated with this token (uid: {token_uid}) "
+                        "is not registered with the {model} model's "
+                        "corresponding StuffConfig and, therefore, "
+                        "could not be rendered.".format(
+                            uid=self.payload,
+                            rendition_short_name=self.node_mapping.get(
+                                'rendition_key'
+                            ),
+                            model=model_cls
+                        )
+                    )
+                else:
+                    # Step 5: Then return it bruh.
+                    return rendition.render_as_html(
+                        context=stuff_config.serializer_class(instance).data
+                    )
 
 __all__ = ('MarkdownFlavoredTextNode', 'ModelStuffNode')

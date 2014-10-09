@@ -4,6 +4,8 @@ import copy
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.conf.urls import patterns, url, include
+from django.template import Context
+from django.template.loader import get_template
 from django.utils import six
 from django.utils.text import slugify
 
@@ -46,11 +48,19 @@ class Rendition(object):
         else:
             self.rendition_type = rendition_type
 
-    def render(self, context):
-        pass
+    def get_context_data(self, **context):
+        return Context(context)
+
+    def render_as_html(self, context):
+        """
+        Renders
+        """
+        template = get_template(self.path_to_template)
+        context = self.get_context_data(context=context)
+        return template.render(context)
 
     def __repr__(self):
-        return "{}".format(self.short_name)
+        return self.path_to_template
 
 
 class Stuff(object):
@@ -74,10 +84,10 @@ class ModelStuff(Stuff):
             self.verbose_name = model._meta.verbose_name
         if self.verbose_name_plural is None:
             self.verbose_name_plural = model._meta.verbose_name_plural
-        self._verify_renditions()
+        self._renditions = self._verify_and_build_renditions_dict()
         self.model = model
 
-    def _verify_renditions(self):
+    def _verify_and_build_renditions_dict(self):
         for rendition in self.renditions:
             if not isinstance(rendition, Rendition):
                 raise InvalidRendition(
@@ -102,6 +112,11 @@ class ModelStuff(Stuff):
                     self.__class__.__name__,
                     non_unique_renditions[0]
                 )
+            )
+        else:
+            return dict(
+                (rendition.short_name, rendition)
+                for rendition in self.renditions
             )
 
     def get_list_serializer(self):
