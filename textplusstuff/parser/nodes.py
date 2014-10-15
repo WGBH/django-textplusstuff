@@ -197,9 +197,9 @@ class ModelStuffNode(BaseNode):
                 #         and combine its template with the context provided by
                 #         the serializer.
                 try:
-                    rendition = stuff_config._renditions.get(
+                    rendition = stuff_config._renditions[
                         self.node_mapping.get('rendition_key')
-                    )
+                    ]
                 except KeyError:
                     raise MissingRendition(
                         "The rendition (short_name: '{rendition_short_name}') "
@@ -207,7 +207,7 @@ class ModelStuffNode(BaseNode):
                         "is not registered with the {model} model's "
                         "corresponding StuffConfig and, therefore, "
                         "could not be rendered.".format(
-                            uid=self.payload,
+                            token_uid=self.payload,
                             rendition_short_name=self.node_mapping.get(
                                 'rendition_key'
                             ),
