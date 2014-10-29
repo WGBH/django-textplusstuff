@@ -33,6 +33,7 @@ Alpha
 ## Requirements ##
 
 * `django` >= 1.5
+* `django-rest-framework` == 2.3.13
 * `markdown2` >= 2.1.0
 * `BeautifulSoup` >= 3.2.1
 

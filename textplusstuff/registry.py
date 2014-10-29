@@ -21,6 +21,7 @@ from .exceptions import (
     NonExistantGroup,
     InvalidRenditionType,
     InvalidRendition,
+    ImproperlyConfigured,
     ImproperlyConfiguredStuff
 )
 from .views import (
@@ -288,33 +289,41 @@ class StuffRegistry(object):
 
             def get_generated_stuffgroups(self):
                 stuffgroups = self.prepare_stuffgroups()
-                for model, tup in self.registered_stuff.iteritems():
-                    stuff_cls, groups = tup
-                    for group in groups:
-                        stuffgroups[group]['stuff'].append({
-                            'name': stuff_cls.verbose_name,
-                            'description': stuff_cls.description or '',
-                            'renditions': [
-                                {
-                                    'name': rendition.verbose_name,
-                                    'description': rendition.description,
-                                    'type': rendition.rendition_type,
-                                    'short_name': rendition.short_name
-                                }
-                                for rendition in stuff_cls.renditions
-                                if isinstance(rendition, Rendition)
-                            ],
-                            'instance_list': reverse(
-                                'textplusstuff:%s-list' % (
-                                    stuff_cls.get_url_name_key()
-                                ),
-                                request=self.request
-                            )
-                        })
-                return [
-                    stuffgroup
-                    for short_name, stuffgroup in six.iteritems(stuffgroups)
-                ]
+                if not stuffgroups:
+                    raise ImproperlyConfigured(
+                        'To use textplustuff the TEXTPLUSSTUFF_STUFFGROUPS '
+                        'must be set in your settings file.'
+                    )
+                else:
+                    for model, tup in self.registered_stuff.iteritems():
+                        stuff_cls, groups = tup
+                        for group in groups:
+                            stuffgroups[group]['stuff'].append({
+                                'name': stuff_cls.verbose_name,
+                                'description': stuff_cls.description or '',
+                                'renditions': [
+                                    {
+                                        'name': rendition.verbose_name,
+                                        'description': rendition.description,
+                                        'type': rendition.rendition_type,
+                                        'short_name': rendition.short_name
+                                    }
+                                    for rendition in stuff_cls.renditions
+                                    if isinstance(rendition, Rendition)
+                                ],
+                                'instance_list': reverse(
+                                    'textplusstuff:%s-list' % (
+                                        stuff_cls.get_url_name_key()
+                                    ),
+                                    request=self.request
+                                )
+                            })
+                    return [
+                        stuffgroup
+                        for short_name, stuffgroup in six.iteritems(
+                            stuffgroups
+                        )
+                    ]
 
             def get(self, request, format=None):
                 """
