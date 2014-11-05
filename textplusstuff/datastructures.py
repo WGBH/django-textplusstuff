@@ -30,41 +30,65 @@ class TextPlusStuff(object):
         # Pass tokens to parser and parse
         self.nodelist = TextPlusStuffParser(tokens=tokens).parse()
 
-    def render(self, text_output_format='html', include_content_nodes=True):
-        """"""
+    def render(self, render_markdown_as, **kwargs):
+        """
+        Renders a TextPlusStuffField
+        `render_markdown_as`: The format that markdown-flavored text should
+        be transformed in. Options: `html`, `markdown`, `plain_text`
+        """
         final_output = ""
+        include_content_nodes = kwargs.pop('include_content_nodes', True)
+        extra_context = kwargs.pop('extra_context', None)
         for node in self.nodelist:
             if isinstance(node, MarkdownFlavoredTextNode):
-                final_output += node.render(render_as=text_output_format)
+                final_output += node.render(render_as=render_markdown_as)
             elif isinstance(node, ModelStuffNode):
                 if (not include_content_nodes) or (
-                    text_output_format in ['plain_text', 'markdown']
+                    render_markdown_as in ['plain_text', 'markdown']
                 ):
                     pass
                 else:
-                    final_output += node.render()
+                    final_output += node.render(extra_context=extra_context)
         return final_output
 
-    @property
-    def as_html(self):
+    def as_html(self, **kwargs):
+        """
+        Renders a TextPlusStuffField as HTML.
+        Optional keyword arguments:
+        * `include_content_nodes`: Boolean signifying whether or not to render
+                                   content nodes (i.e. ModelStuff tokens).
+                                   Defaults to `True`.
+        """
         return mark_safe(
             self.render(
-                text_output_format='html',
-                include_content_nodes=True
+                'html',
+                include_content_nodes=kwargs.pop(
+                    'include_content_nodes', True
+                ),
+                extra_context=kwargs.pop('extra_context', None)
             )
         )
 
-    @property
-    def as_plaintext(self):
+    def as_plaintext(self, **kwargs):
+        """
+        Renders a TextPlusStuffField as plain text (all markdown
+        formatting removed).
+
+        Content nodes (i.e. ModelStuff tokens) will not be rendered.
+        """
         return self.render(
-            text_output_format='plain_text',
+            'plain_text',
             include_content_nodes=False
         )
 
-    @property
-    def as_markdown(self):
+    def as_markdown(self, **kwargs):
+        """
+        Renders a TextPlusStuffField as markdown.
+
+        Content nodes (i.e. ModelStuff tokens) will not be rendered.
+        """
         return self.render(
-            text_output_format='markdown',
+            'markdown',
             include_content_nodes=False
         )
 

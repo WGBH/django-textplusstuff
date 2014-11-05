@@ -24,7 +24,7 @@ class MarkdownFlavoredTextNode(BaseNode):
             errors='replace'
         )
 
-    def render(self, render_as='html'):
+    def render(self, render_as):
         """
         `render_as` can be one of three values:
             * 'html': Returns a block of markdown flavored text as HTML
@@ -157,7 +157,7 @@ class ModelStuffNode(BaseNode):
 
             return node_content
 
-    def render(self):
+    def render(self, extra_context=None):
         """
         Transforms this node into HTML
         """
@@ -217,7 +217,9 @@ class ModelStuffNode(BaseNode):
                 else:
                     # Step 5: Then return it bruh.
                     return rendition.render_as_html(
-                        context=stuff_config.serializer_class(instance).data
+                        context=stuff_config.serializer_class(
+                            instance, context=extra_context
+                        ).data
                     )
 
 __all__ = ('MarkdownFlavoredTextNode', 'ModelStuffNode')
