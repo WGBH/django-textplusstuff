@@ -202,11 +202,19 @@ TextPlusStuff fields store rich text as markdown and can serve it back as either
     >>> from someapp.models import MyModel
     >>> instance = MyModel(content='Oh _hello there_!')
     >>> instance.save()
-    >>> instance.content.as_markdown
+    >>> instance.content.as_markdown()
     'Oh _hello there_!'
-    >>> instance.content.as_plaintext
+    >>> instance.content.as_plaintext()
     'Oh hello there!'
-    >>> instance.content.as_html
+    >>> instance.content.as_html()
     'Oh <em>hello there</em>!'
 
 Try pasting some tokens (that you find at /textplusstuff) into a TextPlusStuffField, saving the model instance associated with the field and then call the attributes above to see what happens. At present when a field with tokens is rendeered by `as_html` it will just transform the token in a generic way (to show that the field found/can-process it) but, once I get some time to come back to this the TextPlusStuff field will combine a template referenced in a Rendition with the context provided by its associated serializer and turn it into DOM.
+
+#### Adding just-in-time extra context to .as_html() rendering
+
+If you want to include extra context data beyond what is provided natively by a token just pass a dictionary to the `extra_context` keyword argument of the `as_html()` method:
+
+    >>> instance.content.as_html(extra_context={'some_key': 'some_value'})
+
+This dictionary will then be passed to the [`context` keyword argument of the serializer class](http://www.django-rest-framework.org/api-guide/serializers.html#including-extra-context) associated with that token's Stuff config. [Click here](http://www.django-rest-framework.org/api-guide/serializers.html#including-extra-context) for more information about how to access this data within your serializer.
