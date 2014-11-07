@@ -14,10 +14,11 @@ class TextPlusStuffRegisteredModelAdmin(admin.ModelAdmin):
             rendition
             for short_name, rendition in rendition_dict.iteritems()
         ]
+        extra_context = extra_context or {}
         if rendition_dict:
-            extra_context = {
-                'rendition_list': rendition_list
-            }
+            extra_context.update({
+                'textplusstuff_rendition_list': rendition_list
+            })
         return super(TextPlusStuffRegisteredModelAdmin, self).change_view(
             request, object_id, form_url=form_url, extra_context=extra_context
         )

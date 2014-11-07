@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block after_field_sets %}
-{% if rendition_list %}
+{% if textplusstuff_rendition_list %}
 <h2>{% trans 'Available TextPlusStuff Renditions' %}</h2>
 
 <div class="module results">
@@ -12,7 +12,7 @@
         <th>{% trans 'Description' %}</th>
         <th>{% trans 'Token' %}</th>
     </tr>
-    {% for rendition in rendition_list %}
+    {% for rendition in textplusstuff_rendition_list %}
     <tr>
         <td>{{ rendition.verbose_name }}</td>
         <td>{{ rendition.description }}</td>
