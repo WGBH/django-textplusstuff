@@ -48,30 +48,10 @@ class TextPlusStuffRetrieveModelMixin(object):
     """
 
     def retrieve(self, request, *args, **kwargs):
+        from ..registry import get_MODELSTUFF_renditions
         self.object = self.get_object()
         serializer = self.get_serializer(self.object)
-        renditions = dict(
-            (
-                rendition.short_name,
-                {
-                    'verbose_name': rendition.verbose_name,
-                    'description': rendition.description,
-                    'token': (
-                        "{{% textplusstuff 'MODELSTUFF__{app}:{model}:"
-                        "{pk}:{rend}' %}}"
-                    ).format(
-                        app=self.model._meta.app_label,
-                        model=self.model._meta.model_name,
-                        pk=self.object.pk,
-                        rend=rendition.short_name
-                    ),
-                    'path_to_template': rendition.path_to_template,
-                    'type': rendition.rendition_type
-
-                }
-            )
-            for rendition in self.renditions
-        )
+        renditions = get_MODELSTUFF_renditions(self.object)
         template = {
             'context': serializer.data,
             'renditions': renditions

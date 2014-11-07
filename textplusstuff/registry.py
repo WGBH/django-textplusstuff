@@ -2,7 +2,6 @@ import collections
 import copy
 
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
 from django.conf.urls import patterns, url, include
 from django.template import Context
 from django.template.loader import get_template
@@ -396,3 +395,42 @@ def findstuff():
             # attempting to import it, otherwise we want it to bubble up.
             if module_has_submodule(mod, 'stuff'):
                 raise
+
+
+def get_MODELSTUFF_renditions(model_instance):
+    """
+    Builds out a dict of the available MODELSTUFF renditions
+    for a particular model instance
+    """
+    if not stuff_registry._modelstuff_registry:
+        findstuff()
+
+    try:
+        stuff_config, groups = stuff_registry._modelstuff_registry[
+            model_instance._meta.model
+        ]
+    except KeyError:
+        return None
+    else:
+        return dict(
+            (
+                rendition.short_name,
+                {
+                    'verbose_name': rendition.verbose_name,
+                    'description': rendition.description,
+                    'token': (
+                        "{{% textplusstuff 'MODELSTUFF__{app}:{model}:"
+                        "{pk}:{rend}' %}}"
+                    ).format(
+                        app=model_instance._meta.app_label,
+                        model=model_instance._meta.model_name,
+                        pk=model_instance.pk,
+                        rend=rendition.short_name
+                    ),
+                    'path_to_template': rendition.path_to_template,
+                    'type': rendition.rendition_type
+
+                }
+            )
+            for rendition in stuff_config.renditions
+        )

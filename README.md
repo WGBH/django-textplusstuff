@@ -218,3 +218,21 @@ If you want to include extra context data beyond what is provided natively by a 
     >>> instance.content.as_html(extra_context={'some_key': 'some_value'})
 
 This dictionary will then be passed to the [`context` keyword argument of the serializer class](http://www.django-rest-framework.org/api-guide/serializers.html#including-extra-context) associated with that token's Stuff config. [Click here](http://www.django-rest-framework.org/api-guide/serializers.html#including-extra-context) for more information about how to access this data within your serializer.
+
+### Exposing tokens within the admin
+
+There currently isn't a front-end interface for TextPlusStuff fields and this makes finding tokens unnecessarily difficult (unless you're a weirdo who likes groking JSON). To mitigate this, just swap the superclass of your admin configurations from `django.contrib.admin.ModelAdmin` with `textplusstuff.admin.TextPlusStuffRegisteredModelAdmin` like so:
+
+    from django.contrib import admin
+
+    from textplusstuff.admin import TextPlusStuffRegisteredModelAdmin
+
+    # A model registered with textplusstuff.registry.stuff_registry
+    from .models import SomeModel
+
+    class SomeModelAdmin(TextPlusStuffRegisteredModelAdmin):
+        # Configure like you would any admin.ModelAdmin class
+
+    admin.site.register(SomeModel, SomeModelAdmin)
+
+This will add an 'Available Renditions' sections beneath the change/edit form within the admin that contains a table that lists all the available renditions for that model (including their instance-associated tokens).

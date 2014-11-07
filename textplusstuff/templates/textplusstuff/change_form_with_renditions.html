@@ -1,0 +1,25 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+
+{% block after_field_sets %}
+{% if rendition_list %}
+<h2>{% trans 'Available TextPlusStuff Renditions' %}</h2>
+
+<div class="module results">
+<table>
+    <tr>
+        <th>{% trans 'Name' %}</th>
+        <th>{% trans 'Description' %}</th>
+        <th>{% trans 'Token' %}</th>
+    </tr>
+    {% for rendition in rendition_list %}
+    <tr>
+        <td>{{ rendition.verbose_name }}</td>
+        <td>{{ rendition.description }}</td>
+        <td>{{ rendition.token }}</td>
+    </tr>
+    {% endfor %}
+</table>
+</div>
+{% endif %}
+{% endblock %}
