@@ -9,7 +9,7 @@ class TextPlusStuffRegisteredModelAdmin(admin.ModelAdmin):
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         obj = self.get_object(request, admin.util.unquote(object_id))
-        rendition_dict = get_MODELSTUFF_renditions(obj)
+        rendition_dict = get_MODELSTUFF_renditions(obj) or {}
         rendition_list = [
             rendition
             for short_name, rendition in rendition_dict.iteritems()
