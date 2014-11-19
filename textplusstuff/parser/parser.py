@@ -11,18 +11,19 @@ class TextPlusStuffParser(object):
     def extend_nodelist(self, nodelist, node, token):
         nodelist.append(node)
 
-    def parse(self, rendition=None):
+    def parse(self):
         nodelist = []
 
         while self.tokens:
             token = self.next_token()
 
             node_class = TOKEN_NODE_MAPPING[token.token_type]
-
-            self.extend_nodelist(
-                nodelist=nodelist,
-                node=node_class(token.contents),
-                token=token
-            )
+            token_content = token.contents.strip()
+            if token_content:
+                self.extend_nodelist(
+                    nodelist=nodelist,
+                    node=node_class(token_content),
+                    token=token
+                )
 
         return nodelist

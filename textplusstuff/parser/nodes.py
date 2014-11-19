@@ -14,6 +14,11 @@ class BaseNode(object):
     def __init__(self, payload):
         self.payload = payload
 
+    def render(self, *args, **kwargs):
+        raise NotImplementedError(
+            'Subclasses must provide a render method.'
+        )
+
 
 class MarkdownFlavoredTextNode(BaseNode):
 

@@ -1,6 +1,6 @@
 import re
 
-from .tokens import TextPlusStuffToken, TOKEN_NODE_MAPPING
+from .tokens import TextPlusStuffToken
 
 # The below compiled regex (`textplusstuff_re`) matches the following pattern:
 # {% textplusstuff '%(content_type__app_label)s'
