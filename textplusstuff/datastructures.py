@@ -15,7 +15,7 @@ class TextPlusStuff(object):
         if raw_text is None:
             raw_text = ""
         try:
-            raw_text_processed = force_text(raw_text)
+            raw_text_processed = force_text(raw_text, errors='replace')
         except UnicodeDecodeError:
             raise UnicodeDecodeError(
                 "TextPlusStuff can only be initialized with either "
