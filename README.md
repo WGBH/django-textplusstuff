@@ -32,9 +32,9 @@ Alpha
 
 ## Requirements ##
 
-* `django` >= 1.5
-* `djangorestframework` == 2.3.13
-* `markdown2` >= 2.1.0
+* `django` >= 1.6.x >
+* `djangorestframework` == 3.0.x
+* `markdown2` >= 2.3.x
 * `BeautifulSoup` >= 3.2.1
 
 ## Installation Instructions
