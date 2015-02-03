@@ -1,0 +1,9 @@
+[
+{
+    "fields": {
+        "title": "Test Title"
+    },
+    "model": "tests.registeredmodel",
+    "pk": 1
+}
+]

@@ -13,7 +13,7 @@ from .mixins import (
 class ListStuffView(TextPlusStuffAPIViewMixIn,
                     TextPlusStuffViewNameMixIn,
                     ListAPIView):
-    pass
+    model = None
 
 
 class RetrieveStuffView(TextPlusStuffAPIViewMixIn,
@@ -21,3 +21,4 @@ class RetrieveStuffView(TextPlusStuffAPIViewMixIn,
                         TextPlusStuffRetrieveModelMixin,
                         RetrieveAPIView):
     renditions = []
+    model = None

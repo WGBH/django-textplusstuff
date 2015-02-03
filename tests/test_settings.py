@@ -12,6 +12,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.staticfiles",
     "rest_framework",
+    "textplusstuff",
     "tests",
 ]
 
@@ -38,3 +39,10 @@ STATIC_URL = '/static/'
 
 ROOT_URLCONF = 'tests.urls'
 DEBUG = True
+
+TEXTPLUSSTUFF_STUFFGROUPS = {
+    'test_group': {
+        'name': 'Testing!',
+        'description': "For your test models!"
+    },
+}
