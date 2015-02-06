@@ -13,6 +13,10 @@ class NonExistantGroup(Exception):
     pass
 
 
+class InvalidRenderOption(Exception):
+    pass
+
+
 class InvalidRendition(Exception):
     pass
 
@@ -26,6 +30,10 @@ class InvalidToken(Exception):
 
 
 class ImproperlyConfiguredStuff(ImproperlyConfigured):
+    pass
+
+
+class MalformedToken(Exception):
     pass
 
 

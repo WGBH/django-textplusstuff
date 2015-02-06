@@ -18,14 +18,7 @@ class TextPlusStuffField(TextField):
     __metaclass__ = SubfieldBase
 
     def get_prep_value(self, value):
-        if isinstance(value, TextPlusStuff):
-            textplusstuff_instance = value
-        else:
-            textplusstuff_instance = TextPlusStuff(
-                raw_text=value, field=self.attname
-            )
-
-        return textplusstuff_instance.raw_text
+        return value.raw_text
 
     def to_python(self, value):
         """

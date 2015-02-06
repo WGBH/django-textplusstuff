@@ -14,6 +14,7 @@ class ListStuffView(TextPlusStuffAPIViewMixIn,
                     TextPlusStuffViewNameMixIn,
                     ListAPIView):
     model = None
+    queryset = None
 
 
 class RetrieveStuffView(TextPlusStuffAPIViewMixIn,

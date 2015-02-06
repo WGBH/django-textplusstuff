@@ -25,14 +25,10 @@ class TextPlusStuffViewNameMixIn(object):
         name = formatting.remove_trailing_string(name, 'View')
         name = formatting.camelcase_to_spaces(name)
         name = name.split(' ')
-        model_verbose_name = self.model._meta.verbose_name._proxy____cast()
-        if isinstance(model_verbose_name, Promise):
+        model_name = self.model._meta.verbose_name
+        if isinstance(model_name, Promise):
             # Catching ugettext_lazy marked text
-            model_name = model_verbose_name._proxy____cast()
-        elif isinstance(
-            model_verbose_name, str
-        ) or isinstance(model_verbose_name, unicode):
-            model_name = model_verbose_name
+            model_name = model_name._proxy____cast()
         new_name = [
             name[0],
             model_name,
@@ -48,10 +44,10 @@ class TextPlusStuffRetrieveModelMixin(object):
     """
 
     def retrieve(self, request, *args, **kwargs):
-        from ..registry import get_MODELSTUFF_renditions
+        from ..registry import get_modelstuff_renditions
         self.object = self.get_object()
         serializer = self.get_serializer(self.object)
-        renditions = get_MODELSTUFF_renditions(self.object)
+        renditions = get_modelstuff_renditions(self.object)
         template = {
             'context': serializer.data,
             'renditions': renditions

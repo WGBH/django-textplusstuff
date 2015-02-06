@@ -2,7 +2,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
-from .datastructures import TextPlusStuff
 from .fields import TextPlusStuffField
 from .parser import ModelStuffNode
 
@@ -27,29 +26,23 @@ def construct_TextPlusStuffLink_attachments(sender, instance, **kwargs):
             # attached to this field on this particular instance
             previously_attached_instances = [
                 textplusstufflink_instance
-                for textplusstufflink_instance in TextPlusStuffLink.objects.filter(
+                for textplusstufflink_instance in TextPlusStuffLink.
+                objects.filter(
                     parent_content_type=parent_ct,
                     parent_object_id=instance.pk,
                     field=field
                 ).select_related('parent_content_type', 'content_type')
             ]
 
-            # Next, pull the content assigned to the TextPlusStuffField field and...
+            # Next, pull the content assigned to the TextPlusStuffField field
+            # and...
             current_textplusstufffield_val = getattr(instance, field)
-            # ...ensure that it is a TextPlusStuff instance
-            if not isinstance(current_textplusstufffield_val, TextPlusStuff):
-                # If not, convert it to TextPlusStuff
-                textplusstuff_instance = TextPlusStuff(
-                    raw_text=current_textplusstufffield_val
-                )
-            else:
-                textplusstuff_instance = current_textplusstufffield_val
 
             # Now, build a list of all ModelStuffNode
             # instances associated with it
             textplusstufflink_nodes = [
                 node
-                for node in textplusstuff_instance.nodelist
+                for node in current_textplusstufffield_val.nodelist
                 if isinstance(node, ModelStuffNode)
             ]
             # Now, iterate through each node...
@@ -70,14 +63,17 @@ def construct_TextPlusStuffLink_attachments(sender, instance, **kwargs):
                     'parent_object_id': instance.id,
                 }
                 # ...either creating or retrieving a TextPlusStuffLink instance
-                textplusstufflink_instance, created = TextPlusStuffLink.objects.get_or_create(
-                    **get_or_create_kwargs
-                )
+                textplusstufflink_instance, created = TextPlusStuffLink.\
+                    objects.get_or_create(
+                        **get_or_create_kwargs
+                    )
                 # Finally...
                 try:
-                    # Remove the TextPlusStuffLink instance you just got/created
-                    # from `previously_attached_instances`
-                    previously_attached_instances.remove(textplusstufflink_instance)
+                    # Remove the TextPlusStuffLink instance you just
+                    # got/created from `previously_attached_instances`
+                    previously_attached_instances.remove(
+                        textplusstufflink_instance
+                    )
                 except ValueError:
                     # Unless it wasn't in there to begin with (which is fine)
                     pass
@@ -103,9 +99,10 @@ def delete_attached_TextPlusStuffLink_instances(sender, instance, **kwargs):
     if textplusstuff_fields:
         from .models import TextPlusStuffLink
         instance_ct = ContentType.objects.get_for_model(instance.__class__)
-        attached_textplusstufflink_instances = TextPlusStuffLink.objects.filter(
-            parent_content_type=instance_ct,
-            parent_object_id=instance.pk
-        )
+        attached_textplusstufflink_instances = TextPlusStuffLink.\
+            objects.filter(
+                parent_content_type=instance_ct,
+                parent_object_id=instance.pk
+            )
         attached_textplusstufflink_instances.delete()
     return

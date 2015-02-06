@@ -1,6 +1,10 @@
+from __future__ import unicode_literals
+
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 from .fields import TextPlusStuffField
@@ -56,6 +60,7 @@ class TextPlusStuffDraft(models.Model):
         verbose_name_plural = _('Text Plus Stuff Drafts')
 
 
+@python_2_unicode_compatible
 class TextPlusStuffLink(models.Model):
     """
     Creates a polymorphic relationship between two model instances:
@@ -88,7 +93,7 @@ class TextPlusStuffLink(models.Model):
         verbose_name = 'Text Plus Stuff Link'
         verbose_name = 'Text Plus Stuff Links'
 
-    def __unicode__(self):
+    def __str__(self):
         doesnotexist_string = '<DoesNotExist>'
         if self.content_object:
             content_object_string = self.content_object.__str__()[:20]

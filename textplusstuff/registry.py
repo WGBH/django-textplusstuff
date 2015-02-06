@@ -141,6 +141,7 @@ class ModelStuff(Stuff):
         """
         return ListStuffView.as_view(
             model=self.model,
+            queryset=self.queryset,
             serializer_class=self.get_list_serializer()
         )
 
@@ -162,6 +163,7 @@ class ModelStuff(Stuff):
         """
         return RetrieveStuffView.as_view(
             model=self.model,
+            queryset=self.queryset,
             serializer_class=self.serializer_class,
             renditions=self.renditions
         )
@@ -255,13 +257,13 @@ class StuffRegistry(object):
         """
         Returns the 'front page' response of the TextPlusStuff builder.
         """
-        STUFF_REGISTRY = self._modelstuff_registry
+        stuff_registry = self._modelstuff_registry
 
         class ListStuffGroups(TextPlusStuffAPIViewMixIn, APIView):
             """
             View to list all StuffGroups for this project.
             """
-            registered_stuff = STUFF_REGISTRY
+            registered_stuff = stuff_registry
 
             def prepare_stuffgroups(self):
                 if STUFFGROUPS:
@@ -397,7 +399,7 @@ def findstuff():
                 raise
 
 
-def get_MODELSTUFF_renditions(model_instance):
+def get_modelstuff_renditions(model_instance):
     """
     Builds out a dict of the available MODELSTUFF renditions
     for a particular model instance

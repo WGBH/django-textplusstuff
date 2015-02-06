@@ -12,17 +12,17 @@ from .parser import (
 class TextPlusStuff(object):
 
     def __init__(self, raw_text, field=None):
-        if raw_text is None:
-            raw_text = ""
-        try:
-            raw_text_processed = force_text(raw_text, errors='replace')
-        except UnicodeDecodeError:
-            raise UnicodeDecodeError(
-                "TextPlusStuff can only be initialized with either "
-                "unicode or UTF-8 strings."
+        raw_text = raw_text or ""
+        if not isinstance(raw_text, basestring):
+            raise UnicodeError(
+                (
+                    "TextPlusStuff can only be initialized with either "
+                    "unicode or UTF-8 strings."
+                )
             )
         else:
-            self.raw_text = raw_text_processed
+            raw_text_processed = force_text(raw_text, errors='replace')
+        self.raw_text = raw_text_processed
         # Initialize lexer
         lexer = TextPlusStuffLexer(raw_val=raw_text_processed)
         # Use the lexer to create tokens
@@ -43,9 +43,7 @@ class TextPlusStuff(object):
             if isinstance(node, MarkdownFlavoredTextNode):
                 final_output += node.render(render_as=render_markdown_as)
             elif isinstance(node, ModelStuffNode):
-                if (not include_content_nodes) or (
-                    render_markdown_as in ['plain_text', 'markdown']
-                ):
+                if include_content_nodes is False:
                     pass
                 else:
                     final_output += node.render(extra_context=extra_context)

@@ -19,6 +19,7 @@ INSTALLED_APPS = [
 if DJANGO_VERSION[0] == 1 and DJANGO_VERSION[1] <= 6:
     INSTALLED_APPS += ("south",)
 
+
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -46,3 +47,4 @@ TEXTPLUSSTUFF_STUFFGROUPS = {
         'description': "For your test models!"
     },
 }
+SOUTH_TESTS_MIGRATE = False

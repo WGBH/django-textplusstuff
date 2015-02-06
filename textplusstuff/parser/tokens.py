@@ -18,7 +18,7 @@ class TextPlusStuffToken(object):
         self.lineno = None
 
     def __str__(self):
-        return '<%s token: "%s...">' % (
-            self.token_type,
-            self.contents[:10].replace('\n', '')
+        return '<{token_type} token: "{content}...">'.format(
+            token_type=self.token_type,
+            content=self.contents[:10].replace('\n', '')
         )

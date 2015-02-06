@@ -1,5 +1,6 @@
 import re
 
+from ..exceptions import MalformedToken
 from .tokens import TextPlusStuffToken
 
 # The below compiled regex (`textplusstuff_re`) matches the following pattern:
@@ -53,7 +54,7 @@ class TextPlusStuffLexer(object):
             try:
                 token_type, token_string = token_string.split('__')
             except ValueError:
-                raise Exception(
+                raise MalformedToken(
                     "{} is a malformed token string!".format(token_string)
                 )
             else:

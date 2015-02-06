@@ -1,11 +1,10 @@
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
 from django.utils.encoding import force_str
 
 from BeautifulSoup import BeautifulSoup
 from markdown2 import Markdown
 
-from ..exceptions import InvalidToken, NotRegistered, MissingRendition
+from ..exceptions import InvalidRenderOption, NotRegistered, MissingRendition
 from ..registry import stuff_registry
 
 
@@ -24,10 +23,10 @@ class MarkdownFlavoredTextNode(BaseNode):
 
     def __repr__(self):
         return force_str(
-            "<MarkdownFlavoredTextNode: '%s'>" % self.payload[:25],
+            "<MarkdownFlavoredTextNode: \'%s\'>" % self.payload[:25],
             'ascii',
             errors='replace'
-        )
+        ).replace('\n', '')
 
     def render(self, render_as):
         """
@@ -49,7 +48,7 @@ class MarkdownFlavoredTextNode(BaseNode):
         elif render_as == 'markdown':
             to_return = self.payload
         else:
-            raise Exception(
+            raise InvalidRenderOption(
                 "`render_as` must be either 'html', 'plain_text' or 'markdown'"
             )
         return to_return
@@ -90,22 +89,14 @@ class ModelStuffNode(BaseNode):
         node_mapping = {}
         # Iterate through each string in `node_id_split`...
         for index, node_segment in enumerate(node_id_split):
-            try:
-                # ...creating a key with a string from the same position
-                # in `self.node_args` and a value `node_segment`
-                node_mapping[node_args[index]] = node_segment
-            except IndexError:
-                # This exception will fire if we've already iterated through
-                # every key in `self.node_args`. It can be safetly passed
-                # since we wouldn't know how to deal with that value anyways.
-                # This will allow any future subclasses to extend
-                # `self.node_args` without having to rework this constructor.
-                pass
+            # ...creating a key with a string from the same position
+            # in `self.node_args` and a value `node_segment`
+            node_mapping[node_args[index]] = node_segment
         return node_mapping
 
     def __repr__(self):
         return force_str(
-            "<ModelStuffNode: %s>" % self.payload,
+            "<ModelStuffNode: \'%s\'>" % self.payload,
             'ascii',
             errors='replace'
         )
@@ -138,29 +129,6 @@ class ModelStuffNode(BaseNode):
         """
         ct = self.get_contenttype()
         return ct.model_class()
-
-    def get_textplusstufflink_instance(self):
-        from .models import TextPlusStuffLink
-        try:
-            ct = self.get_contenttype_by_node_mapping()
-        except ObjectDoesNotExist:
-            raise InvalidToken(
-                "{} is an invalid (or broken) token since the ContentType "
-                "associated with it could not be retrieved.".format(
-                    self.payload
-                )
-            )
-        else:
-            try:
-                node_content = TextPlusStuffLink.objects.get(
-                    content_type=ct,
-                    object_id=self.node_mapping.get('instance_pk'),
-                    field=self.node_mapping.get('field', '')
-                )
-            except TextPlusStuffLink.DoesNotExist:
-                node_content = None
-
-            return node_content
 
     def render(self, extra_context=None):
         """

@@ -37,7 +37,7 @@ class RegisteredModelStuff(registry.ModelStuff):
     ]
     # The attributes used in the list (table) display of the front-end
     # editing tool.
-    list_display = ('id', 'name')
+    list_display = ('id', 'title')
 
 # OK, now let's register our Model and its Stuff config:
 registry.stuff_registry.add_modelstuff(
