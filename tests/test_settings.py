@@ -47,4 +47,8 @@ TEXTPLUSSTUFF_STUFFGROUPS = {
         'description': "For your test models!"
     },
 }
-SOUTH_TESTS_MIGRATE = False
+SOUTH_TESTS_MIGRATE = True
+SKIP_SOUTH_TESTS = True
+SOUTH_MIGRATION_MODULES = {
+    'textplusstuff': 'ignore',
+}
