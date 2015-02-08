@@ -1,6 +1,9 @@
+from __future__ import unicode_literals
+
 from django import VERSION as DJANGO_VERSION
 
 from django.contrib import admin
+from django.utils.six import iteritems
 
 from .models import TextPlusStuffDraft
 from .registry import get_modelstuff_renditions
@@ -17,7 +20,7 @@ class TextPlusStuffRegisteredModelAdmin(admin.ModelAdmin):
         rendition_dict = get_modelstuff_renditions(obj) or {}
         rendition_list = [
             rendition
-            for short_name, rendition in rendition_dict.iteritems()
+            for short_name, rendition in iteritems(rendition_dict)
         ]
         extra_context = extra_context or {}
         if rendition_dict:

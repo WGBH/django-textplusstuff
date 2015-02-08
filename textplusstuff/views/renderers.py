@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from rest_framework.renderers import BrowsableAPIRenderer
 
 from .. import VERSION

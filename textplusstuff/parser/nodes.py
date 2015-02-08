@@ -1,7 +1,9 @@
+from __future__ import unicode_literals
+
 from django.contrib.contenttypes.models import ContentType
 from django.utils.encoding import force_str
 
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 from markdown2 import Markdown
 
 from ..exceptions import InvalidRenderOption, NotRegistered, MissingRendition

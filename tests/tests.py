@@ -1,8 +1,11 @@
+from __future__ import unicode_literals
+
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.test import Client, TestCase
 from django.test.utils import override_settings
+from django.utils import six
 
 from textplusstuff.datastructures import TextPlusStuff
 from textplusstuff.exceptions import (
@@ -62,6 +65,10 @@ class TextPlusStuffTestCase(TestCase):
         response = self.client.get(
             '/admin/tests/registeredmodel/1/'
         )
+        if six.PY2:
+            response_content = response.content
+        else:
+            response_content = str(response.content, encoding='utf8')
         self.assertInHTML(
             """
 <table>
@@ -78,19 +85,27 @@ class TextPlusStuffTestCase(TestCase):
     </tr>
 </table>
             """,
-            response.content
+            response_content
         )
         response = self.client.get(
             '/admin/tests/tpstestmodel/add/'
         )
+        if six.PY2:
+            response_content = response.content
+        else:
+            response_content = str(response.content, encoding='utf8')
         self.assertInHTML(
             '<textarea class="vLargeTextField textplusstuff" cols="40" '
             'id="id_content" name="content" rows="10">',
-            response.content
+            response_content
         )
         response = self.client.get(
             '/admin/tests/tpstestmodel/1/'
         )
+        if six.PY2:
+            response_content = response.content
+        else:
+            response_content = str(response.content, encoding='utf8')
         self.assertInHTML(
             '<textarea class="vLargeTextField textplusstuff" cols="40" '
             'id="id_content" name="content" rows="10">'
@@ -99,14 +114,18 @@ class TextPlusStuffTestCase(TestCase):
             'And [a link](http://www.djangoproject.com), too!\n\n'
             '{% textplusstuff &#39;MODELSTUFF__tests:registeredmodel'
             ':1:test_rendition&#39; %}</textarea>',
-            response.content
+            response_content
         )
 
     def test_api_stuffgroup_list_response(self):
         """Tests the TextPlusStuff API's 'ListStuffGroups' response"""
         response = self.client.get('/textplusstuff/')
+        if six.PY2:
+            response_content = response.content
+        else:
+            response_content = str(response.content, encoding='utf8')
         self.assertJSONEqual(
-            response.content,
+            response_content,
             [
                 {
                     "stuff": [
@@ -139,8 +158,12 @@ class TextPlusStuffTestCase(TestCase):
         response = self.client.get(
             '/textplusstuff/tests/registeredmodel/list/?format=json'
         )
+        if six.PY2:
+            response_content = response.content
+        else:
+            response_content = str(response.content, encoding='utf8')
         self.assertJSONEqual(
-            response.content,
+            response_content,
             [{
                 'url': 'http://testserver/textplusstuff/tests/'
                        'registeredmodel/detail/1/',
@@ -154,8 +177,12 @@ class TextPlusStuffTestCase(TestCase):
         response = self.client.get(
             '/textplusstuff/tests/registeredmodel/detail/1/?format=json'
         )
+        if six.PY2:
+            response_content = response.content
+        else:
+            response_content = str(response.content, encoding='utf8')
         self.assertJSONEqual(
-            response.content,
+            response_content,
             {
                 'renditions': {
                     'test_rendition': {
@@ -176,13 +203,17 @@ class TextPlusStuffTestCase(TestCase):
         response = self.client.get(
             '/textplusstuff/tests/registeredmodel/detail/1/?format=api'
         )
+        if six.PY2:
+            response_content = response.content
+        else:
+            response_content = str(response.content, encoding='utf8')
         self.assertInHTML(
             """
             <div class="page-header">
                 <h1>Retrieve Registered Model Stuff</h1>
             </div>
             """,
-            response.content
+            response_content
         )
 
     def test_textplusstufffield_responses(self):
@@ -255,7 +286,7 @@ And [a link](http://www.djangoproject.com), too!"""
             self.registered_model_instance
         )
         self.assertEqual(
-            x.__unicode__(),
+            x.__str__(),
             'tpstestmodel:1 -> registeredmodel:1'
         )
         y = TextPlusStuffLink.objects.create(

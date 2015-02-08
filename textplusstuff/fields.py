@@ -1,5 +1,8 @@
+from __future__ import unicode_literals
+
 from django.conf import settings
 from django.db.models import SubfieldBase, TextField
+from django.utils.six import add_metaclass
 from django.utils.translation import ugettext_lazy as _
 
 from .datastructures import TextPlusStuff
@@ -12,10 +15,10 @@ if 'south' in settings.INSTALLED_APPS:
     )
 
 
+@add_metaclass(SubfieldBase)
 class TextPlusStuffField(TextField):
 
     description = _("Text Plus Stuff Field")
-    __metaclass__ = SubfieldBase
 
     def get_prep_value(self, value):
         if not isinstance(value, TextPlusStuff):

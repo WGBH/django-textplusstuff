@@ -35,7 +35,7 @@ Alpha
 * `django` >= 1.6.x >
 * `djangorestframework` == 3.0.x
 * `markdown2` >= 2.3.x
-* `BeautifulSoup` >= 3.2.1
+* `beautifulsoup4` >= 4.3.1
 
 ## Installation Instructions
 

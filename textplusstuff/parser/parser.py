@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from .tokens import TOKEN_NODE_MAPPING
 
 

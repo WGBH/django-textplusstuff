@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import collections
 import copy
 
@@ -34,7 +36,7 @@ class Rendition(object):
 
     def __init__(self, short_name, verbose_name, description,
                  path_to_template, rendition_type='block'):
-        self.short_name = slugify(unicode(short_name))
+        self.short_name = slugify(short_name)
         self.verbose_name = verbose_name
         self.description = description
         self.path_to_template = path_to_template
@@ -276,7 +278,7 @@ class StuffRegistry(object):
                         getattr(settings, 'TEXTPLUSSTUFF_STUFFGROUPS', {})
                     )
                     # Verifying the StuffGroups listed in settings
-                    for short_name, config in stuffgroups.iteritems():
+                    for short_name, config in six.iteritems(stuffgroups):
                         if 'name' not in config or 'description' not in config:
                             raise ImproperlyConfigured(
                                 "The %s group is configured incorrectly. Each "
@@ -303,7 +305,7 @@ class StuffRegistry(object):
                         'must be set in your settings file.'
                     )
                 else:
-                    for model, tup in self.registered_stuff.iteritems():
+                    for model, tup in six.iteritems(self.registered_stuff):
                         stuff_cls, groups = tup
                         for group in groups:
                             stuffgroups[group]['stuff'].append({
