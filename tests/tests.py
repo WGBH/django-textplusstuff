@@ -1,17 +1,27 @@
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.test import Client, TestCase
+from django.test.utils import override_settings
 
 from textplusstuff.datastructures import TextPlusStuff
 from textplusstuff.exceptions import (
-    InvalidRenderOption, MalformedToken, MissingRendition, NotRegistered
+    AlreadyRegistered,
+    ImproperlyConfiguredStuff,
+    InvalidRenderOption,
+    InvalidRendition,
+    InvalidRenditionType,
+    MalformedToken,
+    MissingRendition,
+    NonExistentGroup,
+    NotRegistered
 )
 from textplusstuff.models import TextPlusStuffLink
 from textplusstuff.parser.lexer import TextPlusStuffLexer
 from textplusstuff.parser.nodes import (
     BaseNode, MarkdownFlavoredTextNode, ModelStuffNode
 )
+from textplusstuff.registry import findstuff
 
 from .models import TPSTestModel, RegisteredModel
 
@@ -90,6 +100,38 @@ class TextPlusStuffTestCase(TestCase):
             '{% textplusstuff &#39;MODELSTUFF__tests:registeredmodel'
             ':1:test_rendition&#39; %}</textarea>',
             response.content
+        )
+
+    def test_api_stuffgroup_list_response(self):
+        """Tests the TextPlusStuff API's 'ListStuffGroups' response"""
+        response = self.client.get('/textplusstuff/')
+        self.assertJSONEqual(
+            response.content,
+            [
+                {
+                    "stuff": [
+                        {
+                            "renditions": [
+                                {
+                                    "type": "block",
+                                    "name": "Test Rendition",
+                                    "short_name": "test_rendition",
+                                    "description": (
+                                        "Displays a Test Rendition rendered."
+                                    )
+                                }
+                            ],
+                            "instance_list": "http://testserver/textplusstuff/"
+                                             "tests/registeredmodel/list/",
+                            "name": "Registered Model",
+                            "description": "Add an Registration Test Model"
+                        }
+                    ],
+                    "name": "Testing!",
+                    "short_name": "test_group",
+                    "description": "For your test models!"
+                }
+            ]
         )
 
     def test_api_list_response(self):
@@ -347,3 +389,119 @@ And [a link](http://www.djangoproject.com), too!"""
             lexer.tokenize()[0].__str__(),
             """<MARKDOWNTEXT token: "# I'm an H...">"""
         )
+
+    @override_settings(
+        INSTALLED_APPS=('tests.test_invalidrenditiontype',)
+    )
+    def test_InvalidRenditionType(self):
+        """
+        Tests the InvalidRenditionType exception
+        """
+        with self.assertRaises(InvalidRenditionType):
+            findstuff()
+
+    @override_settings(
+        INSTALLED_APPS=('tests.test_invalidrendition',)
+    )
+    def test_InvalidRendition(self):
+        """
+        Tests the InvalidRendition exception
+        """
+        with self.assertRaises(InvalidRendition):
+            findstuff()
+
+    @override_settings(
+        INSTALLED_APPS=('tests.test_invalidrendition_nonunique',)
+    )
+    def test_InvalidRendition_nonunique(self):
+        """
+        Tests the InvalidRendition exception when multiple renditions on the
+        same stuff have the same short_name value
+        """
+        with self.assertRaises(InvalidRendition):
+            findstuff()
+
+    @override_settings(
+        INSTALLED_APPS=('tests.test_missing_renditions',)
+    )
+    def test_ImproperlyConfiguredStuff_missing_renditions(self):
+        """
+        Tests the InvalidRendition exception when multiple renditions on the
+        same stuff have the same short_name value
+        """
+        with self.assertRaises(ImproperlyConfiguredStuff):
+            findstuff()
+
+    @override_settings(
+        INSTALLED_APPS=('tests.test_non_existent_group',)
+    )
+    def test_NonExistentGroup(self):
+        """
+        Ensures the NonExistentGroup exception fires when appropriate
+        """
+        with self.assertRaises(NonExistentGroup):
+            findstuff()
+
+    @override_settings(
+        INSTALLED_APPS=('tests.test_alreadyregistered',)
+    )
+    def test_AlreadyRegistered(self):
+        """
+        Ensures the AlreadyRegistered exception fires when appropriate
+        """
+        with self.assertRaises(AlreadyRegistered):
+            findstuff()
+
+    @override_settings(
+        INSTALLED_APPS=('tests.test_notregistered',)
+    )
+    def test_NotRegistered(self):
+        """
+        Ensures the NotRegistered exception fires when appropriate
+        """
+        with self.assertRaises(NotRegistered):
+            findstuff()
+
+    @override_settings(
+        INSTALLED_APPS=(
+            "django.contrib.admin",
+            "django.contrib.auth",
+            "django.contrib.contenttypes",
+            "django.contrib.messages",
+            "django.contrib.sessions",
+            "django.contrib.staticfiles",
+            "rest_framework",
+            'textplusstuff',
+        ),
+        TEXTPLUSSTUFF_STUFFGROUPS=None
+    )
+    def test_missing_StuffGroups(self):
+        """
+        Raises ImproperlyConfigured if settings.TEXTPLUSSTUFF_STUFFGROUPS
+        is unset.
+        """
+        with self.assertRaises(ImproperlyConfigured):
+            response = self.client.get('/textplusstuff/')
+            del response
+
+    @override_settings(
+        INSTALLED_APPS=(
+            "django.contrib.admin",
+            "django.contrib.auth",
+            "django.contrib.contenttypes",
+            "django.contrib.messages",
+            "django.contrib.sessions",
+            "django.contrib.staticfiles",
+            "rest_framework",
+            'textplusstuff',
+        ),
+        TEXTPLUSSTUFF_STUFFGROUPS={'pickle': {'foo': 1, 'bar': 2}}
+    )
+    def test_improperly_structured_StuffGroup(self):
+        """
+        Raises ImproperlyConfigured if settings.TEXTPLUSSTUFF_STUFFGROUPS
+        is set incorrectly.
+        """
+        with self.assertRaises(ImproperlyConfigured):
+            response = self.client.get('/textplusstuff/')
+            del response

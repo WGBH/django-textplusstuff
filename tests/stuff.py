@@ -12,8 +12,8 @@ class RegisteredModelStuff(registry.ModelStuff):
     queryset = RegisteredModel.objects.all()
 
     # What humans see when they see this stuff
-    verbose_name = 'Registration Test Model'
-    verbose_name_plural = 'Registration Test Models'
+    # verbose_name = 'Registration Test Model'
+    # verbose_name_plural = 'Registration Test Models'
     description = 'Add an Registration Test Model'
 
     # The serializer we just defined, this is what provides the context/JSON
@@ -40,6 +40,16 @@ class RegisteredModelStuff(registry.ModelStuff):
     list_display = ('id', 'title')
 
 # OK, now let's register our Model and its Stuff config:
+registry.stuff_registry.add_modelstuff(
+    RegisteredModel,
+    RegisteredModelStuff,
+    groups=['test_group']
+)
+
+# Testing stuff_registry.remove_modelstuff
+registry.stuff_registry.remove_modelstuff(RegisteredModel)
+
+# Re-registering for remaining tests
 registry.stuff_registry.add_modelstuff(
     RegisteredModel,
     RegisteredModelStuff,

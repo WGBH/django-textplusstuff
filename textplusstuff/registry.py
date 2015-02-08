@@ -17,7 +17,7 @@ from rest_framework.serializers import ModelSerializer, \
 from .exceptions import (
     AlreadyRegistered,
     NotRegistered,
-    NonExistantGroup,
+    NonExistentGroup,
     InvalidRenditionType,
     InvalidRendition,
     ImproperlyConfigured,
@@ -28,8 +28,6 @@ from .views import (
     RetrieveStuffView,
     TextPlusStuffAPIViewMixIn
 )
-
-STUFFGROUPS = getattr(settings, 'TEXTPLUSSTUFF_STUFFGROUPS', {})
 
 
 class Rendition(object):
@@ -58,9 +56,6 @@ class Rendition(object):
         template = get_template(self.path_to_template)
         context = self.get_context_data(context=context)
         return template.render(context)
-
-    def __repr__(self):
-        return self.path_to_template
 
 
 class Stuff(object):
@@ -203,12 +198,15 @@ class StuffRegistry(object):
         self.name = name
 
     def verify_stuff_cls(self, stuff_cls):
+        """
+        Verifies a Stuff class is properly configured.
+        """
         invalid_stuff_msg = ''
-        if not hasattr(stuff_cls, 'renditions'):
+        if not stuff_cls.renditions:
             invalid_stuff_msg = (
-                "%s does not have any renditions! (All Stuff must have at "
+                "{} does not have any renditions! (All Stuff must have at "
                 "least one renditiom)."
-            ) % stuff_cls.__name__
+            ).format(stuff_cls.__name__)
         if invalid_stuff_msg:
             raise ImproperlyConfiguredStuff(invalid_stuff_msg)
 
@@ -216,11 +214,14 @@ class StuffRegistry(object):
         """
 
         """
+        stuffgroups = getattr(
+            settings, 'TEXTPLUSSTUFF_STUFFGROUPS', {}
+        )
         for group in groups:
-            if group not in STUFFGROUPS:
-                raise NonExistantGroup(
-                    "You tried registering %s with a group (%s) that is "
-                    "not defined in settings.TEXTPLUSSTUFF_STUFFGROUPS." % (
+            if group not in stuffgroups:
+                raise NonExistentGroup(
+                    "You tried registering {} with a group ({}) that is not "
+                    "defined in settings.TEXTPLUSSTUFF_STUFFGROUPS.".format(
                         stuff_cls.__name__,
                         group
                     )
@@ -232,8 +233,8 @@ class StuffRegistry(object):
         """
         if model in self._modelstuff_registry:
             raise AlreadyRegistered(
-                'The model %s is already registered with the TextPlusStuff '
-                'registry.' % model.__name__
+                'The model {} is already registered with the TextPlusStuff '
+                'registry.'.format(model.__name__)
             )
         else:
             self.verify_stuff_cls(stuff_cls)
@@ -248,8 +249,9 @@ class StuffRegistry(object):
         """
         if model not in self._modelstuff_registry:
             raise NotRegistered(
-                'The model %s is not registered with the TextPlusStuff '
-                'registry.' % model.__name__)
+                'The model {} is not registered with the TextPlusStuff '
+                'registry.'.format(model.__name__)
+            )
         else:
             del self._modelstuff_registry[model]
 
@@ -266,10 +268,15 @@ class StuffRegistry(object):
             registered_stuff = stuff_registry
 
             def prepare_stuffgroups(self):
-                if STUFFGROUPS:
-                    stuffgroups = copy.copy(STUFFGROUPS)
+                stuffgroups = getattr(
+                    settings, 'TEXTPLUSSTUFF_STUFFGROUPS', {}
+                )
+                if stuffgroups:
+                    stuffgroups_copy = copy.copy(
+                        getattr(settings, 'TEXTPLUSSTUFF_STUFFGROUPS', {})
+                    )
                     # Verifying the StuffGroups listed in settings
-                    for short_name, config in STUFFGROUPS.iteritems():
+                    for short_name, config in stuffgroups.iteritems():
                         if 'name' not in config or 'description' not in config:
                             raise ImproperlyConfigured(
                                 "The %s group is configured incorrectly. Each "
@@ -280,11 +287,11 @@ class StuffRegistry(object):
                         else:
                             # OK, this config passed, give it a 'stuff' key
                             # to hold Stuff that is associated with it.
-                            stuffgroups[short_name].update({
+                            stuffgroups_copy[short_name].update({
                                 'stuff': [],
                                 'short_name': short_name
                             })
-                    return stuffgroups
+                    return stuffgroups_copy
                 else:
                     return None
 
@@ -313,7 +320,7 @@ class StuffRegistry(object):
                                     if isinstance(rendition, Rendition)
                                 ],
                                 'instance_list': reverse(
-                                    'textplusstuff:%s-list' % (
+                                    'textplusstuff:{}-list'.format(
                                         stuff_cls.get_url_name_key()
                                     ),
                                     request=self.request
@@ -384,7 +391,7 @@ def findstuff():
             before_import_stuff_registry = copy.copy(
                 stuff_registry._modelstuff_registry
             )
-            import_module('%s.stuff' % app)
+            import_module('{}.stuff'.format(app))
         except:
             # Reset the stuff_registry to the state before the last
             # import as this import will have to reoccur on the next request
@@ -404,16 +411,10 @@ def get_modelstuff_renditions(model_instance):
     Builds out a dict of the available MODELSTUFF renditions
     for a particular model instance
     """
-    if not stuff_registry._modelstuff_registry:
-        findstuff()
-
-    try:
-        stuff_config, groups = stuff_registry._modelstuff_registry[
-            model_instance._meta.model
-        ]
-    except KeyError:
-        return None
-    else:
+    stuff_config, groups = stuff_registry._modelstuff_registry.get(
+        model_instance._meta.model, (None, None)
+    )
+    if stuff_config is not None:
         return dict(
             (
                 rendition.short_name,

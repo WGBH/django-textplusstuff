@@ -23,7 +23,7 @@ class MarkdownFlavoredTextNode(BaseNode):
 
     def __repr__(self):
         return force_str(
-            "<MarkdownFlavoredTextNode: \'%s\'>" % self.payload[:25],
+            "<MarkdownFlavoredTextNode: \'{}\'>".format(self.payload[:25]),
             'ascii',
             errors='replace'
         ).replace('\n', '')
@@ -56,7 +56,7 @@ class MarkdownFlavoredTextNode(BaseNode):
 
 class ModelStuffNode(BaseNode):
     """
-    {% textplusstuff 'MODELSTUFF__{app_label}:{model}:{pk}:{rendition_key}:{field}' %}
+    {% textplusstuff 'MODELSTUFF__{app_label}:{model}:{pk}:{r_key}:{field}' %}
     """
     node_args = (
         'content_type__app_label',
@@ -96,7 +96,7 @@ class ModelStuffNode(BaseNode):
 
     def __repr__(self):
         return force_str(
-            "<ModelStuffNode: \'%s\'>" % self.payload,
+            "<ModelStuffNode: \'{}\'>".format(self.payload),
             'ascii',
             errors='replace'
         )

@@ -28,6 +28,6 @@ install:
  - pip install flake8
 # Tell Travis how to run the test script itself
 script:
-- flake8 .
+- flake8 textplusstuff/
 - coverage run --source=textplusstuff --omit=*south_migrations* runtests.py
 after_success: coveralls

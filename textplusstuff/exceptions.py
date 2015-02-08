@@ -9,7 +9,7 @@ class NotRegistered(Exception):
     pass
 
 
-class NonExistantGroup(Exception):
+class NonExistentGroup(Exception):
     pass
 
 
