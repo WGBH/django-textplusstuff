@@ -71,7 +71,7 @@ Dependencies
 ````````````
 
 - ``django`` >= 1.6.x >
-- ``djangorestframework`` >= 2.3.14
+- ``djangorestframework`` >= 2.4.4
 - ``markdown2`` >= 2.3.x
 - ``beautifulsoup4`` >= 4.3.1
 

@@ -2,6 +2,28 @@
 django-textplusstuff
 ====================
 
+.. image:: https://travis-ci.org/WGBH/django-textplusstuff.svg?branch=master
+    :target: https://travis-ci.org/WGBH/django-textplusstuff
+    :alt: Travis CI Status
+
+.. image:: https://img.shields.io/coveralls/WGBH/django-textplusstuff.svg?style=flat
+    :target: https://coveralls.io/r/WGBH/django-textplusstuff
+    :alt: Coverage Status
+
+.. image:: https://pypip.in/py_versions/django-textplusstuff/badge.svg?style=flat
+    :target: https://pypi.python.org/pypi/django-textplusstuff/
+    :alt: Supported Python versions
+
+.. image:: https://pypip.in/download/django-textplusstuff/badge.svg?style=flat
+    :target: https://pypi.python.org/pypi/django-textplusstuff/
+    :alt: Downloads
+
+.. image:: https://pypip.in/version/django-textplusstuff/badge.svg?style=flat
+    :target: https://pypi.python.org/pypi/django-textplusstuff/
+    :alt: Latest Version
+
+----
+
 About
 =====
 
