@@ -36,6 +36,9 @@ class Rendition(object):
 
     def __init__(self, short_name, verbose_name, description,
                  path_to_template, rendition_type='block'):
+        if six.PY2:
+            short_name = unicode(short_name)
+
         self.short_name = slugify(short_name)
         self.verbose_name = verbose_name
         self.description = description
