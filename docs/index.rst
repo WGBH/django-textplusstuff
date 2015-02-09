@@ -87,6 +87,11 @@ Contents
 Release Notes
 =============
 
+0.1.1
+-----
+
+-  Squashing ``pip`` installation bug
+
 0.1
 ---
 
