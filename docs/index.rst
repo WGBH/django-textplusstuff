@@ -95,6 +95,7 @@ Release Notes
 Roadmap to v1.0
 ===============
 
+-  Add a ``TextPlusStuffField`` ``rest_framework``-compatible serializer.
 -  Create a javascript powered editor for writing markdown-flavored text and placing tokens.
 
 

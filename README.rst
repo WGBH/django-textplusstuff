@@ -34,16 +34,3 @@ Designer/Front-End Developer Friendly
 `````````````````````````````````````
 
 Each model registered with ``django-textplusstuff`` can have as many 'renditions' as you like which keeps business logic DRY while enabling designers and front-end developers to have control over how content is displayed.
-
-Current Version
----------------
-
-0.1
-
-Requirements
-````````````
-
-- ``django`` >= 1.6.x >
-- ``djangorestframework`` >= 2.3.14
-- ``markdown2`` >= 2.3.x
-- ``beautifulsoup4`` >= 4.3.1
