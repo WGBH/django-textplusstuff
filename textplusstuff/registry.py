@@ -8,6 +8,7 @@ from django.conf.urls import patterns, url, include
 from django.template import Context
 from django.template.loader import get_template
 from django.utils import six
+from django.utils.encoding import force_text
 from django.utils.text import slugify
 
 from rest_framework.views import APIView
@@ -37,7 +38,7 @@ class Rendition(object):
     def __init__(self, short_name, verbose_name, description,
                  path_to_template, rendition_type='block'):
         if six.PY2:
-            short_name = unicode(short_name)
+            short_name = force_text(short_name)
 
         self.short_name = slugify(short_name)
         self.verbose_name = verbose_name
