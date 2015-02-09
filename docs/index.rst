@@ -65,7 +65,7 @@ Each model registered with ``django-textplusstuff`` can have as many 'renditions
 Current Version
 ---------------
 
-0.1.2
+0.1.3
 
 Dependencies
 ````````````
@@ -86,6 +86,11 @@ Contents
 
 Release Notes
 =============
+
+0.1.3
+-----
+
+-  Fixed a Python 2.7.x-related encoding issue in the Stuff registry.
 
 0.1.2
 -----

@@ -5,3 +5,4 @@ recursive-include textplusstuff/static *.eot
 recursive-include textplusstuff/static *.svg
 recursive-include textplusstuff/static *.woff
 recursive-include textplusstuff/templates *.html
+prune tests

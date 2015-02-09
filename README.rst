@@ -32,11 +32,6 @@ Summary
 
 A django field that makes it easy to intersperse 'stuff' into blocks of text.
 
-Documentation
--------------
-
-Full documentation available at `Read the Docs <http://django-textplusstuff.readthedocs.org/en/latest/>`_.
-
 A Flexible Interface
 ````````````````````
 
@@ -56,3 +51,8 @@ Designer/Front-End Developer Friendly
 `````````````````````````````````````
 
 Each model registered with ``django-textplusstuff`` can have as many 'renditions' as you like which keeps business logic DRY while enabling designers and front-end developers to have control over how content is displayed.
+
+Documentation
+-------------
+
+Full documentation available at `Read the Docs <http://django-textplusstuff.readthedocs.org/en/latest/>`_.
