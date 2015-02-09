@@ -6,7 +6,9 @@ django-textplusstuff
     :target: https://travis-ci.org/WGBH/django-textplusstuff
     :alt: Travis CI Status
 
-.. image:: https://coveralls.io/repos/WGBH/django-textplusstuff/badge.svg?branch=master :target: https://coveralls.io/r/WGBH/django-textplusstuff?branch=master
+.. image:: https://coveralls.io/repos/WGBH/django-textplusstuff/badge.svg?branch=master
+    :target: https://coveralls.io/r/WGBH/django-textplusstuff?branch=master
+    :alt: Coverage Status
 
 .. image:: https://pypip.in/py_versions/django-textplusstuff/badge.svg?style=flat
     :target: https://pypi.python.org/pypi/django-textplusstuff/
