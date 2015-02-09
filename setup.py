@@ -7,7 +7,7 @@ import uuid
 setup(
     name='django-textplusstuff',
     packages=find_packages(exclude=['tests*', 'docs*']),
-    version='0.1.1',
+    version='0.1.2',
     author=u'Jonathan Ellenberger',
     author_email='jonathan_ellenberger@wgbh.org',
     url='http://github.com/WGBH/django-textplusstuff/',
@@ -24,6 +24,7 @@ setup(
         'textplusstuff': [
             'static/textplusstuff/darkly/*.css',
             'static/textplusstuff/fonts/*.*',
+            'templates/textplusstuff/*.html'
         ]
     },
     classifiers=[

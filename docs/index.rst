@@ -65,7 +65,7 @@ Each model registered with ``django-textplusstuff`` can have as many 'renditions
 Current Version
 ---------------
 
-0.1
+0.1.2
 
 Dependencies
 ````````````
@@ -87,10 +87,15 @@ Contents
 Release Notes
 =============
 
+0.1.2
+-----
+
+-  Another ``pip`` installation hotfix: including template files in distribution.
+
 0.1.1
 -----
 
--  Squashing ``pip`` installation bug
+-  Squashed ``pip`` installation bug
 
 0.1
 ---
