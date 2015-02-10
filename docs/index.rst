@@ -83,6 +83,7 @@ Contents
 
    installation
    using_textplusstuff
+   drf_integration
 
 Release Notes
 =============
