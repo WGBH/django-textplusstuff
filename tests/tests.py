@@ -112,7 +112,7 @@ class TextPlusStuffTestCase(TestCase):
             '<textarea class="vLargeTextField textplusstuff" cols="40" '
             'id="id_content" name="content" rows="10">'
             '# I&#39;m an H1\n\n## I&#39;m an H2\n\n###I&#39;m an H3\n\n'
-            'I&#39;m in a paragraph with *bold text* and _italic text_.\n\n'
+            'I&#39;m in a paragraph with **bold text** and _italic text_.\n\n'
             'And [a link](http://www.djangoproject.com), too!\n\n'
             '{% textplusstuff &#39;MODELSTUFF__tests:registeredmodel'
             ':1:test_rendition&#39; %}</textarea>',
@@ -238,7 +238,7 @@ class TextPlusStuffTestCase(TestCase):
 
 ###I'm an H3
 
-I'm in a paragraph with *bold text* and _italic text_.
+I'm in a paragraph with **bold text** and _italic text_.
 
 And [a link](http://www.djangoproject.com), too!"""
         )
@@ -247,7 +247,7 @@ And [a link](http://www.djangoproject.com), too!"""
             (
                 '<h1>I\'m an H1</h1>\n\n<h2>I\'m an H2</h2>\n\n'
                 '<h3>I\'m an H3</h3>\n\n<p>I\'m in a paragraph with '
-                '<em>bold text</em> and <em>italic text</em>.</p>\n\n'
+                '<strong>bold text</strong> and <em>italic text</em>.</p>\n\n'
                 '<p>And <a href="http://www.djangoproject.com">a link</a>, '
                 'too!</p>\n<h1>Test Title</h1>\n'
             )
@@ -259,7 +259,7 @@ And [a link](http://www.djangoproject.com), too!"""
             (
                 '<h1>I\'m an H1</h1>\n\n<h2>I\'m an H2</h2>\n\n'
                 '<h3>I\'m an H3</h3>\n\n<p>I\'m in a paragraph with '
-                '<em>bold text</em> and <em>italic text</em>.</p>\n\n'
+                '<strong>bold text</strong> and <em>italic text</em>.</p>\n\n'
                 '<p>And <a href="http://www.djangoproject.com">a link</a>, '
                 'too!</p>\n'
             )
@@ -553,25 +553,26 @@ And [a link](http://www.djangoproject.com), too!"""
                                 "And a link, too!\n",
                 'as_html': (
                     '<h1>I\'m an H1</h1>\n\n<h2>I\'m an H2</h2>\n\n<h3>I\'m '
-                    'an H3</h3>\n\n<p>I\'m in a paragraph with <em>bold '
-                    'text</em> and <em>italic text</em>.</p>\n\n<p>'
+                    'an H3</h3>\n\n<p>I\'m in a paragraph with <strong>bold '
+                    'text</strong> and <em>italic text</em>.</p>\n\n<p>'
                     'And <a href="http://www.djangoproject.com">a link</a>, '
                     'too!</p>\n<h1>Test Title</h1>\n'
                 ),
                 'raw_text': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\n"
-                            "I'm in a paragraph with *bold text* and _italic "
-                            "text_.\n\nAnd [a link](http://www.djangoproject."
-                            "com), too!\n\n{% textplusstuff 'MODELSTUFF__tests"
-                            ":registeredmodel:1:test_rendition' %}",
+                            "I'm in a paragraph with **bold text** and "
+                            "_italic text_.\n\nAnd [a link](http://www."
+                            "djangoproject.com), too!\n\n{% textplusstuff "
+                            "'MODELSTUFF__tests:registeredmodel:1:"
+                            "test_rendition' %}",
                 'as_html_no_tokens': (
                     '<h1>I\'m an H1</h1>\n\n<h2>I\'m an H2</h2>\n\n<h3>I\'m '
-                    'an H3</h3>\n\n<p>I\'m in a paragraph with <em>bold '
-                    'text</em> and <em>italic text</em>.</p>\n\n<p>And <a '
+                    'an H3</h3>\n\n<p>I\'m in a paragraph with <strong>bold '
+                    'text</strong> and <em>italic text</em>.</p>\n\n<p>And <a '
                     'href="http://www.djangoproject.com">a link</a>, '
                     'too!</p>\n'
                 ),
                 'as_markdown': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3"
-                               "\n\nI'm in a paragraph with *bold text* and "
+                               "\n\nI'm in a paragraph with **bold text** and "
                                "_italic text_.\n\nAnd [a link](http://www."
                                "djangoproject.com), too!"
             }}
