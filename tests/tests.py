@@ -25,8 +25,10 @@ from textplusstuff.parser.nodes import (
     BaseNode, MarkdownFlavoredTextNode, ModelStuffNode
 )
 from textplusstuff.registry import findstuff
+from textplusstuff.serializers import TextPlusStuffFieldSerializer
 
 from .models import TPSTestModel, RegisteredModel
+from .serializers import TPSTestModelSerializer
 
 
 class TextPlusStuffTestCase(TestCase):
@@ -536,3 +538,46 @@ And [a link](http://www.djangoproject.com), too!"""
         with self.assertRaises(ImproperlyConfigured):
             response = self.client.get('/textplusstuff/')
             del response
+
+    def test_TextPlusStuffSerializerField(self):
+        """
+        Ensures the TextPlusStuffFieldSerializer works as intended.
+        """
+        findstuff()
+        serializer = TPSTestModelSerializer(self.tps_test_instance)
+        self.assertEqual(
+            serializer.data,
+            {'content': {
+                'as_plaintext': "I'm an H1\nI'm an H2\nI'm an H3\nI'm in a "
+                                "paragraph with bold text and italic text.\n"
+                                "And a link, too!\n",
+                'as_html': (
+                    '<h1>I\'m an H1</h1>\n\n<h2>I\'m an H2</h2>\n\n<h3>I\'m '
+                    'an H3</h3>\n\n<p>I\'m in a paragraph with <em>bold '
+                    'text</em> and <em>italic text</em>.</p>\n\n<p>'
+                    'And <a href="http://www.djangoproject.com">a link</a>, '
+                    'too!</p>\n<h1>Test Title</h1>\n'
+                ),
+                'raw_text': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\n"
+                            "I'm in a paragraph with *bold text* and _italic "
+                            "text_.\n\nAnd [a link](http://www.djangoproject."
+                            "com), too!\n\n{% textplusstuff 'MODELSTUFF__tests"
+                            ":registeredmodel:1:test_rendition' %}",
+                'as_html_no_tokens': (
+                    '<h1>I\'m an H1</h1>\n\n<h2>I\'m an H2</h2>\n\n<h3>I\'m '
+                    'an H3</h3>\n\n<p>I\'m in a paragraph with <em>bold '
+                    'text</em> and <em>italic text</em>.</p>\n\n<p>And <a '
+                    'href="http://www.djangoproject.com">a link</a>, '
+                    'too!</p>\n'
+                ),
+                'as_markdown': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3"
+                               "\n\nI'm in a paragraph with *bold text* and "
+                               "_italic text_.\n\nAnd [a link](http://www."
+                               "djangoproject.com), too!"
+            }}
+        )
+        with self.assertRaises(ValueError):
+            # Ensuring only TextPlusStuffFields can be rendered by
+            # TextPlusStuffFieldSerializer
+            s = TextPlusStuffFieldSerializer()
+            s.to_representation(value=self.registered_model_instance.title)
