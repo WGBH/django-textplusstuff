@@ -65,7 +65,7 @@ Each model registered with ``django-textplusstuff`` can have as many 'renditions
 Current Version
 ---------------
 
-0.1.3
+0.2
 
 Dependencies
 ````````````
@@ -87,6 +87,11 @@ Contents
 
 Release Notes
 =============
+
+0.2
+---
+
+-  Added Django REST Framework :doc:`serialization </drf_integration>` for ``TextPlusStuffField``
 
 0.1.3
 -----
