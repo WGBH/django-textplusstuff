@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
+from django.core import serializers
 from django.test import Client, TestCase
 from django.test.utils import override_settings
 from django.utils import six
@@ -582,3 +583,31 @@ And [a link](http://www.djangoproject.com), too!"""
             # TextPlusStuffFieldSerializer
             s = TextPlusStuffFieldSerializer()
             s.to_representation(value=self.registered_model_instance.title)
+
+    def test_field_serialization(self):
+        """
+        Ensures TextPlusStuffField serializes correctly
+        """
+        output = serializers.serialize(
+            'json',
+            TPSTestModel.objects.filter(pk=1)
+        )
+        self.assertJSONEqual(
+            output,
+            [
+                {
+                    "fields": {
+                        "content": (
+                            "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\n"
+                            "I'm in a paragraph with **bold text** and "
+                            "_italic text_.\n\nAnd "
+                            "[a link](http://www.djangoproject.com), too!\n\n"
+                            "{% textplusstuff 'MODELSTUFF__tests:"
+                            "registeredmodel:1:test_rendition' %}"
+                        )
+                    },
+                    "model": "tests.tpstestmodel",
+                    "pk": 1
+                }
+            ]
+        )
