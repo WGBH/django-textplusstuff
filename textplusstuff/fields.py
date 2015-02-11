@@ -25,6 +25,13 @@ class TextPlusStuffField(TextField):
             value = TextPlusStuff(value)
         return value.raw_text
 
+    def value_to_string(self, obj):
+        """
+        Prepares this field for serialization.
+        """
+        value = self._get_val_from_obj(obj)
+        return self.get_prep_value(value)
+
     def to_python(self, value):
         """
         Takes Markdown-flavored (and TextPlusStuffToken-laden text) and
