@@ -65,7 +65,7 @@ Each model registered with ``django-textplusstuff`` can have as many 'renditions
 Current Version
 ---------------
 
-0.2
+0.2.1
 
 Dependencies
 ````````````
@@ -87,6 +87,11 @@ Contents
 
 Release Notes
 =============
+
+0.2.1
+-----
+
+- Squashed a bug that prevented ``TextPlusStuffField`` from serializing correctly (when using ``dumpdata``).
 
 0.2
 ---
