@@ -20,7 +20,7 @@ To demonstrate how it works we'll use this simple model:
 
 
     class Content(models.Model):
-        """Represents a person."""
+        """Represents a piece of content."""
         content = TextPlusStuffField('Content')
 
         class Meta:
@@ -44,7 +44,7 @@ OK, let's write a simple ``ModelSerializer`` subclass to serialize Content insta
 
 
     class ContentSerializer(serializers.ModelSerializer):
-        """Serializes Person instances"""
+        """Serializes Content instances"""
         content = TextPlusStuffFieldSerializer()
 
         class Meta:
