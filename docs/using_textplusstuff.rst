@@ -58,7 +58,7 @@ To start using textplusstuff you have to register a model as Stuff. The examples
             # within the front-end interface. For instance, you could
             # exclude 'unpublished' instances or anything else you can
             # query the ORM against
-            queryset = RoadshowTable.objects.all()
+            queryset = TestModel.objects.all()
 
             # What humans see when they see this stuff
             verbose_name = 'Test Model'
