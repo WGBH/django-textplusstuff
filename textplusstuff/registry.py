@@ -189,7 +189,7 @@ class ModelStuff(Stuff):
             model=self.model,
             queryset=self.queryset,
             serializer_class=self.serializer_class,
-            renditions=self.renditions
+            renditions=self._renditions
         )
 
     def get_url_name_key(self):
@@ -360,8 +360,9 @@ class StuffRegistry(object):
                                         'type': rendition.rendition_type,
                                         'short_name': rendition.short_name
                                     }
-                                    for rendition in stuff_cls.renditions
-                                    if isinstance(rendition, Rendition)
+                                    for short_name, rendition in six.iteritems(
+                                        stuff_cls._renditions
+                                    )
                                 ],
                                 'instance_list': reverse(
                                     'textplusstuff:{}-list'.format(
@@ -461,7 +462,7 @@ def get_modelstuff_renditions(model_instance):
     if stuff_config is not None:
         return dict(
             (
-                rendition.short_name,
+                short_name,
                 {
                     'verbose_name': rendition.verbose_name,
                     'description': rendition.description,
@@ -472,12 +473,14 @@ def get_modelstuff_renditions(model_instance):
                         app=model_instance._meta.app_label,
                         model=model_instance._meta.model_name,
                         pk=model_instance.pk,
-                        rend=rendition.short_name
+                        rend=short_name
                     ),
                     'path_to_template': rendition.path_to_template,
                     'type': rendition.rendition_type
 
                 }
             )
-            for rendition in stuff_config.renditions
+            for short_name, rendition in six.iteritems(
+                stuff_config._renditions
+            )
         )
