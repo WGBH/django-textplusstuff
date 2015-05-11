@@ -19,6 +19,7 @@ from rest_framework.serializers import ModelSerializer, \
 
 from .exceptions import (
     AlreadyRegistered,
+    AlreadyRegisteredRendition,
     NotRegistered,
     NonExistentGroup,
     InvalidRenditionType,
@@ -85,23 +86,24 @@ class ModelStuff(Stuff):
             self.verbose_name = model._meta.verbose_name
         if self.verbose_name_plural is None:
             self.verbose_name_plural = model._meta.verbose_name_plural
-        self._renditions = self._verify_and_build_renditions_dict()
+        self._renditions = self._verify_and_build_initial_rendition_dict()
         self.model = model
 
-    def _verify_and_build_renditions_dict(self):
-        for rendition in self.renditions:
-            if not isinstance(rendition, Rendition):
-                raise InvalidRendition(
-                    "{} is an invalid Rendition. All Renditions must "
-                    "be a subclass of textplusstuff.registry.Rendition".format(
-                        rendition
-                    )
+    def _verify_rendition(self, rendition):
+        if not isinstance(rendition, Rendition):
+            raise InvalidRendition(
+                "{} is an invalid Rendition. All Renditions must "
+                "be a subclass of textplusstuff.registry.Rendition".format(
+                    rendition
                 )
+            )
+
+    def _verify_rendition_list_uniqueness(self, rendition_list):
         non_unique_renditions = [
             x
             for x, y in collections.Counter([
                 rendition.short_name
-                for rendition in self.renditions
+                for rendition in rendition_list
             ]).items()
             if y > 1
         ]
@@ -114,11 +116,32 @@ class ModelStuff(Stuff):
                     non_unique_renditions[0]
                 )
             )
-        else:
-            return dict(
-                (rendition.short_name, rendition)
-                for rendition in self.renditions
+
+    def _verify_and_build_initial_rendition_dict(self):
+        for rendition in self.renditions:
+            self._verify_rendition(rendition)
+        self._verify_rendition_list_uniqueness(self.renditions)
+        return dict(
+            (rendition.short_name, rendition)
+            for rendition in self.renditions
+        )
+
+    def register_non_core_rendition(self, rendition):
+        """
+        Registers a 'non-core' rendition with this Stuff Config
+        """
+        self._verify_rendition(rendition)
+        if rendition.short_name in self._renditions:
+            raise AlreadyRegisteredRendition(
+                "A rendition with a short_name of '{}' has already been "
+                "registered to {} (for model: {}).".format(
+                    rendition.short_name,
+                    self.__class__.__name__,
+                    self.model
+                )
             )
+        else:
+            self._renditions[rendition.short_name] = rendition
 
     def get_list_serializer(self):
         """"""
@@ -246,6 +269,21 @@ class StuffRegistry(object):
             self.verify_stuff_cls(stuff_cls)
             self.verify_groups(groups, stuff_cls)
             self._modelstuff_registry[model] = (stuff_cls(model), groups)
+
+    def add_noncore_modelstuff_rendition(self, model, rendition):
+        """
+        Registers a 'non-core' rendition (`rendition`) with `model`.
+
+        Raises `NotRegistered` if `model` isn't registered.
+        """
+        if self._modelstuff_registry.get(model, None) is not None:
+            stuff_cls = self._modelstuff_registry.get(model)[0]
+            stuff_cls.register_non_core_rendition(rendition)
+        else:
+            raise NotRegistered(
+                'The model {} is not registered with the TextPlusStuff '
+                'registry.'.format(model.__name__)
+            )
 
     def remove_modelstuff(self, model):
         """

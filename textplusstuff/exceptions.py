@@ -41,3 +41,7 @@ class MalformedToken(Exception):
 
 class MissingRendition(Exception):
     pass
+
+
+class AlreadyRegisteredRendition(Exception):
+    pass
