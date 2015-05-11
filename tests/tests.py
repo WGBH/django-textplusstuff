@@ -11,6 +11,7 @@ from django.utils import six
 from textplusstuff.datastructures import TextPlusStuff
 from textplusstuff.exceptions import (
     AlreadyRegistered,
+    AlreadyRegisteredRendition,
     ImproperlyConfiguredStuff,
     InvalidRenderOption,
     InvalidRendition,
@@ -25,7 +26,7 @@ from textplusstuff.parser.lexer import TextPlusStuffLexer
 from textplusstuff.parser.nodes import (
     BaseNode, MarkdownFlavoredTextNode, ModelStuffNode
 )
-from textplusstuff.registry import findstuff
+from textplusstuff.registry import findstuff, stuff_registry
 from textplusstuff.serializers import TextPlusStuffFieldSerializer
 
 from .models import TPSTestModel, RegisteredModel
@@ -611,3 +612,60 @@ And [a link](http://www.djangoproject.com), too!"""
                 }
             ]
         )
+
+    @override_settings(
+        INSTALLED_APPS=(
+            "rest_framework",
+            'textplusstuff',
+            'tests',
+            'tests.test_add_noncore_rendition'
+        )
+    )
+    def test_noncore_rendition_registration(self):
+        """
+        Test to see if 'non-core' Rendition registration works.
+        """
+        findstuff()
+        self.assertTrue(
+            2,
+            len(
+                stuff_registry._modelstuff_registry.get(
+                    RegisteredModel
+                )[0]._renditions
+            )
+        )
+        self.assertNotEqual(
+            None,
+            stuff_registry._modelstuff_registry.get(
+                RegisteredModel
+            )[0]._renditions.get('baz', None)
+        )
+
+    @override_settings(
+        INSTALLED_APPS=(
+            "rest_framework",
+            'textplusstuff',
+            'tests',
+            'tests.test_add_dupe_noncore_rendition'
+        )
+    )
+    def test_add_dupe_noncore_rendition_registration(self):
+        """
+        Should raise AlreadyRegisteredRendition
+        """
+        with self.assertRaises(AlreadyRegisteredRendition):
+            findstuff()
+
+    @override_settings(
+        INSTALLED_APPS=(
+            "rest_framework",
+            'textplusstuff',
+            'tests.test_add_noncore_rendition_to_notregistered_model'
+        )
+    )
+    def test_noncore_rendition_registration_to_notregistered_model(self):
+        """
+        Should raise NotRegistered
+        """
+        with self.assertRaises(NotRegistered):
+            findstuff()
