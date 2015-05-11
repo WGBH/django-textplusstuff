@@ -11,8 +11,7 @@ from django.conf import settings
 
 if __name__ == "__main__":
     os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.test_settings'
-    django_version = '.'.join([str(seg) for seg in django.VERSION])
-    if django_version.startswith('1.7'):
+    if django.VERSION[0] == 1 and django.VERSION[1] >= 7:
         django.setup()
     from django.test.utils import get_runner
     TestRunner = get_runner(settings)
