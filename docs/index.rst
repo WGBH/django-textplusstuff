@@ -65,15 +65,36 @@ Each model registered with ``django-textplusstuff`` can have as many 'renditions
 Current Version
 ---------------
 
-0.2.1
+0.3
 
 Dependencies
-````````````
+------------
 
-- ``django`` >= 1.6.x >
-- ``djangorestframework`` >= 2.4.4
 - ``markdown2`` >= 2.3.x
 - ``beautifulsoup4`` >= 4.3.1
+- ``django`` >= 1.6.x
+- ``djangorestframework`` >= 2.4.4
+
+Python Compatibility
+````````````````````
+
+-  2.7.x
+-  3.3.x
+-  3.4.x
+
+Django Compatibility
+````````````````````
+
+-  1.6.x
+-  1.7.x
+-  1.8.x
+
+Django REST Framework Compatibility
+```````````````````````````````````
+
+-  2.4.4
+-  3.0.x
+-  3.1.x
 
 Contents
 ========
@@ -87,6 +108,12 @@ Contents
 
 Release Notes
 =============
+
+0.3
+---
+
+- Added the ability to :ref:`register 'non-core' renditions <non-core-renditions>` in a third-party application's already-registered Stuff class.
+- ``django-textplusstuff`` is now available for installation via `wheel <http://wheel.readthedocs.org/en/latest/>`_.
 
 0.2.1
 -----
@@ -121,7 +148,7 @@ Release Notes
 Roadmap to v1.0
 ===============
 
--  Add a ``TextPlusStuffField`` ``rest_framework``-compatible serializer.
 -  Create a javascript powered editor for writing markdown-flavored text and placing tokens.
+-  textplusstuff API POST support (so model instances registered with the stuff_registry can be created directly from a TextPlusStuff field widget)
 
 
