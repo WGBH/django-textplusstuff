@@ -166,7 +166,38 @@ If you want to include extra context data beyond what is provided natively by a 
 
     >>> instance.content.as_html(extra_context={'some_key': 'some_value'})
 
-This dictionary will then be passed to the `context keyword argument of the serializer class <http://www.django-rest-framework.org/api-guide/serializers.html#including-extra-context>`__ associated with that token's Stuff config. `Click here <http://www.django-rest-framework.org/api-guide/serializers.html#including-extra-context>`__ for more information about how to access this data within your serializer.
+This dictionary will then be passed to the `context keyword argument of the serializer class <http://www.django-rest-framework.org/api-guide/serializers/#including-extra-context>`__ associated with that token's Stuff config. `Click here <http://www.django-rest-framework.org/api-guide/serializers.html#including-extra-context>`__ for more information about how to access this data within your serializer.
+
+.. _extra-context-serializer-mixin:
+
+Automatically pass ``extra_context`` to all renditions associated with ``Stuff``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you'd like to automatically include the values passed to ``extra_context`` into your serializer context just use the ``ExtraContextSerializerMixin`` as one of your serializer superclasses.
+
+Here's how we'd integrate it into the ``TestModelSerializer`` example:
+
+.. code-block:: python
+    :emphasize-lines: 5,9
+
+    # serializers.py
+
+    from rest_framework.serializers import ModelSerializer
+
+    from textplusstuff.serializers import ExtraContextSerializerMixIn
+
+    from .models import TestModel
+
+    class TestModelSerializer(ExtraContextSerializerMixIn,
+                              ModelSerializer):
+
+        class Meta:
+            model = TestModel
+            fields = (
+                'name',
+            )
+
+Now any data passed like this: ``instance.text_plus_stuff_field.as_html(extra_context={'foo': 'bar'})`` will be available on all its renditions/templates at ``{{ context.extra_content.foo }}`` (where ``{{ context.extra_content.foo }}`` would be rendered as ``bar``).
 
 Admin Integration
 -----------------
