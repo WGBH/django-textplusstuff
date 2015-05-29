@@ -31,7 +31,7 @@ class ExtraContextSerializerMixIn(object):
             payload = super(
                 ExtraContextSerializerMixIn, self
             ).to_native(instance)
-        extra_context = copy.copy(self.context)
+        extra_context = copy.copy(self.context) or {}
         extra_context.pop('view', None)
         extra_context.pop('request', None)
         extra_context.pop('format', None)
