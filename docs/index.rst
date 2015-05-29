@@ -65,7 +65,7 @@ Each model registered with ``django-textplusstuff`` can have as many 'renditions
 Current Version
 ---------------
 
-0.3
+0.4
 
 Dependencies
 ------------
@@ -108,6 +108,11 @@ Contents
 
 Release Notes
 =============
+
+0.4
+---
+
+- Added :ref:``ExtraContextSerializerMixin <extra-context-serializer-mixin>` for simplifying ``extra_context``-to-serializer handoff.
 
 0.3
 ---
