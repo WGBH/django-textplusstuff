@@ -1,1 +1,1 @@
-<h1>{{ context.title }}</h1>
+<h1>{{ context.title }}</h1>{% if context.extra_context.foo %}<h2>{{ context.extra_context.foo }}</h2>{% endif %}

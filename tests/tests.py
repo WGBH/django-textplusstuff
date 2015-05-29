@@ -199,7 +199,7 @@ class TextPlusStuffTestCase(TestCase):
                         'type': 'block'
                     }
                 },
-                'context': {'title': 'Test Title'}
+                'context': {'title': 'Test Title', 'extra_context': {}}
             }
         )
 
@@ -669,3 +669,13 @@ And [a link](http://www.djangoproject.com), too!"""
         """
         with self.assertRaises(NotRegistered):
             findstuff()
+
+    def test_extra_context(self):
+        """Tests the 'extra_context' functionality of .as_html()"""
+        as_html_with_extra_context = self.tps_test_instance.content.as_html(
+            extra_context={'foo': 'bar'}
+        )
+        self.assertInHTML(
+            "<h2>bar</h2>",
+            as_html_with_extra_context
+        )

@@ -1,8 +1,44 @@
 from __future__ import unicode_literals
 
+import copy
+
 from rest_framework.serializers import CharField
 
 from .datastructures import TextPlusStuff
+
+
+class ExtraContextSerializerMixIn(object):
+    """
+    A serializer mixin that conveniently adds the entirety of self.context to
+    the 'extra_context' key of `to_representation`.
+    """
+
+    def to_native(self, instance):
+        """For backwards compatibility with djangorestframework 2.X.X"""
+        return self.to_representation(instance)
+
+    def to_representation(self, instance):
+        """
+        Adds self.context to the 'extra_context' key of a
+        serializers output.
+        """
+        try:
+            payload = super(
+                ExtraContextSerializerMixIn, self
+            ).to_representation(instance)
+        except AttributeError:
+            # For backwards compatibility with djangorestframework 2.X.X
+            payload = super(
+                ExtraContextSerializerMixIn, self
+            ).to_native(instance)
+        extra_context = copy.copy(self.context)
+        extra_context.pop('view', None)
+        extra_context.pop('request', None)
+        extra_context.pop('format', None)
+        payload.update({
+            'extra_context': extra_context
+        })
+        return payload
 
 
 class TextPlusStuffFieldSerializer(CharField):
@@ -18,6 +54,7 @@ class TextPlusStuffFieldSerializer(CharField):
         'as_html_no_tokens': <As HTML markup no tokens rendered>,
     }
     """
+
     read_only = True
 
     def to_native(self, value):
@@ -35,7 +72,7 @@ class TextPlusStuffFieldSerializer(CharField):
                 'raw_text': value.raw_text,
                 'as_plaintext': value.as_plaintext(),
                 'as_markdown': value.as_markdown(),
-                'as_html': value.as_html(),
+                'as_html': value.as_html(extra_context=self.context),
                 'as_html_no_tokens': value.as_html(
                     include_content_nodes=False
                 ),
