@@ -15,15 +15,11 @@ Welcome to django-textplusstuff's documentation!
     :target: https://coveralls.io/r/WGBH/django-textplusstuff
     :alt: Coverage Status
 
-.. image:: https://pypip.in/py_versions/django-textplusstuff/badge.svg?style=flat
-    :target: https://pypi.python.org/pypi/django-textplusstuff/
-    :alt: Supported Python versions
-
-.. image:: https://pypip.in/download/django-textplusstuff/badge.svg?style=flat
+.. image:: https://img.shields.io/pypi/dm/django-textplusstuff.svg?style=flat
     :target: https://pypi.python.org/pypi/django-textplusstuff/
     :alt: Downloads
 
-.. image:: https://pypip.in/version/django-textplusstuff/badge.svg?style=flat
+.. image:: https://img.shields.io/pypi/v/django-textplusstuff.svg?style=flat
     :target: https://pypi.python.org/pypi/django-textplusstuff/
     :alt: Latest Version
 
@@ -65,7 +61,7 @@ Each model registered with ``django-textplusstuff`` can have as many 'renditions
 Current Version
 ---------------
 
-0.4
+0.4.1
 
 Dependencies
 ------------
@@ -95,6 +91,7 @@ Django REST Framework Compatibility
 -  2.4.4
 -  3.0.x
 -  3.1.x
+-  3.2.x
 
 Contents
 ========
@@ -109,10 +106,15 @@ Contents
 Release Notes
 =============
 
+0.4.1
+-----
+
+- Fixed a UnicodeDecodeError bug that arose in Python 2.7.5 when encoding text nodes that had non-ASCII encoded HTML entities.
+
 0.4
 ---
 
-- Added :ref:``ExtraContextSerializerMixin <extra-context-serializer-mixin>` for simplifying ``extra_context``-to-serializer handoff.
+- Added :ref:`ExtraContextSerializerMixin <extra-context-serializer-mixin>` for simplifying ``extra_context``-to-serializer handoff.
 
 0.3
 ---
