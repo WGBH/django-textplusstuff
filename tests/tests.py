@@ -8,6 +8,8 @@ from django.test import Client, TestCase
 from django.test.utils import override_settings
 from django.utils import six
 
+from rest_framework import __version__ as rest_framework_version
+
 from textplusstuff.datastructures import TextPlusStuff
 from textplusstuff.exceptions import (
     AlreadyRegistered,
@@ -31,6 +33,11 @@ from textplusstuff.serializers import TextPlusStuffFieldSerializer
 
 from .models import TPSTestModel, RegisteredModel
 from .serializers import TPSTestModelSerializer
+
+rest_framework_version = [
+    int(seg)
+    for seg in rest_framework_version.split('.')
+]
 
 
 class TextPlusStuffTestCase(TestCase):
@@ -166,11 +173,22 @@ class TextPlusStuffTestCase(TestCase):
             response_content = response.content
         else:
             response_content = str(response.content, encoding='utf8')
+
+        if rest_framework_version[0] >= 3 and rest_framework_version[1] >= 2:
+            response_url = (
+                'http://testserver/textplusstuff/tests/'
+                'registeredmodel/detail/1/?format=json'
+            )
+        else:
+            response_url = (
+                'http://testserver/textplusstuff/tests/'
+                'registeredmodel/detail/1/'
+            )
+
         self.assertJSONEqual(
             response_content,
             [{
-                'url': 'http://testserver/textplusstuff/tests/'
-                       'registeredmodel/detail/1/',
+                'url': response_url,
                 'id': 1,
                 'title': 'Test Title'
             }]
@@ -179,7 +197,7 @@ class TextPlusStuffTestCase(TestCase):
     def test_api_detail_response(self):
         """Tests the TextPlusStuff API's 'RetrieveStuffView' response"""
         response = self.client.get(
-            '/textplusstuff/tests/registeredmodel/detail/1/?format=json'
+            '/textplusstuff/tests/registeredmodel/detail/1/'
         )
         if six.PY2:
             response_content = response.content
