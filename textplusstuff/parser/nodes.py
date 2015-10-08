@@ -40,7 +40,11 @@ class MarkdownFlavoredTextNode(BaseNode):
         """
         if render_as in ['html', 'plain_text']:
             markdowner = Markdown()
-            markdown_as_html = markdowner.convert(self.payload)
+            payload = self.payload.encode(
+                'ascii',
+                'xmlcharrefreplace'
+            )
+            markdown_as_html = markdowner.convert(payload)
             if render_as == 'html':
                 to_return = markdown_as_html
             else:
