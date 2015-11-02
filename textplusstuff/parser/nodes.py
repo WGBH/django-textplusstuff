@@ -136,9 +136,9 @@ class ModelStuffNode(BaseNode):
         ct = self.get_contenttype()
         return ct.model_class()
 
-    def render(self, extra_context=None):
+    def get_stuff_config(self):
         """
-        Transforms this node into HTML
+        Returns the StuffConfig instance associated with this Node.
         """
         # Step 1: Get Model associated with token
         model_cls = self.get_model_class()
@@ -155,50 +155,68 @@ class ModelStuffNode(BaseNode):
                 "not be rendered.".format(model_cls, self.payload)
             )
         else:
-            try:
-                # Step 3: Use the associated Stuff queryset (and the
-                #         token's ID) to retrieve the right instance.
-                instance = stuff_config.queryset.get(
-                    pk=self.node_mapping.get('object_id')
+            return stuff_config
+
+    def get_instance(self):
+        """
+        Returns the model instance associated with this Node.
+        """
+        stuff_config = self.get_stuff_config()
+        try:
+            instance = stuff_config.queryset.get(
+                pk=self.node_mapping.get('object_id')
+            )
+        except stuff_config.queryset.model.DoesNotExist:
+            raise stuff_config.queryset.model.DoesNotExist(
+                "The model instance associated with this token (uid: {}): "
+                "model: {}, pk: {} could not be retrieved and, therefore, "
+                "could not be rendered.".format(
+                    self.payload,
+                    stuff_config.queryset.model,
+                    self.node_mapping.get('object_id')
                 )
-            except stuff_config.queryset.model.DoesNotExist:
-                raise stuff_config.queryset.model.DoesNotExist(
-                    "The model instance associated with this token (uid: {}): "
-                    "model: {}, pk: {} could not be retrieved and, therefore, "
-                    "could not be rendered.".format(
-                        self.payload,
-                        model_cls,
-                        self.node_mapping.get('object_id')
-                    )
+            )
+        else:
+            return instance
+
+    def get_rendition(self):
+        """
+        Returns the rendition associated with this Node.
+        """
+        stuff_config = self.get_stuff_config()
+        try:
+            rendition = stuff_config._renditions[
+                self.node_mapping.get('rendition_key')
+            ]
+        except KeyError:
+            model_cls = self.get_model_class()
+            raise MissingRendition(
+                "The rendition (short_name: '{rendition_short_name}') "
+                "associated with this token (uid: {token_uid}) "
+                "is not registered with the {model} model's "
+                "corresponding StuffConfig and, therefore, "
+                "could not be rendered.".format(
+                    token_uid=self.payload,
+                    rendition_short_name=self.node_mapping.get(
+                        'rendition_key'
+                    ),
+                    model=model_cls
                 )
-            else:
-                # Step 4: Grab the rendition instance associated with the token
-                #         and combine its template with the context provided by
-                #         the serializer.
-                try:
-                    rendition = stuff_config._renditions[
-                        self.node_mapping.get('rendition_key')
-                    ]
-                except KeyError:
-                    raise MissingRendition(
-                        "The rendition (short_name: '{rendition_short_name}') "
-                        "associated with this token (uid: {token_uid}) "
-                        "is not registered with the {model} model's "
-                        "corresponding StuffConfig and, therefore, "
-                        "could not be rendered.".format(
-                            token_uid=self.payload,
-                            rendition_short_name=self.node_mapping.get(
-                                'rendition_key'
-                            ),
-                            model=model_cls
-                        )
-                    )
-                else:
-                    # Step 5: Then return it bruh.
-                    return rendition.render_as_html(
-                        context=stuff_config.serializer_class(
-                            instance, context=extra_context
-                        ).data
-                    )
+            )
+        else:
+            return rendition
+
+    def render(self, extra_context=None):
+        """
+        Transforms this node into HTML
+        """
+        stuff_config = self.get_stuff_config()
+        instance = self.get_instance()
+        rendition = self.get_rendition()
+        return rendition.render_as_html(
+            context=stuff_config.serializer_class(
+                instance, context=extra_context
+            ).data
+        )
 
 __all__ = ('MarkdownFlavoredTextNode', 'ModelStuffNode')
