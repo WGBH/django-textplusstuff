@@ -206,17 +206,29 @@ class ModelStuffNode(BaseNode):
         else:
             return rendition
 
+    def get_serializer_class(self):
+        """
+        Returns the serializer class associated with this Node.
+        """
+        stuff_config = self.get_stuff_config()
+        return stuff_config.serializer_class
+
+    def get_node_context(self, extra_context=None):
+        serializer_class = self.get_serializer_class()
+        instance = self.get_instance()
+        return serializer_class(
+            instance, context=extra_context
+        ).data
+
     def render(self, extra_context=None):
         """
         Transforms this node into HTML
         """
-        stuff_config = self.get_stuff_config()
-        instance = self.get_instance()
+
         rendition = self.get_rendition()
+        node_context = self.get_node_context(extra_context=extra_context)
         return rendition.render_as_html(
-            context=stuff_config.serializer_class(
-                instance, context=extra_context
-            ).data
+            context=node_context
         )
 
 __all__ = ('MarkdownFlavoredTextNode', 'ModelStuffNode')
