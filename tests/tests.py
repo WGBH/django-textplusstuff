@@ -44,6 +44,7 @@ class TextPlusStuffTestCase(TestCase):
     """The test suite for django-textplusstuff"""
 
     fixtures = ['textplusstuff.json']
+    maxDiff = None
 
     def setUp(self):
         password = '12345'
@@ -289,8 +290,8 @@ And [a link](http://www.djangoproject.com), too!"""
                     "<h3>I'm an H3</h3>\n\n<p>I'm in a paragraph with "
                     "<strong>bold text</strong> and <em>italic text</em>.</p>"
                     "\n\n<p>And <a href=\"http://www.djangoproject.com\">a "
-                    "link</a>, too!</p>\n<span data-textplusstuff-node-"
-                    "index=\"0\"></span>"
+                    "link</a>, too!</p>\n<span data-textplusstuff-contentnode-"
+                    "arrayindex=\"0\"></span>"
                 ),
                 "text_as_markdown": (
                     "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\nI'm in a "
@@ -298,8 +299,15 @@ And [a link](http://www.djangoproject.com), too!"""
                     "[a link](http://www.djangoproject.com), too!"
                     "{{ NODE__0 }}"
                 ),
-                "node_context": [
-                    {"title": "Test Title", "extra_context": {}}
+                "content_nodes": [
+                    {
+                        "model": "tests:registeredmodel",
+                        "rendition": "test_rendition",
+                        "context": {
+                            "title": "Test Title",
+                            "extra_context": {}
+                        }
+                    }
                 ]
             }
         )

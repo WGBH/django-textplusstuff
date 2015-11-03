@@ -89,24 +89,30 @@ class TextPlusStuff(object):
                 final_output_as_html += node.render(render_as='html')
                 final_output_as_markdown += node.render(render_as='markdown')
             elif isinstance(node, ModelStuffNode):
-                if include_content_nodes is False:
-                    pass
-                else:
+                if include_content_nodes is True:
                     final_output_as_markdown += "{{{{ NODE__{index} }}}}"\
                         .format(
                             index=model_stuff_node_counter
                         )
                     final_output_as_html += (
-                        '<span data-textplusstuff-node-index="{index}"></span>'
+                        '<span data-textplusstuff-contentnode-arrayindex='
+                        '"{index}"></span>'
                     ).format(index=model_stuff_node_counter)
-                    model_stuff_node_context_list.append(
-                        node.get_node_context(extra_context=extra_context)
-                    )
+                    model_stuff_node_context_list.append({
+                        'model': '{}:{}'.format(
+                            node.node_mapping.get('content_type__app_label'),
+                            node.node_mapping.get('content_type__model')
+                        ),
+                        'rendition': node.get_rendition().short_name,
+                        'context': node.get_node_context(
+                            extra_context=extra_context
+                        )
+                    })
                     model_stuff_node_counter += 1
         return json.dumps({
             'text_as_markdown': final_output_as_markdown,
             'text_as_html': final_output_as_html,
-            'node_context': model_stuff_node_context_list
+            'content_nodes': model_stuff_node_context_list
         })
 
     def as_plaintext(self, **kwargs):
