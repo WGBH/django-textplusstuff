@@ -284,6 +284,31 @@ And [a link](http://www.djangoproject.com), too!"""
                 'too!</p>\n'
             )
         )
+        json_output = self.tps_test_instance.content.as_json()
+        if six.PY3:
+            json_output = str(json_output, encoding='utf8')
+        self.assertJSONEqual(
+            json_output,
+            {
+                "text_as_html": (
+                    "<h1>I'm an H1</h1>\n\n<h2>I'm an H2</h2>\n\n"
+                    "<h3>I'm an H3</h3>\n\n<p>I'm in a paragraph with "
+                    "<strong>bold text</strong> and <em>italic text</em>.</p>"
+                    "\n\n<p>And <a href=\"http://www.djangoproject.com\">a "
+                    "link</a>, too!</p>\n<span data-textplusstuff-node-"
+                    "index=\"0\"></span>"
+                ),
+                "text_as_markdown": (
+                    "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\nI'm in a "
+                    "paragraph with **bold text** and _italic text_.\n\nAnd "
+                    "[a link](http://www.djangoproject.com), too!"
+                    "{{ NODE__0 }}"
+                ),
+                "node_context": [
+                    {"title": "Test Title", "extra_context": {}}
+                ]
+            }
+        )
 
     def test_textplusstuff_invalid_initialization(self):
         """
