@@ -229,12 +229,8 @@ class TextPlusStuffTestCase(TestCase):
             response_content = response.content
         else:
             response_content = str(response.content, encoding='utf8')
-        self.assertInHTML(
-            """
-            <div class="page-header">
-                <h1>Retrieve Registered Model Stuff</h1>
-            </div>
-            """,
+        self.assertIn(
+            '<h1>Retrieve Registered Model Stuff</h1>',
             response_content
         )
 
@@ -285,8 +281,6 @@ And [a link](http://www.djangoproject.com), too!"""
             )
         )
         json_output = self.tps_test_instance.content.as_json()
-        if six.PY3:
-            json_output = str(json_output, encoding='utf8')
         self.assertJSONEqual(
             json_output,
             {
