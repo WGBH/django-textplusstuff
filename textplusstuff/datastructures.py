@@ -82,6 +82,7 @@ class TextPlusStuff(object):
         final_output_as_markdown = ""
         include_content_nodes = kwargs.pop('include_content_nodes', True)
         extra_context = kwargs.pop('extra_context', None)
+        convert_to_json = kwargs.pop('convert_to_json', True)
         model_stuff_node_counter = 0
         model_stuff_node_context_list = []
         for node in self.nodelist:
@@ -109,11 +110,17 @@ class TextPlusStuff(object):
                         )
                     })
                     model_stuff_node_counter += 1
-        return json.dumps({
+        dict_to_return = {
             'text_as_markdown': final_output_as_markdown,
             'text_as_html': final_output_as_html,
             'content_nodes': model_stuff_node_context_list
-        })
+        }
+
+        to_return = dict_to_return
+        if convert_to_json is True:
+            to_return = json.dumps(dict_to_return)
+
+        return to_return
 
     def as_plaintext(self, **kwargs):
         """
