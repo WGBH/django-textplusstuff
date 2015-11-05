@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
@@ -73,13 +73,13 @@ class TextPlusStuffLink(models.Model):
         related_name="textplusstufflink_parent_link"
     )
     parent_object_id = models.PositiveIntegerField()
-    parent_content_object = generic.GenericForeignKey(
+    parent_content_object = GenericForeignKey(
         'parent_content_type',
         'parent_object_id'
     )
     content_type = models.ForeignKey(ContentType)
     object_id = models.CharField(max_length=25)
-    content_object = generic.GenericForeignKey(
+    content_object = GenericForeignKey(
         'content_type',
         'object_id'
     )
