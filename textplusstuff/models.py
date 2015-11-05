@@ -75,13 +75,18 @@ class TextPlusStuffLink(models.Model):
         ContentType,
         related_name="textplusstufflink_parent_link"
     )
-    parent_object_id = models.PositiveIntegerField()
+    parent_object_id = models.PositiveIntegerField(
+        db_index=True
+    )
     parent_content_object = GenericForeignKey(
         'parent_content_type',
         'parent_object_id'
     )
     content_type = models.ForeignKey(ContentType)
-    object_id = models.CharField(max_length=25)
+    object_id = models.CharField(
+        max_length=25,
+        db_index=True
+    )
     content_object = GenericForeignKey(
         'content_type',
         'object_id'
