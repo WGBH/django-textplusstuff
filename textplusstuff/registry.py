@@ -350,10 +350,18 @@ class StuffRegistry(object):
                     for model, tup in six.iteritems(self.registered_stuff):
                         stuff_cls, groups = tup
                         for group in groups:
-                            stuffgroups[group]['stuff'].append({
-                                'name': stuff_cls.verbose_name,
-                                'description': stuff_cls.description or '',
-                                'renditions': [
+                            stuffgroups[group][
+                                'stuff'
+                            ].append(collections.OrderedDict([
+                                ('name', stuff_cls.verbose_name),
+                                ('description', stuff_cls.description or ''),
+                                ('instance_list', reverse(
+                                    'textplusstuff:{}-list'.format(
+                                        stuff_cls.get_url_name_key()
+                                    ),
+                                    request=self.request
+                                )),
+                                ('renditions', [
                                     {
                                         'name': rendition.verbose_name,
                                         'description': rendition.description,
@@ -363,14 +371,8 @@ class StuffRegistry(object):
                                     for short_name, rendition in six.iteritems(
                                         stuff_cls._renditions
                                     )
-                                ],
-                                'instance_list': reverse(
-                                    'textplusstuff:{}-list'.format(
-                                        stuff_cls.get_url_name_key()
-                                    ),
-                                    request=self.request
-                                )
-                            })
+                                ])
+                            ]))
                     return [
                         stuffgroup
                         for short_name, stuffgroup in six.iteritems(

@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from collections import OrderedDict
 
 from django.utils.functional import Promise
 
@@ -50,8 +51,8 @@ class TextPlusStuffRetrieveModelMixin(object):
         self.object = self.get_object()
         serializer = self.get_serializer(self.object)
         renditions = get_modelstuff_renditions(self.object)
-        template = {
-            'context': serializer.data,
-            'renditions': renditions
-        }
+        template = OrderedDict([
+            ('context', serializer.data),
+            ('renditions', renditions)
+        ])
         return Response(template)
