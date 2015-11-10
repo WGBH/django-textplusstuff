@@ -331,10 +331,16 @@ class StuffRegistry(object):
                         else:
                             # OK, this config passed, give it a 'stuff' key
                             # to hold Stuff that is associated with it.
-                            stuffgroups_copy[short_name].update({
-                                'stuff': [],
-                                'short_name': short_name
-                            })
+                            stuffgroup = collections.OrderedDict([
+                                ('name', stuffgroups_copy[short_name]['name']),
+                                ('short_name', short_name),
+                                (
+                                    'description',
+                                    stuffgroups_copy[short_name]['description']
+                                ),
+                                ('stuff', [])
+                            ])
+                            stuffgroups_copy[short_name] = stuffgroup
                     return stuffgroups_copy
                 else:
                     return None
