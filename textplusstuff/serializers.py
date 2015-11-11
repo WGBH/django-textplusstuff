@@ -72,7 +72,9 @@ class TextPlusStuffFieldSerializer(CharField):
                 'raw_text': value.raw_text,
                 'as_plaintext': value.as_plaintext(),
                 'as_markdown': value.as_markdown(),
-                'as_html': value.as_html(extra_context=self.context),
+                'as_html': value.as_html(extra_context=getattr(
+                    self, 'context', {}
+                )),
                 'as_html_no_tokens': value.as_html(
                     include_content_nodes=False
                 ),
