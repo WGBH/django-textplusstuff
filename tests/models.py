@@ -4,7 +4,10 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
-from textplusstuff.fields import TextPlusStuffField
+from textplusstuff.fields import (
+    TextPlusStuffField,
+    TextPlusStuffConstructedField
+)
 
 
 @python_2_unicode_compatible
@@ -26,7 +29,10 @@ class RegisteredModel(models.Model):
 
 @python_2_unicode_compatible
 class TPSTestModel(models.Model):
-    content = TextPlusStuffField()
+    content = TextPlusStuffField(
+        constructed_field='content_constructed'
+    )
+    content_constructed = TextPlusStuffConstructedField()
 
     def __str__(self):
         return "tpstestmodel:{}".format(self.pk)

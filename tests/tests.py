@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from collections import OrderedDict
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -325,6 +326,7 @@ And [a link](http://www.djangoproject.com), too!"""
         Ensures TextPlusStuffLink instances are created and deleted as
         expected.
         """
+        findstuff()
         x = TextPlusStuffLink.objects.get()
         self.assertEqual(
             x.parent_content_object,
@@ -650,7 +652,8 @@ And [a link](http://www.djangoproject.com), too!"""
                             "[a link](http://www.djangoproject.com), too!\n\n"
                             "{% textplusstuff 'MODELSTUFF__tests:"
                             "registeredmodel:1:test_rendition' %}"
-                        )
+                        ),
+                        "content_constructed": "{}"
                     },
                     "model": "tests.tpstestmodel",
                     "pk": 1
@@ -723,4 +726,41 @@ And [a link](http://www.djangoproject.com), too!"""
         self.assertInHTML(
             "<h2>bar</h2>",
             as_html_with_extra_context
+        )
+
+    def test_constructed_field(self):
+        """Tests the 'constructed_field' functionality."""
+        instance = self.tps_test_instance
+        self.assertEqual(
+            instance.content_constructed,
+            OrderedDict()
+        )
+        instance.save()
+        self.assertJSONEqual(
+            instance.content_constructed,
+            {
+                "text_as_html": (
+                    "<h1>I'm an H1</h1>\n\n<h2>I'm an H2</h2>\n\n<h3>I'm an "
+                    "H3</h3>\n\n<p>I'm in a paragraph with <strong>bold text"
+                    "</strong> and <em>italic text</em>.</p>\n\n<p>And "
+                    "<a href=\"http://www.djangoproject.com\">a link</a>, too!"
+                    "</p>\n<span data-textplusstuff-contentnode-arrayindex"
+                    "=\"0\"></span>"
+                ),
+                "text_as_markdown": (
+                    "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\nI'm in a "
+                    "paragraph with **bold text** and _italic text_.\n\nAnd "
+                    "[a link](http://www.djangoproject.com), too!{{ NODE__0 }}"
+                ),
+                "content_nodes": [
+                    {
+                        "rendition": "test_rendition",
+                        "model": "tests:registeredmodel",
+                        "context": {
+                            "title": "Test Title",
+                            "extra_context": {}
+                        }
+                    }
+                ]
+            }
         )
