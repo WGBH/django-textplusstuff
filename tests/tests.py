@@ -765,8 +765,11 @@ And [a link](http://www.djangoproject.com), too!"""
             OrderedDict()
         )
         instance.save()
+        constructed_json = JSONRenderer().render(instance.content_constructed)
+        if six.PY3:
+            constructed_json = str(constructed_json, encoding='utf8')
         self.assertJSONEqual(
-            JSONRenderer().render(instance.content_constructed),
+            constructed_json,
             {
                 'as_plaintext': "I'm an H1\nI'm an H2\nI'm an H3\nI'm in a "
                                 "paragraph with bold text and italic text.\n"
@@ -826,10 +829,13 @@ And [a link](http://www.djangoproject.com), too!"""
         original_title = self.registered_model_instance.title
         self.registered_model_instance.title = 'Test Title UPDATED'
         self.registered_model_instance.save()
+        constructed_json_2 = JSONRenderer().render(
+            TPSTestModel.objects.get(pk=1).content_constructed
+        )
+        if six.PY3:
+            constructed_json_2 = str(constructed_json_2, encoding='utf8')
         self.assertJSONEqual(
-            JSONRenderer().render(
-                TPSTestModel.objects.get(pk=1).content_constructed
-            ),
+            constructed_json_2,
             {
                 'as_plaintext': "I'm an H1\nI'm an H2\nI'm an H3\nI'm in a "
                                 "paragraph with bold text and italic text.\n"
