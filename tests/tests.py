@@ -10,6 +10,7 @@ from django.test.utils import override_settings
 from django.utils import six
 
 from rest_framework import __version__ as rest_framework_version
+from rest_framework.renderers import JSONRenderer
 
 from textplusstuff.datastructures import TextPlusStuff
 from textplusstuff.exceptions import (
@@ -282,7 +283,9 @@ And [a link](http://www.djangoproject.com), too!"""
                 'too!</p>\n'
             )
         )
-        json_output = self.tps_test_instance.content.as_json()
+        json_output = self.tps_test_instance.content.as_json(
+            convert_to_json_string=True
+        )
         self.assertJSONEqual(
             json_output,
             {
@@ -593,7 +596,7 @@ And [a link](http://www.djangoproject.com), too!"""
         Ensures the TextPlusStuffFieldSerializer works as intended.
         """
         findstuff()
-        serializer = TPSTestModelSerializer(self.tps_test_instance)
+        serializer = TPSTestModelSerializer(TPSTestModel.objects.get(pk=1))
         self.assertEqual(
             serializer.data,
             {'content': {
@@ -623,7 +626,33 @@ And [a link](http://www.djangoproject.com), too!"""
                 'as_markdown': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3"
                                "\n\nI'm in a paragraph with **bold text** and "
                                "_italic text_.\n\nAnd [a link](http://www."
-                               "djangoproject.com), too!"
+                               "djangoproject.com), too!",
+                'as_json': {
+                    "text_as_html": (
+                        "<h1>I'm an H1</h1>\n\n<h2>I'm an H2</h2>\n\n<h3>I'm "
+                        "an H3</h3>\n\n<p>I'm in a paragraph with <strong>"
+                        "bold text</strong> and <em>italic text</em>.</p>\n\n"
+                        "<p>And <a href=\"http://www.djangoproject.com\">a "
+                        "link</a>, too!</p>\n<span data-textplusstuff-"
+                        "contentnode-arrayindex=\"0\"></span>"
+                    ),
+                    "text_as_markdown": (
+                        "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\nI'm "
+                        "in a paragraph with **bold text** and _italic text_."
+                        "\n\nAnd [a link](http://www.djangoproject.com), "
+                        "too!{{ NODE__0 }}"
+                    ),
+                    "content_nodes": [
+                        {
+                            "rendition": "test_rendition",
+                            "model": "tests:registeredmodel",
+                            "context": {
+                                "title": "Test Title",
+                                "extra_context": {}
+                            }
+                        }
+                    ]
+                }
             }}
         )
         with self.assertRaises(ValueError):
@@ -737,30 +766,125 @@ And [a link](http://www.djangoproject.com), too!"""
         )
         instance.save()
         self.assertJSONEqual(
-            instance.content_constructed,
+            JSONRenderer().render(instance.content_constructed),
             {
-                "text_as_html": (
-                    "<h1>I'm an H1</h1>\n\n<h2>I'm an H2</h2>\n\n<h3>I'm an "
-                    "H3</h3>\n\n<p>I'm in a paragraph with <strong>bold text"
-                    "</strong> and <em>italic text</em>.</p>\n\n<p>And "
-                    "<a href=\"http://www.djangoproject.com\">a link</a>, too!"
-                    "</p>\n<span data-textplusstuff-contentnode-arrayindex"
-                    "=\"0\"></span>"
+                'as_plaintext': "I'm an H1\nI'm an H2\nI'm an H3\nI'm in a "
+                                "paragraph with bold text and italic text.\n"
+                                "And a link, too!\n",
+                'as_html': (
+                    '<h1>I\'m an H1</h1>\n\n<h2>I\'m an H2</h2>\n\n<h3>I\'m '
+                    'an H3</h3>\n\n<p>I\'m in a paragraph with <strong>bold '
+                    'text</strong> and <em>italic text</em>.</p>\n\n<p>'
+                    'And <a href="http://www.djangoproject.com">a link</a>, '
+                    'too!</p>\n<h1>Test Title</h1>\n'
                 ),
-                "text_as_markdown": (
-                    "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\nI'm in a "
-                    "paragraph with **bold text** and _italic text_.\n\nAnd "
-                    "[a link](http://www.djangoproject.com), too!{{ NODE__0 }}"
+                'raw_text': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\n"
+                            "I'm in a paragraph with **bold text** and "
+                            "_italic text_.\n\nAnd [a link](http://www."
+                            "djangoproject.com), too!\n\n{% textplusstuff "
+                            "'MODELSTUFF__tests:registeredmodel:1:"
+                            "test_rendition' %}",
+                'as_html_no_tokens': (
+                    '<h1>I\'m an H1</h1>\n\n<h2>I\'m an H2</h2>\n\n<h3>I\'m '
+                    'an H3</h3>\n\n<p>I\'m in a paragraph with <strong>bold '
+                    'text</strong> and <em>italic text</em>.</p>\n\n<p>And <a '
+                    'href="http://www.djangoproject.com">a link</a>, '
+                    'too!</p>\n'
                 ),
-                "content_nodes": [
-                    {
-                        "rendition": "test_rendition",
-                        "model": "tests:registeredmodel",
-                        "context": {
-                            "title": "Test Title",
-                            "extra_context": {}
+                'as_markdown': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3"
+                               "\n\nI'm in a paragraph with **bold text** and "
+                               "_italic text_.\n\nAnd [a link](http://www."
+                               "djangoproject.com), too!",
+                'as_json': {
+                    "text_as_html": (
+                        "<h1>I'm an H1</h1>\n\n<h2>I'm an H2</h2>\n\n<h3>I'm "
+                        "an H3</h3>\n\n<p>I'm in a paragraph with <strong>"
+                        "bold text</strong> and <em>italic text</em>.</p>\n\n"
+                        "<p>And <a href=\"http://www.djangoproject.com\">a "
+                        "link</a>, too!</p>\n<span data-textplusstuff-"
+                        "contentnode-arrayindex=\"0\"></span>"
+                    ),
+                    "text_as_markdown": (
+                        "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\nI'm "
+                        "in a paragraph with **bold text** and _italic text_."
+                        "\n\nAnd [a link](http://www.djangoproject.com), "
+                        "too!{{ NODE__0 }}"
+                    ),
+                    "content_nodes": [
+                        {
+                            "rendition": "test_rendition",
+                            "model": "tests:registeredmodel",
+                            "context": {
+                                "title": "Test Title",
+                                "extra_context": {}
+                            }
                         }
-                    }
-                ]
+                    ]
+                }
             }
         )
+        original_title = self.registered_model_instance.title
+        self.registered_model_instance.title = 'Test Title UPDATED'
+        self.registered_model_instance.save()
+        self.assertJSONEqual(
+            JSONRenderer().render(
+                TPSTestModel.objects.get(pk=1).content_constructed
+            ),
+            {
+                'as_plaintext': "I'm an H1\nI'm an H2\nI'm an H3\nI'm in a "
+                                "paragraph with bold text and italic text.\n"
+                                "And a link, too!\n",
+                'as_html': (
+                    '<h1>I\'m an H1</h1>\n\n<h2>I\'m an H2</h2>\n\n<h3>I\'m '
+                    'an H3</h3>\n\n<p>I\'m in a paragraph with <strong>bold '
+                    'text</strong> and <em>italic text</em>.</p>\n\n<p>'
+                    'And <a href="http://www.djangoproject.com">a link</a>, '
+                    'too!</p>\n<h1>Test Title UPDATED</h1>\n'
+                ),
+                'raw_text': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\n"
+                            "I'm in a paragraph with **bold text** and "
+                            "_italic text_.\n\nAnd [a link](http://www."
+                            "djangoproject.com), too!\n\n{% textplusstuff "
+                            "'MODELSTUFF__tests:registeredmodel:1:"
+                            "test_rendition' %}",
+                'as_html_no_tokens': (
+                    '<h1>I\'m an H1</h1>\n\n<h2>I\'m an H2</h2>\n\n<h3>I\'m '
+                    'an H3</h3>\n\n<p>I\'m in a paragraph with <strong>bold '
+                    'text</strong> and <em>italic text</em>.</p>\n\n<p>And <a '
+                    'href="http://www.djangoproject.com">a link</a>, '
+                    'too!</p>\n'
+                ),
+                'as_markdown': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3"
+                               "\n\nI'm in a paragraph with **bold text** and "
+                               "_italic text_.\n\nAnd [a link](http://www."
+                               "djangoproject.com), too!",
+                'as_json': {
+                    "text_as_html": (
+                        "<h1>I'm an H1</h1>\n\n<h2>I'm an H2</h2>\n\n<h3>I'm "
+                        "an H3</h3>\n\n<p>I'm in a paragraph with <strong>"
+                        "bold text</strong> and <em>italic text</em>.</p>\n\n"
+                        "<p>And <a href=\"http://www.djangoproject.com\">a "
+                        "link</a>, too!</p>\n<span data-textplusstuff-"
+                        "contentnode-arrayindex=\"0\"></span>"
+                    ),
+                    "text_as_markdown": (
+                        "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\nI'm "
+                        "in a paragraph with **bold text** and _italic text_."
+                        "\n\nAnd [a link](http://www.djangoproject.com), "
+                        "too!{{ NODE__0 }}"
+                    ),
+                    "content_nodes": [
+                        {
+                            "rendition": "test_rendition",
+                            "model": "tests:registeredmodel",
+                            "context": {
+                                "title": "Test Title UPDATED",
+                                "extra_context": {}
+                            }
+                        }
+                    ]
+                }
+            }
+        )
+        self.registered_model_instance.title = original_title
+        self.registered_model_instance.save()

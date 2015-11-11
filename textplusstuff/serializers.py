@@ -76,4 +76,5 @@ class TextPlusStuffFieldSerializer(CharField):
                 'as_html_no_tokens': value.as_html(
                     include_content_nodes=False
                 ),
+                'as_json': value.as_json(convert_to_json_string=False)
             }

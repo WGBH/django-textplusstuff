@@ -82,7 +82,7 @@ class TextPlusStuff(object):
         final_output_as_markdown = ""
         include_content_nodes = kwargs.pop('include_content_nodes', True)
         extra_context = kwargs.pop('extra_context', None)
-        convert_to_json = kwargs.pop('convert_to_json', True)
+        convert_to_json_string = kwargs.pop('convert_to_json_string', False)
         model_stuff_node_counter = 0
         model_stuff_node_context_list = []
         for node in self.nodelist:
@@ -117,7 +117,7 @@ class TextPlusStuff(object):
         }
 
         to_return = dict_to_return
-        if convert_to_json is True:
+        if convert_to_json_string is True:
             to_return = json.dumps(dict_to_return)
 
         return to_return

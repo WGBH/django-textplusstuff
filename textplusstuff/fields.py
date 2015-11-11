@@ -2,13 +2,19 @@ from __future__ import unicode_literals
 from collections import OrderedDict
 
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import FieldDoesNotExist
 from django.db.models import SubfieldBase, TextField
+from django.db.models.signals import post_save
+from django.dispatch.dispatcher import receiver
 from django.utils.six import add_metaclass
 from django.utils.translation import ugettext_lazy as _
 
 from jsonfield import JSONField
 
 from .datastructures import TextPlusStuff
+from .registry import stuff_registry
+from .serializers import TextPlusStuffFieldSerializer
 from .widgets import TextPlusStuffWidget
 
 if 'south' in settings.INSTALLED_APPS:
@@ -73,10 +79,14 @@ class TextPlusStuffField(TextField):
         # Nothing to update if the field doesn't have have a constructed field
         if self.constructed_field:
             tps_field_value = getattr(model_instance, self.attname)
+            constructed_value = TextPlusStuffFieldSerializer(
+            ).to_representation(
+                tps_field_value
+            )
             setattr(
                 model_instance,
                 self.constructed_field,
-                tps_field_value.as_json()
+                constructed_value
             )
 
     def pre_save(self, model_instance, add):
@@ -96,6 +106,33 @@ class TextPlusStuffConstructedField(JSONField):
         kwargs['load_kwargs'] = load_kwargs
         default = kwargs.get('default', {})
         kwargs['default'] = default
+        kwargs['editable'] = False
         super(TextPlusStuffConstructedField, self).__init__(*args, **kwargs)
+
+
+@receiver(post_save)
+def update_constructed_fields(sender, instance, **kwargs):
+    """
+    Rebuilds any constructed fields on model instances with a
+    TextPlusStuff field.
+    """
+    if type(instance) in stuff_registry._modelstuff_registry:
+        from .models import TextPlusStuffLink
+        instance_ct = ContentType.objects.get_for_model(instance)
+        to_update_qs = TextPlusStuffLink.objects.filter(
+            content_type=instance_ct,
+            object_id=instance.pk
+        )
+        for link_instance in to_update_qs:
+            parent_instance = link_instance.parent_content_object
+            try:
+                tps_field = parent_instance._meta.get_field(
+                    link_instance.field
+                )
+            except FieldDoesNotExist:  # pragma: no cover
+                pass
+            else:
+                if tps_field.constructed_field is not None:
+                    parent_instance.save()
 
 __all__ = ('TextPlusStuffField', 'TextPlusStuffConstructedField')
