@@ -3,7 +3,10 @@ from collections import OrderedDict
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import FieldDoesNotExist
+try:
+    from django.core.exceptions import FieldDoesNotExist
+except ImportError:
+    from django.db.models.fields import FieldDoesNotExist
 from django.db.models import SubfieldBase, TextField
 from django.db.models.signals import post_save
 from django.dispatch.dispatcher import receiver
