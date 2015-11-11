@@ -92,6 +92,7 @@ Django REST Framework Compatibility
 -  3.0.x
 -  3.1.x
 -  3.2.x
+-  3.3.x (**NOTE:** Django 1.6.x is not compatible with DRF 3.3.x)
 
 Contents
 ========
@@ -157,5 +158,7 @@ Roadmap to v1.0
 
 -  Create a javascript powered editor for writing markdown-flavored text and placing tokens.
 -  textplusstuff API POST support (so model instances registered with the stuff_registry can be created directly from a TextPlusStuff field widget)
+-  Document 'Constructed Field' functionality to improve performance.
+-  Document 'as_json' method on a TextPlusStuff instance.
 
 
