@@ -103,6 +103,7 @@ Contents
    installation
    using_textplusstuff
    drf_integration
+   improving_performance
 
 Release Notes
 =============
