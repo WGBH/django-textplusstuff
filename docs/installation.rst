@@ -39,6 +39,7 @@ Installation is easy with ``pip``:
 3. Add textplusstuff-required bits to your project's base `urls.py`:
 
     .. code-block:: python
+        :emphasize-lines: 6,9,16
 
         # Base project urls.py
         from django.conf.urls import patterns, include, url

@@ -56,7 +56,7 @@ OK, let's write a simple ``ModelSerializer`` subclass to serialize Content insta
 And here's what it would look like serialized:
 
 .. code-block:: python
-    :emphasize-lines: 11-15
+    :emphasize-lines: 10-21
 
     >>> from myproject.content.models import Content
     >>> content = Person.objects.create(
@@ -67,12 +67,17 @@ And here's what it would look like serialized:
     >>> content_serialized = ContentSerializer(content)
     >>> content_serialized.data
     {
-        'content': {
-            'raw_text': "# Oh hello!\n\nHere's some _italic_ and **bold** text.", # The 'raw' content of the field as it is stored in the database.
-            'as_plaintext': "Oh hello!\n\nHere's some italic and bold text.", # The content of this field as plaintext (all markup/formatting and tokens removed)
-            'as_markdown': "# Oh hello!\n\nHere's some _italic_ and **bold** text.", # The content of this field as markdown (with tokens removed)
-            'as_html': "<h1>Oh hello!</h1>\n\n<p>Here's some <em>italic</em> and <strong>bold</strong> text.", # The content of this field as HTML with tokens rendered
-            'as_html_no_tokens': "<h1>Oh hello!</h1>\n\n<p>Here's some <em>italic</em> and <strong>bold</strong> text.", # The content of this field as HTML with tokens removed
+        "content": {
+            "raw_text": "# Oh hello!\n\nHere's some _italic_ and **bold** text.", # The 'raw' content of the field as it is stored in the database.
+            "as_plaintext": "Oh hello!\n\nHere's some italic and bold text.", # The content of this field as plaintext (all markup/formatting and tokens removed)
+            "as_markdown": "# Oh hello!\n\nHere's some _italic_ and **bold** text.", # The content of this field as markdown (with tokens removed)
+            "as_html": "<h1>Oh hello!</h1>\n\n<p>Here's some <em>italic</em> and <strong>bold</strong> text.", # The content of this field as HTML with tokens rendered
+            "as_html_no_tokens": "<h1>Oh hello!</h1>\n\n<p>Here's some <em>italic</em> and <strong>bold</strong> text.", # The content of this field as HTML with tokens removed
+            "as_json": {
+                "text_as_html": "<h1>Oh hello!</h1>\n\n<p>Here's some <em>italic</em> and <strong>bold</strong> text.",
+                "text_as_markdown": "# Oh hello!\n\nHere's some _italic_ and **bold** text.",
+                "content_nodes": []
+            }
         }
     }
 
