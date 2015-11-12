@@ -61,7 +61,7 @@ Each model registered with ``django-textplusstuff`` can have as many 'renditions
 Current Version
 ---------------
 
-0.4.1
+0.5
 
 Dependencies
 ------------
@@ -107,6 +107,12 @@ Contents
 
 Release Notes
 =============
+
+0.5
+-----
+
+- Added ``as_json`` method to ``TextPlusStuffField``
+- Added a new field (``TextPlusStuffConstructedField``) and signal (``update_constructed_fields``) that can be leveraged to improve speed/performance.
 
 0.4.1
 -----
@@ -159,6 +165,7 @@ Roadmap to v1.0
 
 -  Create a javascript powered editor for writing markdown-flavored text and placing tokens.
 -  textplusstuff API POST support (so model instances registered with the stuff_registry can be created directly from a TextPlusStuff field widget)
+-  Create an example registered model to explain how the rendition/token architecture works.
 -  Document 'Constructed Field' functionality to improve performance.
 -  Document 'as_json' method on a TextPlusStuff instance.
 

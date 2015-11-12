@@ -7,8 +7,8 @@ import uuid
 setup(
     name='django-textplusstuff',
     packages=find_packages(exclude=['tests*', 'docs*']),
-    version='0.4.1',
-    author=u'Jonathan Ellenberger',
+    version='0.5',
+    author='Jonathan Ellenberger',
     author_email='jonathan_ellenberger@wgbh.org',
     url='http://github.com/WGBH/django-textplusstuff/',
     license='MIT License, see LICENSE',
@@ -37,6 +37,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
-        'Topic :: Text Processing :: Markup'
+        'Topic :: Text Processing :: Markup',
+        'Development Status :: 4 - Beta'
     ]
 )
