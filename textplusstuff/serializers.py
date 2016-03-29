@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import copy
 
+from rest_framework import VERSION as REST_FRAMEWORK_VERSION
 from rest_framework.serializers import CharField
 
 from .datastructures import TextPlusStuff
@@ -19,18 +20,17 @@ class ExtraContextSerializerMixIn(object):
 
     def to_representation(self, instance):
         """
-        Adds self.context to the 'extra_context' key of a
+        Add self.context to the 'extra_context' key of a
         serializers output.
         """
-        try:
-            payload = super(
-                ExtraContextSerializerMixIn, self
-            ).to_representation(instance)
-        except AttributeError:
-            # For backwards compatibility with djangorestframework 2.X.X
+        if REST_FRAMEWORK_VERSION.startswith('2.'):
             payload = super(
                 ExtraContextSerializerMixIn, self
             ).to_native(instance)
+        else:
+            payload = super(
+                ExtraContextSerializerMixIn, self
+            ).to_representation(instance)
         extra_context = copy.copy(self.context) or {}
         extra_context.pop('view', None)
         extra_context.pop('request', None)
@@ -43,7 +43,7 @@ class ExtraContextSerializerMixIn(object):
 
 class TextPlusStuffFieldSerializer(CharField):
     """
-    Returns a dictionary of all available permutations of a TextPlusStuffField
+    Return a dictionary of all available permutations of a TextPlusStuffField
 
     Example:
     {
