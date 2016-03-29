@@ -57,9 +57,6 @@ class Rendition(object):
         return Context(context)
 
     def render_as_html(self, context):
-        """
-        Renders
-        """
         template = get_template(self.path_to_template)
         context = self.get_context_data(context=context)
         return template.render(context)
@@ -128,7 +125,7 @@ class ModelStuff(Stuff):
 
     def register_non_core_rendition(self, rendition):
         """
-        Registers a 'non-core' rendition with this Stuff Config
+        Register a 'non-core' rendition with this Stuff Config
         """
         self._verify_rendition(rendition)
         if rendition.short_name in self._renditions:
@@ -161,7 +158,7 @@ class ModelStuff(Stuff):
 
     def list_view(self):
         """
-        Returns a view that lists out all instances of self.model
+        Return a view that lists out all instances of self.model
         """
         return ListStuffView.as_view(
             model=self.model,
@@ -171,7 +168,7 @@ class ModelStuff(Stuff):
 
     def detail_view(self):
         """
-        Returns a view that returns a single instance of self.model
+        Return a view that returns a single instance of self.model
 
         Proposed response template:
         {
@@ -228,7 +225,7 @@ class StuffRegistry(object):
 
     def verify_stuff_cls(self, stuff_cls):
         """
-        Verifies a Stuff class is properly configured.
+        Verify that a Stuff class is properly configured.
         """
         invalid_stuff_msg = ''
         if not stuff_cls.renditions:
@@ -258,7 +255,7 @@ class StuffRegistry(object):
 
     def add_modelstuff(self, model, stuff_cls, groups=[]):
         """
-        Registers the given model(s) with the given Stuff class.
+        Register the given model(s) with the given Stuff class.
         """
         if model in self._modelstuff_registry:
             raise AlreadyRegistered(
@@ -272,7 +269,7 @@ class StuffRegistry(object):
 
     def add_noncore_modelstuff_rendition(self, model, rendition):
         """
-        Registers a 'non-core' rendition (`rendition`) with `model`.
+        Register a 'non-core' rendition (`rendition`) with `model`.
 
         Raises `NotRegistered` if `model` isn't registered.
         """
@@ -287,7 +284,7 @@ class StuffRegistry(object):
 
     def remove_modelstuff(self, model):
         """
-        Unregisters the given model.
+        Unregister the given model.
 
         If a model isn't already registered, this will raise NotRegistered.
         """
@@ -301,7 +298,7 @@ class StuffRegistry(object):
 
     def index(self):
         """
-        Returns the 'front page' response of the TextPlusStuff builder.
+        Return the 'front page' response of the TextPlusStuff builder.
         """
         stuff_registry = self._modelstuff_registry
 
@@ -461,7 +458,7 @@ def findstuff():
 
 def get_modelstuff_renditions(model_instance):
     """
-    Builds out a dict of the available MODELSTUFF renditions
+    Build out a dict of the available MODELSTUFF renditions
     for a particular model instance
     """
     stuff_config, groups = stuff_registry._modelstuff_registry.get(

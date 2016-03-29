@@ -44,14 +44,14 @@ class TextPlusStuffField(TextField):
 
     def value_to_string(self, obj):
         """
-        Prepares this field for serialization.
+        Prepare this field for serialization.
         """
         value = self._get_val_from_obj(obj)
         return self.get_prep_value(value)
 
     def to_python(self, value):
         """
-        Takes Markdown-flavored (and TextPlusStuffToken-laden text) and
+        Take Markdown-flavored (and TextPlusStuffToken-laden text) and
         returns it as a TextPlusStuff instance.
         """
         if isinstance(value, TextPlusStuff):
@@ -75,7 +75,7 @@ class TextPlusStuffField(TextField):
 
     def update_constructed_field(self, model_instance):
         """
-        Updates field's ppoi field, if defined.
+        Update field's ppoi field, if defined.
 
         This method is hooked up this field's pre_save method to update
         the constructed immediately before the model instance (`instance`)
@@ -95,7 +95,7 @@ class TextPlusStuffField(TextField):
             )
 
     def pre_save(self, model_instance, add):
-        "Returns field's value just before saving."
+        """Return the field's value just before saving."""
         value = super(TextPlusStuffField, self).pre_save(model_instance, add)
         self.update_constructed_field(model_instance)
         return value
@@ -118,7 +118,7 @@ class TextPlusStuffConstructedField(JSONField):
 @receiver(post_save)
 def update_constructed_fields(sender, instance, **kwargs):
     """
-    Rebuilds any constructed fields on model instances with a
+    Rebuild any constructed fields on model instances with a
     TextPlusStuff field.
     """
     if type(instance) in stuff_registry._modelstuff_registry:
