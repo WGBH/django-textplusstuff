@@ -66,8 +66,10 @@ class TextPlusStuffField(TextField):
 
     def formfield(self, **kwargs):
         formfield = super(TextPlusStuffField, self).formfield(**kwargs)
+        attrs = formfield.widget.attrs
+        attrs.update({'class': 'vLargeTextField textplusstuff'})
         formfield.widget = TextPlusStuffWidget(
-            attrs={'class': 'vLargeTextField textplusstuff'}
+            attrs=attrs
         )
         return formfield
 
