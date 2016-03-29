@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from collections import OrderedDict
 
+from django import VERSION as DJANGO_VERSION
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
@@ -76,9 +77,11 @@ class TextPlusStuffTestCase(TestCase):
         token table response and textplusstuff.fields.TextPlusStuffField's
         formfield.
         """
-        response = self.client.get(
-            '/admin/tests/registeredmodel/1/'
-        )
+        admin_path = '/admin/tests/registeredmodel/1/'
+        if DJANGO_VERSION[0] == 1 and DJANGO_VERSION[1] > 8:
+            admin_path = '/admin/tests/registeredmodel/1/change/'
+
+        response = self.client.get(admin_path)
         if six.PY2:
             response_content = response.content
         else:
@@ -113,9 +116,10 @@ class TextPlusStuffTestCase(TestCase):
             'id="id_content" name="content" rows="10">',
             response_content
         )
-        response = self.client.get(
-            '/admin/tests/tpstestmodel/1/'
-        )
+        tps_admin_path = '/admin/tests/tpstestmodel/1/'
+        if DJANGO_VERSION[0] == 1 and DJANGO_VERSION[1] > 8:
+            tps_admin_path = '/admin/tests/tpstestmodel/1/change/'
+        response = self.client.get(tps_admin_path)
         if six.PY2:
             response_content = response.content
         else:
