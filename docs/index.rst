@@ -61,13 +61,13 @@ Each model registered with ``django-textplusstuff`` can have as many 'renditions
 Current Version
 ---------------
 
-0.5
+0.6
 
 Dependencies
 ------------
 
 - ``markdown2`` >= 2.3.x
-- ``beautifulsoup4`` >= 4.3.1
+- ``beautifulsoup4`` >= 4.4.0
 - ``django`` >= 1.6.x
 - ``djangorestframework`` >= 2.4.4
 
@@ -75,8 +75,8 @@ Python Compatibility
 ````````````````````
 
 -  2.7.x
--  3.3.x
 -  3.4.x
+-  3.5.x
 
 Django Compatibility
 ````````````````````
@@ -84,6 +84,7 @@ Django Compatibility
 -  1.6.x
 -  1.7.x
 -  1.8.x
+-  1.9.x
 
 Django REST Framework Compatibility
 ```````````````````````````````````
@@ -107,6 +108,13 @@ Contents
 
 Release Notes
 =============
+
+0.6
+-----
+
+- Added Python 3.5 support
+- Deprecated Python 3.3 support
+- Added Django 1.9.x compatibility
 
 0.5
 -----
