@@ -41,6 +41,7 @@ class RegisteredModelStuff(registry.ModelStuff):
     # editing tool.
     list_display = ('id', 'title')
 
+
 # OK, now let's register our Model and its Stuff config:
 registry.stuff_registry.add_modelstuff(
     RegisteredModel,

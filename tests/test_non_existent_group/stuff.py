@@ -21,6 +21,7 @@ class RegisteredModelStuff(registry.ModelStuff):
     ]
     list_display = ('id', 'title')
 
+
 registry.stuff_registry.add_modelstuff(
     RegisteredModel,
     RegisteredModelStuff,

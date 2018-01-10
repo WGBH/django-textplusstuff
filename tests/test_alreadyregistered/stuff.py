@@ -13,6 +13,7 @@ class DummyModelStuff(registry.ModelStuff):
             path_to_template='foo.html')
     ]
 
+
 registry.stuff_registry.add_modelstuff(
     RegisteredModel,
     DummyModelStuff,

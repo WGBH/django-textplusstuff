@@ -118,6 +118,7 @@ class TextPlusStuffLink(models.Model):
             content_object_string
         )
 
+
 __all__ = [
     'construct_TextPlusStuffLink_attachments',
     'delete_attached_TextPlusStuffLink_instances',

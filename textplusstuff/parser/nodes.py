@@ -231,4 +231,5 @@ class ModelStuffNode(BaseNode):
             context=node_context
         )
 
+
 __all__ = ('MarkdownFlavoredTextNode', 'ModelStuffNode')

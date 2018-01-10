@@ -419,6 +419,7 @@ class StuffRegistry(object):
     def urls(self):
         return self.get_urls(), 'textplusstuff', 'textplusstuff'
 
+
 stuff_registry = StuffRegistry()
 
 
@@ -442,7 +443,7 @@ def findstuff():
                 stuff_registry._modelstuff_registry
             )
             import_module('{}.stuff'.format(app))
-        except:
+        except ImportError:
             # Reset the stuff_registry to the state before the last
             # import as this import will have to reoccur on the next request
             # and this could raise NotRegistered and AlreadyRegistered
@@ -454,6 +455,8 @@ def findstuff():
             # attempting to import it, otherwise we want it to bubble up.
             if module_has_submodule(mod, 'stuff'):
                 raise
+        except Exception:
+            raise
 
 
 def get_modelstuff_renditions(model_instance):

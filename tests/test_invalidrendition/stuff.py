@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 
 from textplusstuff import registry
 
@@ -14,6 +13,7 @@ class RegisteredModelStuff(registry.ModelStuff):
         object()
     ]
     list_display = ('id', 'title')
+
 
 registry.stuff_registry.add_modelstuff(
     RegisteredModel,

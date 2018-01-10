@@ -140,4 +140,5 @@ def update_constructed_fields(sender, instance, **kwargs):
                 if tps_field.constructed_field is not None:
                     parent_instance.save()
 
+
 __all__ = ('TextPlusStuffField', 'TextPlusStuffConstructedField')
