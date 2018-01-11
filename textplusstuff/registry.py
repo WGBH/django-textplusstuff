@@ -231,7 +231,7 @@ class StuffRegistry(object):
         if not stuff_cls.renditions:
             invalid_stuff_msg = (
                 "{} does not have any renditions! (All Stuff must have at "
-                "least one renditiom)."
+                "least one rendition)."
             ).format(stuff_cls.__name__)
         if invalid_stuff_msg:
             raise ImproperlyConfiguredStuff(invalid_stuff_msg)
@@ -437,7 +437,7 @@ def findstuff():
 
     for app in settings.INSTALLED_APPS:
         mod = import_module(app)
-        # Attempt to import the app's sizedimage module.
+        # Attempt to import the app's stuff module.
         try:
             before_import_stuff_registry = copy.copy(
                 stuff_registry._modelstuff_registry
