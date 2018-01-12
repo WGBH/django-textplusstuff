@@ -392,6 +392,7 @@ class StuffRegistry(object):
         return ListStuffGroups.as_view()
 
     def get_urls(self):
+        findstuff()
         urlpatterns = patterns(
             '',
             url(
