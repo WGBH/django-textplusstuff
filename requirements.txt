@@ -1,4 +1,4 @@
 beautifulsoup4==4.4.0
 djangorestframework>=2.4.8
 markdown2>=2.3.0
-jsonfield>=1.0.3
+git+https://github.com/eyemyth/django-jsonfield.git#egg=jsonfield
