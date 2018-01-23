@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 import sys
 
+from six.moves import reload_module
+
 from textplusstuff.registry import stuff_registry
 
 from django.utils.module_loading import autodiscover_modules
@@ -22,5 +24,5 @@ def autodiscover(urlconf=None):
     if urlconf is None:
         urlconf = settings.ROOT_URLCONF
     if urlconf in sys.modules:
-        reload(sys.modules[urlconf])
+        reload_module(sys.modules[urlconf])
         clear_url_caches()
