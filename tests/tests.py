@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 from collections import OrderedDict
 
+from six.moves import reload_module
+
 from django import VERSION as DJANGO_VERSION
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -335,7 +337,7 @@ And [a link](http://www.djangoproject.com), too!"""
         expected.
         """
         x = __import__('tests')
-        reload(x.stuff)
+        reload_module(x.stuff)
         x = TextPlusStuffLink.objects.get()
         self.assertEqual(
             x.parent_content_object,
