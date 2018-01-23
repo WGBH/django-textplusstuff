@@ -31,11 +31,12 @@ from textplusstuff.parser.lexer import TextPlusStuffLexer
 from textplusstuff.parser.nodes import (
     BaseNode, MarkdownFlavoredTextNode, ModelStuffNode
 )
-from textplusstuff.registry import findstuff, stuff_registry
+from textplusstuff.registry import stuff_registry, Rendition, ModelStuff
+from textplusstuff import autodiscover
 from textplusstuff.serializers import TextPlusStuffFieldSerializer
 
 from .models import TPSTestModel, RegisteredModel
-from .serializers import TPSTestModelSerializer
+from .serializers import TPSTestModelSerializer, RegisteredModelSerializer
 
 rest_framework_version = [
     int(seg)
@@ -333,7 +334,8 @@ And [a link](http://www.djangoproject.com), too!"""
         Ensures TextPlusStuffLink instances are created and deleted as
         expected.
         """
-        findstuff()
+        x = __import__('tests')
+        reload(x.stuff)
         x = TextPlusStuffLink.objects.get()
         self.assertEqual(
             x.parent_content_object,
@@ -479,77 +481,165 @@ And [a link](http://www.djangoproject.com), too!"""
             """<MARKDOWNTEXT token: "# I'm an H...">"""
         )
 
-    @override_settings(
-        INSTALLED_APPS=('tests.test_invalidrenditiontype',)
-    )
     def test_InvalidRenditionType(self):
         """
         Tests the InvalidRenditionType exception
         """
         with self.assertRaises(InvalidRenditionType):
-            findstuff()
+            class RegisteredModelStuff(ModelStuff):
+                queryset = RegisteredModel.objects.all()
+                description = 'Add an Registration Test Model'
+                serializer_class = RegisteredModelSerializer
+                renditions = [
+                    Rendition(
+                        short_name='foo',
+                        verbose_name='Foo Rendition',
+                        description='Displays a Foo Rendition rendered.',
+                        path_to_template='nonexistant.html',
+                        rendition_type='invalid_rendition_type'
+                    )
+                ]
+                list_display = ('id', 'title')
 
-    @override_settings(
-        INSTALLED_APPS=('tests.test_invalidrendition',)
-    )
+            stuff_registry.add_modelstuff(
+                RegisteredModel,
+                RegisteredModelStuff,
+                groups=['test_group']
+            )
+
     def test_InvalidRendition(self):
         """
         Tests the InvalidRendition exception
         """
         with self.assertRaises(InvalidRendition):
-            findstuff()
+            class RegisteredModelStuff(ModelStuff):
+                queryset = RegisteredModel.objects.all()
+                description = 'Add an Registration Test Model'
+                serializer_class = RegisteredModelSerializer
+                renditions = [
+                    object()
+                ]
+                list_display = ('id', 'title')
 
-    @override_settings(
-        INSTALLED_APPS=('tests.test_invalidrendition_nonunique',)
-    )
+            stuff_registry.add_modelstuff(
+                RegisteredModel,
+                RegisteredModelStuff,
+                groups=['test_group']
+            )
+
     def test_InvalidRendition_nonunique(self):
         """
         Tests the InvalidRendition exception when multiple renditions on the
         same stuff have the same short_name value
         """
         with self.assertRaises(InvalidRendition):
-            findstuff()
+            class RegisteredModelStuff(ModelStuff):
+                queryset = RegisteredModel.objects.all()
+                description = 'Add an Registration Test Model'
+                serializer_class = RegisteredModelSerializer
+                renditions = [
+                    Rendition(
+                        short_name='foo',
+                        verbose_name='Foo Rendition',
+                        description='Displays a Foo Rendition rendered.',
+                        path_to_template='nonexistant.html',
+                        rendition_type='block'
+                    ),
+                    Rendition(
+                        short_name='foo',
+                        verbose_name='Foo Rendition Duplicate',
+                        description='Displays a Foo Rendition rendered.',
+                        path_to_template='nonexistant-duplicate.html',
+                        rendition_type='block'
+                    )
+                ]
+                list_display = ('id', 'title')
 
-    @override_settings(
-        INSTALLED_APPS=('tests.test_missing_renditions',)
-    )
+            stuff_registry.add_modelstuff(
+                RegisteredModel,
+                RegisteredModelStuff,
+                groups=['test_group']
+            )
+
     def test_ImproperlyConfiguredStuff_missing_renditions(self):
         """
         Tests the InvalidRendition exception when multiple renditions on the
         same stuff have the same short_name value
         """
         with self.assertRaises(ImproperlyConfiguredStuff):
-            findstuff()
+            stuff_registry._registry = {}
 
-    @override_settings(
-        INSTALLED_APPS=('tests.test_non_existent_group',)
-    )
+            class RegisteredModelStuff(ModelStuff):
+                queryset = RegisteredModel.objects.all()
+                description = 'Add an Registration Test Model'
+                serializer_class = RegisteredModelSerializer
+                renditions = []
+                list_display = ('id', 'title')
+
+            stuff_registry.add_modelstuff(
+                RegisteredModel,
+                RegisteredModelStuff,
+                groups=['test_group']
+            )
+
     def test_NonExistentGroup(self):
         """
         Ensures the NonExistentGroup exception fires when appropriate
         """
         with self.assertRaises(NonExistentGroup):
-            findstuff()
+            class RegisteredModelStuff(ModelStuff):
+                queryset = RegisteredModel.objects.all()
+                description = 'Add an Registration Test Model'
+                serializer_class = RegisteredModelSerializer
+                renditions = [
+                    Rendition(
+                        short_name='foo',
+                        verbose_name='Foo Rendition',
+                        description='Displays a Foo Rendition rendered.',
+                        path_to_template='nonexistant.html',
+                        rendition_type='block'
+                    )
+                ]
+                list_display = ('id', 'title')
 
-    @override_settings(
-        INSTALLED_APPS=('tests.test_alreadyregistered',)
-    )
+            stuff_registry.add_modelstuff(
+                RegisteredModel,
+                RegisteredModelStuff,
+                groups=['non_existent_group']
+            )
+
     def test_AlreadyRegistered(self):
         """
         Ensures the AlreadyRegistered exception fires when appropriate
         """
         with self.assertRaises(AlreadyRegistered):
-            findstuff()
+            class DummyModelStuff(ModelStuff):
+                renditions = [
+                    Rendition(
+                        short_name='foo',
+                        verbose_name='foo',
+                        description='foo',
+                        path_to_template='foo.html')
+                ]
 
-    @override_settings(
-        INSTALLED_APPS=('tests.test_notregistered',)
-    )
+            stuff_registry.add_modelstuff(
+                RegisteredModel,
+                DummyModelStuff,
+                groups=['test_group']
+            )
+
+            stuff_registry.add_modelstuff(
+                RegisteredModel,
+                object,
+                groups=['test_group']
+            )
+
     def test_NotRegistered(self):
         """
         Ensures the NotRegistered exception fires when appropriate
         """
         with self.assertRaises(NotRegistered):
-            findstuff()
+            stuff_registry.remove_modelstuff(RegisteredModel)
 
     @override_settings(
         INSTALLED_APPS=(
@@ -599,7 +689,7 @@ And [a link](http://www.djangoproject.com), too!"""
         """
         Ensures the TextPlusStuffFieldSerializer works as intended.
         """
-        findstuff()
+        autodiscover()
         serializer = TPSTestModelSerializer(TPSTestModel.objects.get(pk=1))
         self.assertEqual(
             serializer.data,
@@ -699,25 +789,35 @@ And [a link](http://www.djangoproject.com), too!"""
             "rest_framework",
             'textplusstuff',
             'tests',
-            'tests.test_add_noncore_rendition'
         )
     )
     def test_noncore_rendition_registration(self):
         """
         Test to see if 'non-core' Rendition registration works.
         """
-        findstuff()
+        rendition = Rendition(
+            short_name='baz',
+            verbose_name='baz',
+            description='baz',
+            path_to_template='baz.html'
+        )
+
+        stuff_registry.add_noncore_modelstuff_rendition(
+            RegisteredModel,
+            rendition
+        )
+
         self.assertTrue(
             2,
             len(
-                stuff_registry._modelstuff_registry.get(
+                stuff_registry._registry.get(
                     RegisteredModel
                 )[0]._renditions
             )
         )
         self.assertNotEqual(
             None,
-            stuff_registry._modelstuff_registry.get(
+            stuff_registry._registry.get(
                 RegisteredModel
             )[0]._renditions.get('baz', None)
         )
@@ -727,7 +827,6 @@ And [a link](http://www.djangoproject.com), too!"""
             "rest_framework",
             'textplusstuff',
             'tests',
-            'tests.test_add_dupe_noncore_rendition'
         )
     )
     def test_add_dupe_noncore_rendition_registration(self):
@@ -735,13 +834,22 @@ And [a link](http://www.djangoproject.com), too!"""
         Should raise AlreadyRegisteredRendition
         """
         with self.assertRaises(AlreadyRegisteredRendition):
-            findstuff()
+            dupe_rendition = Rendition(
+                short_name='test_rendition',
+                verbose_name='Test Rendition',
+                description='Displays a Test Rendition rendered.',
+                path_to_template='RegisteredModel_test_rendition.html',
+                rendition_type='block'
+            )
+            stuff_registry.add_noncore_modelstuff_rendition(
+                RegisteredModel,
+                dupe_rendition
+            )
 
     @override_settings(
         INSTALLED_APPS=(
             "rest_framework",
             'textplusstuff',
-            'tests.test_add_noncore_rendition_to_notregistered_model'
         )
     )
     def test_noncore_rendition_registration_to_notregistered_model(self):
@@ -749,7 +857,17 @@ And [a link](http://www.djangoproject.com), too!"""
         Should raise NotRegistered
         """
         with self.assertRaises(NotRegistered):
-            findstuff()
+            from django.contrib.auth.models import User
+            stuff_registry.add_noncore_modelstuff_rendition(
+                User,
+                Rendition(
+                    short_name='bar',
+                    verbose_name='Bar',
+                    description='Bar Rendition',
+                    path_to_template='bar.html',
+                    rendition_type='block'
+                )
+            )
 
     def test_extra_context(self):
         """Tests the 'extra_context' functionality of .as_html()"""
