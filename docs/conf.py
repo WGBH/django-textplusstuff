@@ -48,7 +48,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'django-textplusstuff'
-copyright = u'2015, Jonathan Ellenberger'
+copyright = u'2018, WGBH Educational Foundation'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -208,7 +208,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   ('index', 'django-textplusstuff.tex', u'django-textplusstuff Documentation',
-   u'Jonathan Ellenberger', 'manual'),
+   u'Jonathan Ellenberger et al', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -238,7 +238,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'django-textplusstuff', u'django-textplusstuff Documentation',
-     [u'Jonathan Ellenberger'], 1)
+     [u'Jonathan Ellenberger', u'Jay Thompson'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -252,7 +252,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'django-textplusstuff', u'django-textplusstuff Documentation',
-   u'Jonathan Ellenberger', 'django-textplusstuff', 'One line description of project.',
+   u'Jonathan Ellenberger et al', 'django-textplusstuff', 'One line description of project.',
    'Miscellaneous'),
 ]
 
