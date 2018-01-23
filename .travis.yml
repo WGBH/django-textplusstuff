@@ -33,7 +33,7 @@ matrix:
     - python: "2.7"
       env: DJANGO_VERSION=1.10.8 REST_FRAMEWORK_VERSION=3.7.7
     - python: "2.7"
-      env: DJANGO_VERSION=1.11.10 REST_FRAMEWORK_VERSION=3.7.7
+      env: DJANGO_VERSION=1.11.9 REST_FRAMEWORK_VERSION=3.7.7
     - python: "3.4"
       env: DJANGO_VERSION=1.7.11 REST_FRAMEWORK_VERSION=2.4.8
     - python: "3.4"
@@ -75,9 +75,9 @@ matrix:
     - python: "3.5"
       env: DJANGO_VERSION=1.10.8 REST_FRAMEWORK_VERSION=3.7.7
     - python: "3.5"
-      env: DJANGO_VERSION=1.11.10 REST_FRAMEWORK_VERSION=3.7.7
+      env: DJANGO_VERSION=1.11.9 REST_FRAMEWORK_VERSION=3.7.7
     - python: "3.6"
-      env: DJANGO_VERSION=1.11.10 REST_FRAMEWORK_VERSION=3.7.7
+      env: DJANGO_VERSION=1.11.9 REST_FRAMEWORK_VERSION=3.7.7
 before_install:
   - export DJANGO_SETTINGS_MODULE=tests.test_settings
   - export PIP_USE_MIRRORS=true
