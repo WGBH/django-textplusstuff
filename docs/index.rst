@@ -81,7 +81,6 @@ Python Compatibility
 Django Compatibility
 ````````````````````
 
--  1.6.x
 -  1.7.x
 -  1.8.x
 -  1.9.x
@@ -108,6 +107,11 @@ Contents
 
 Release Notes
 =============
+
+0.7
+-----
+- Removed need to call findstuff() to discover stuff modules. Now we use Django's built in autodiscover_modules function and set everything up in the AppConfig.
+- Removed Django 1.6.x compatibility
 
 0.6
 -----
@@ -171,10 +175,9 @@ Release Notes
 Roadmap to v1.0
 ===============
 
+-  Support Django 1.10 - 2.0
 -  Create a javascript powered editor for writing markdown-flavored text and placing tokens.
 -  textplusstuff API POST support (so model instances registered with the stuff_registry can be created directly from a TextPlusStuff field widget)
 -  Create an example registered model to explain how the rendition/token architecture works.
 -  Document 'Constructed Field' functionality to improve performance.
 -  Document 'as_json' method on a TextPlusStuff instance.
-
-

@@ -46,10 +46,7 @@ Installation is easy with ``pip``:
         from django.contrib import admin
 
         # Importing required textplusstuff bits
-        from textplusstuff.registry import stuff_registry, findstuff
-
-        # Firing off the textplusstuff discovery engine
-        findstuff()
+        from textplusstuff.registry import stuff_registry
 
         urlpatterns = patterns(
             '',

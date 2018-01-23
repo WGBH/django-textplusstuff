@@ -7,9 +7,9 @@ import uuid
 setup(
     name='django-textplusstuff',
     packages=find_packages(exclude=['tests*', 'docs*']),
-    version='0.6',
-    author='Jonathan Ellenberger',
-    author_email='jonathan_ellenberger@wgbh.org',
+    version='0.7',
+    author='Jonathan Ellenberger et al',
+    author_email='jay_thompson@wgbh.org',
     url='http://github.com/WGBH/django-textplusstuff/',
     license='MIT License, see LICENSE',
     description="A django field that makes it easy to intersperse 'stuff' "
