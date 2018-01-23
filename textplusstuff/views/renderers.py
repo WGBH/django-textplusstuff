@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from rest_framework.renderers import BrowsableAPIRenderer
 
-from .. import VERSION
+from textplusstuff.__version__ import __version__ as VERSION
 
 version_as_string = [
     str(segment)

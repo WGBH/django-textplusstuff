@@ -121,7 +121,7 @@ def update_constructed_fields(sender, instance, **kwargs):
     Rebuild any constructed fields on model instances with a
     TextPlusStuff field.
     """
-    if type(instance) in stuff_registry._modelstuff_registry:
+    if type(instance) in stuff_registry._registry:
         from .models import TextPlusStuffLink
         instance_ct = ContentType.objects.get_for_model(instance)
         to_update_qs = TextPlusStuffLink.objects.filter(

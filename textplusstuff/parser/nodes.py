@@ -142,9 +142,9 @@ class ModelStuffNode(BaseNode):
         """
         # Step 1: Get Model associated with token
         model_cls = self.get_model_class()
-        # Step 2: Find the model in stuff_registry._modelstuff_registry
+        # Step 2: Find the model in stuff_registry._registry
         try:
-            stuff_config, groups = stuff_registry._modelstuff_registry[
+            stuff_config, groups = stuff_registry._registry[
                 model_cls
             ]
         except KeyError:
@@ -152,7 +152,9 @@ class ModelStuffNode(BaseNode):
                 "The model ({}) associated with this token (uid: {}) is not "
                 "currently registered with "
                 "textplusstuff.registry.stuff_registry and, therefore, could "
-                "not be rendered.".format(model_cls, self.payload)
+                "not be rendered. The stuff registry contains: {}".format(
+                    model_cls, self.payload, stuff_registry._registry
+                )
             )
         else:
             return stuff_config

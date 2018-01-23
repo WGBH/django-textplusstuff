@@ -220,7 +220,7 @@ class StuffRegistry(object):
     """
 
     def __init__(self, name='stuff_registry'):
-        self._modelstuff_registry = {}
+        self._registry = {}
         self.name = name
 
     def verify_stuff_cls(self, stuff_cls):
@@ -238,7 +238,7 @@ class StuffRegistry(object):
 
     def verify_groups(self, groups, stuff_cls):
         """
-
+        Verify that Stuff Groups are properly configured.
         """
         stuffgroups = getattr(
             settings, 'TEXTPLUSSTUFF_STUFFGROUPS', {}
@@ -257,7 +257,7 @@ class StuffRegistry(object):
         """
         Register the given model(s) with the given Stuff class.
         """
-        if model in self._modelstuff_registry:
+        if model in self._registry:
             raise AlreadyRegistered(
                 'The model {} is already registered with the TextPlusStuff '
                 'registry.'.format(model.__name__)
@@ -265,7 +265,7 @@ class StuffRegistry(object):
         else:
             self.verify_stuff_cls(stuff_cls)
             self.verify_groups(groups, stuff_cls)
-            self._modelstuff_registry[model] = (stuff_cls(model), groups)
+            self._registry[model] = (stuff_cls(model), groups)
 
     def add_noncore_modelstuff_rendition(self, model, rendition):
         """
@@ -273,8 +273,8 @@ class StuffRegistry(object):
 
         Raises `NotRegistered` if `model` isn't registered.
         """
-        if self._modelstuff_registry.get(model, None) is not None:
-            stuff_cls = self._modelstuff_registry.get(model)[0]
+        if self._registry.get(model, None) is not None:
+            stuff_cls = self._registry.get(model)[0]
             stuff_cls.register_non_core_rendition(rendition)
         else:
             raise NotRegistered(
@@ -288,19 +288,19 @@ class StuffRegistry(object):
 
         If a model isn't already registered, this will raise NotRegistered.
         """
-        if model not in self._modelstuff_registry:
+        if model not in self._registry:
             raise NotRegistered(
                 'The model {} is not registered with the TextPlusStuff '
                 'registry.'.format(model.__name__)
             )
         else:
-            del self._modelstuff_registry[model]
+            del self._registry[model]
 
     def index(self):
         """
         Return the 'front page' response of the TextPlusStuff builder.
         """
-        stuff_registry = self._modelstuff_registry
+        stuff_registry = self._registry
 
         class ListStuffGroups(TextPlusStuffAPIViewMixIn, APIView):
             """
@@ -392,7 +392,6 @@ class StuffRegistry(object):
         return ListStuffGroups.as_view()
 
     def get_urls(self):
-        findstuff()
         urlpatterns = patterns(
             '',
             url(
@@ -402,7 +401,7 @@ class StuffRegistry(object):
             ),
         )
 
-        for model, tup in six.iteritems(self._modelstuff_registry):
+        for model, tup in six.iteritems(self._registry):
             stuff_config, groups = tup
             urlpatterns += patterns(
                 '',
@@ -424,48 +423,12 @@ class StuffRegistry(object):
 stuff_registry = StuffRegistry()
 
 
-def findstuff():
-    """
-    Auto-discover INSTALLED_APPS stuff.py modules and fail silently when
-    not present. This forces an import on them (thereby registering their
-    Stuff)
-
-    This is a near 1-to-1 copy of how django's admin application registers
-    models.
-    """
-    from importlib import import_module
-    from django.utils.module_loading import module_has_submodule
-
-    for app in settings.INSTALLED_APPS:
-        mod = import_module(app)
-        # Attempt to import the app's stuff module.
-        try:
-            before_import_stuff_registry = copy.copy(
-                stuff_registry._modelstuff_registry
-            )
-            import_module('{}.stuff'.format(app))
-        except ImportError:
-            # Reset the stuff_registry to the state before the last
-            # import as this import will have to reoccur on the next request
-            # and this could raise NotRegistered and AlreadyRegistered
-            # exceptions (see django ticket #8245).
-            stuff_registry._modelstuff_registry = before_import_stuff_registry
-
-            # Decide whether to bubble up this error. If the app just
-            # doesn't have a stuff module, we can ignore the error
-            # attempting to import it, otherwise we want it to bubble up.
-            if module_has_submodule(mod, 'stuff'):
-                raise
-        except Exception:
-            raise
-
-
 def get_modelstuff_renditions(model_instance):
     """
     Build out a dict of the available MODELSTUFF renditions
     for a particular model instance
     """
-    stuff_config, groups = stuff_registry._modelstuff_registry.get(
+    stuff_config, groups = stuff_registry._registry.get(
         model_instance._meta.model, (None, None)
     )
     if stuff_config is not None:
