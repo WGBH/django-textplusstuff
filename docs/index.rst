@@ -15,10 +15,6 @@ Welcome to django-textplusstuff's documentation!
     :target: https://coveralls.io/r/WGBH/django-textplusstuff
     :alt: Coverage Status
 
-.. image:: https://img.shields.io/pypi/dm/django-textplusstuff.svg?style=flat
-    :target: https://pypi.python.org/pypi/django-textplusstuff/
-    :alt: Downloads
-
 .. image:: https://img.shields.io/pypi/v/django-textplusstuff.svg?style=flat
     :target: https://pypi.python.org/pypi/django-textplusstuff/
     :alt: Latest Version
