@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 
 import os
-from django import VERSION as DJANGO_VERSION
 
 PROJECT_DIR = os.path.abspath(os.path.dirname(__file__))
 MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
@@ -17,10 +16,6 @@ INSTALLED_APPS = [
     "textplusstuff",
     "tests",
 ]
-
-if DJANGO_VERSION[0] == 1 and DJANGO_VERSION[1] <= 6:
-    INSTALLED_APPS += ("south",)
-
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -40,6 +35,21 @@ DATABASES = {
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
 ROOT_URLCONF = 'tests.urls'
 DEBUG = True
 
@@ -48,9 +58,4 @@ TEXTPLUSSTUFF_STUFFGROUPS = {
         'name': 'Testing!',
         'description': "For your test models!"
     },
-}
-SOUTH_TESTS_MIGRATE = True
-SKIP_SOUTH_TESTS = True
-SOUTH_MIGRATION_MODULES = {
-    'textplusstuff': 'ignore',
 }

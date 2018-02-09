@@ -34,7 +34,6 @@ from textplusstuff.parser.nodes import (
     BaseNode, MarkdownFlavoredTextNode, ModelStuffNode
 )
 from textplusstuff.registry import stuff_registry, Rendition, ModelStuff
-from textplusstuff import autodiscover
 from textplusstuff.serializers import TextPlusStuffFieldSerializer
 
 from .models import TPSTestModel, RegisteredModel
@@ -116,7 +115,7 @@ class TextPlusStuffTestCase(TestCase):
             response_content = str(response.content, encoding='utf8')
         self.assertInHTML(
             '<textarea class="vLargeTextField textplusstuff" cols="40" '
-            'id="id_content" name="content" rows="10">',
+            'id="id_content" name="content" rows="10" required>',
             response_content
         )
         tps_admin_path = '/admin/tests/tpstestmodel/1/'
@@ -129,7 +128,7 @@ class TextPlusStuffTestCase(TestCase):
             response_content = str(response.content, encoding='utf8')
         self.assertInHTML(
             '<textarea class="vLargeTextField textplusstuff" cols="40" '
-            'id="id_content" name="content" rows="10">'
+            'id="id_content" name="content" rows="10" required>'
             '# I&#39;m an H1\n\n## I&#39;m an H2\n\n###I&#39;m an H3\n\n'
             'I&#39;m in a paragraph with **bold text** and _italic text_.\n\n'
             'And [a link](http://www.djangoproject.com), too!\n\n'
@@ -414,6 +413,7 @@ And [a link](http://www.djangoproject.com), too!"""
             self.tps_test_instance.content = (
                 "{% textplusstuff 'tests:registeredmodel:1:test_rendition' %}"
             )
+            self.tps_test_instance.save()
 
     def test_nodes(self):
         """
@@ -691,7 +691,6 @@ And [a link](http://www.djangoproject.com), too!"""
         """
         Ensures the TextPlusStuffFieldSerializer works as intended.
         """
-        autodiscover()
         serializer = TPSTestModelSerializer(TPSTestModel.objects.get(pk=1))
         self.assertEqual(
             serializer.data,
