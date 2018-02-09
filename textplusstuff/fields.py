@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 from collections import OrderedDict
 
-from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 try:
     from django.core.exceptions import FieldDoesNotExist
@@ -18,13 +17,6 @@ from .datastructures import TextPlusStuff
 from .registry import stuff_registry
 from .serializers import TextPlusStuffFieldSerializer
 from .widgets import TextPlusStuffWidget
-
-
-if 'south' in settings.INSTALLED_APPS:
-    from south.modelsinspector import add_introspection_rules
-    add_introspection_rules(
-        [], [r"^textplusstuff\.fields\.TextPlusStuffField"]
-    )
 
 
 class TextPlusStuffField(TextField):
