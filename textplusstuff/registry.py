@@ -4,7 +4,7 @@ import collections
 import copy
 
 from django.conf import settings
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from django.template import Context
 from django.template.loader import get_template
 from django.utils import six
@@ -197,8 +197,7 @@ class ModelStuff(Stuff):
 
     def get_urls(self):
         url_name_key = self.get_url_name_key()
-        urlpatterns = patterns(
-            '',
+        urlpatterns = [
             url(
                 r'^list/$',
                 self.list_view(),
@@ -209,7 +208,7 @@ class ModelStuff(Stuff):
                 self.detail_view(),
                 name='{}-detail'.format(url_name_key)
             ),
-        )
+        ]
         return urlpatterns
 
 
@@ -324,6 +323,7 @@ class StuffRegistry(object):
                                 "group listed in "
                                 "settings.TEXTPLUSSTUFF_STUFFGROUPS must "
                                 "provide both a 'name' & a 'description' key."
+                                % short_name
                             )
                         else:
                             # OK, this config passed, give it a 'stuff' key
@@ -392,19 +392,17 @@ class StuffRegistry(object):
         return ListStuffGroups.as_view()
 
     def get_urls(self):
-        urlpatterns = patterns(
-            '',
+        urlpatterns = [
             url(
                 r'^$',
                 self.index(),
                 name='index'
             ),
-        )
+        ]
 
         for model, tup in six.iteritems(self._registry):
             stuff_config, groups = tup
-            urlpatterns += patterns(
-                '',
+            urlpatterns += [
                 url(
                     r'^{app}/{model}/'.format(
                         app=model._meta.app_label,
@@ -412,7 +410,7 @@ class StuffRegistry(object):
                     ),
                     include(stuff_config.get_urls())
                 )
-            )
+            ]
         return urlpatterns
 
     @property
