@@ -5,7 +5,6 @@ import copy
 
 from django.conf import settings
 from django.conf.urls import url, include
-from django.template import Context
 from django.template.loader import get_template
 from django.utils import six
 from django.utils.encoding import force_text
@@ -54,7 +53,7 @@ class Rendition(object):
             self.rendition_type = rendition_type
 
     def get_context_data(self, **context):
-        return Context(context)
+        return context
 
     def render_as_html(self, context):
         template = get_template(self.path_to_template)
