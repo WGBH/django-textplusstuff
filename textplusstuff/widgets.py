@@ -17,7 +17,12 @@ class TextPlusStuffWidget(Textarea):
         value = value or ''
         if isinstance(value, TextPlusStuff):
             value = value.raw_text
-        final_attrs = self.build_attrs(attrs, name=name)
+        final_attrs = self.build_attrs(attrs)
+        final_attrs['rows'] = '10'
+        final_attrs['name'] = name
+        final_attrs['cols'] = '40'
+        final_attrs['class'] = 'vLargeTextField textplusstuff'
+
         return format_html('<textarea{0}>\r\n{1}</textarea>',
                            flatatt(final_attrs),
                            force_text(value))
