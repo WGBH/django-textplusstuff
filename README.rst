@@ -47,15 +47,15 @@ Each model registered with ``django-textplusstuff`` can have as many 'renditions
 Compatibility
 -------------
 
-Version 0.7 is compatible with:
-Python 2.7, 3.3, 3.4, 3.5, 3.6
-Django 1.7, 1.8, 1.9
-Django REST Framework 2.5, 3.0, 3.1, 3.2, 3.3 (maybe 3.5+, but untested)
+| Version 0.7 is compatible with:
+| Python 2.7, 3.3, 3.4, 3.5, 3.6
+| Django 1.7, 1.8, 1.9
+| Django REST Framework 2.5, 3.0, 3.1, 3.2, 3.3 (maybe 3.5+, but untested)
 
-Version 0.8 is compatible with:
-Python 2.7, 3.3, 3.4, 3.5, 3.6
-Django 1.10, 1.11
-Django REST Framework 3.6, 3.7
+| Version 0.8 is compatible with:
+| Python 2.7, 3.3, 3.4, 3.5, 3.6
+| Django 1.10, 1.11
+| Django REST Framework 3.6, 3.7
 
 Documentation
 -------------
