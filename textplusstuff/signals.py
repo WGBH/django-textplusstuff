@@ -6,6 +6,7 @@ from django.dispatch import receiver
 
 from .fields import TextPlusStuffField
 from .parser import ModelStuffNode
+from .datastructures import TextPlusStuff
 
 
 @receiver(post_save)
@@ -39,6 +40,10 @@ def construct_TextPlusStuffLink_attachments(sender, instance, **kwargs):
             # Next, pull the content assigned to the TextPlusStuffField field
             # and...
             current_textplusstufffield_val = getattr(instance, field)
+            if current_textplusstufffield_val.__class__ is not TextPlusStuff:
+                current_textplusstufffield_val = TextPlusStuff(
+                    current_textplusstufffield_val
+                )
 
             # Now, build a list of all ModelStuffNode
             # instances associated with it
