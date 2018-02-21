@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 from collections import OrderedDict
 
-from six.moves import reload_module
+import importlib
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -9,7 +9,6 @@ from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core import serializers
 from django.test import Client, TestCase
 from django.test.utils import override_settings
-from django.utils import six
 
 from rest_framework import __version__ as rest_framework_version
 from rest_framework.renderers import JSONRenderer
@@ -86,10 +85,7 @@ class TextPlusStuffTestCase(TestCase):
         admin_path = '/admin/tests/registeredmodel/1/change/'
 
         response = self.client.get(admin_path)
-        if six.PY2:
-            response_content = response.content
-        else:
-            response_content = str(response.content, encoding='utf8')
+        response_content = str(response.content, encoding='utf8')
         self.assertInHTML(
             """
 <table>
@@ -111,10 +107,7 @@ class TextPlusStuffTestCase(TestCase):
         response = self.client.get(
             '/admin/tests/tpstestmodel/add/'
         )
-        if six.PY2:
-            response_content = response.content
-        else:
-            response_content = str(response.content, encoding='utf8')
+        response_content = str(response.content, encoding='utf8')
         self.assertInHTML(
             '<textarea class="vLargeTextField textplusstuff" cols="40" '
             'id="id_content" name="content" rows="10" required>',
@@ -122,10 +115,7 @@ class TextPlusStuffTestCase(TestCase):
         )
         tps_admin_path = '/admin/tests/tpstestmodel/1/change/'
         response = self.client.get(tps_admin_path)
-        if six.PY2:
-            response_content = response.content
-        else:
-            response_content = str(response.content, encoding='utf8')
+        response_content = str(response.content, encoding='utf8')
         self.assertInHTML(
             '<textarea class="vLargeTextField textplusstuff" cols="40" '
             'id="id_content" name="content" rows="10" required>'
@@ -140,10 +130,7 @@ class TextPlusStuffTestCase(TestCase):
     def test_api_stuffgroup_list_response(self):
         """Tests the TextPlusStuff API's 'ListStuffGroups' response"""
         response = self.client.get('/textplusstuff/')
-        if six.PY2:
-            response_content = response.content
-        else:
-            response_content = str(response.content, encoding='utf8')
+        response_content = str(response.content, encoding='utf8')
         self.assertJSONEqual(
             response_content,
             [
@@ -178,10 +165,7 @@ class TextPlusStuffTestCase(TestCase):
         response = self.client.get(
             '/textplusstuff/tests/registeredmodel/list/?format=json'
         )
-        if six.PY2:
-            response_content = response.content
-        else:
-            response_content = str(response.content, encoding='utf8')
+        response_content = str(response.content, encoding='utf8')
 
         if rest_framework_version[0] >= 3 and rest_framework_version[1] >= 2:
             response_url = (
@@ -208,10 +192,7 @@ class TextPlusStuffTestCase(TestCase):
         response = self.client.get(
             '/textplusstuff/tests/registeredmodel/detail/1/'
         )
-        if six.PY2:
-            response_content = response.content
-        else:
-            response_content = str(response.content, encoding='utf8')
+        response_content = str(response.content, encoding='utf8')
         self.assertJSONEqual(
             response_content,
             {
@@ -234,10 +215,7 @@ class TextPlusStuffTestCase(TestCase):
         response = self.client.get(
             '/textplusstuff/tests/registeredmodel/detail/1/?format=api'
         )
-        if six.PY2:
-            response_content = response.content
-        else:
-            response_content = str(response.content, encoding='utf8')
+        response_content = str(response.content, encoding='utf8')
         self.assertIn(
             '<h1>Retrieve Registered Model Stuff</h1>',
             response_content
@@ -336,7 +314,7 @@ And [a link](http://www.djangoproject.com), too!"""
         expected.
         """
         x = __import__('tests')
-        reload_module(x.stuff)
+        importlib.reload(x.stuff)
         x = TextPlusStuffLink.objects.get()
         self.assertEqual(
             x.parent_content_object,
@@ -347,8 +325,8 @@ And [a link](http://www.djangoproject.com), too!"""
             self.registered_model_instance
         )
         self.assertEqual(
-            x.__str__(),
-            'tpstestmodel:1 -> registeredmodel:1'
+            x.__unicode__(),
+            'TPSTestModel object (1) -> RegisteredModel object (1)'
         )
         y = TextPlusStuffLink.objects.create(
             parent_content_type=x.parent_content_type,
@@ -359,7 +337,7 @@ And [a link](http://www.djangoproject.com), too!"""
         )
         y.save()
         self.assertEqual(
-            y.__str__(),
+            y.__unicode__(),
             '<DoesNotExist> -> <DoesNotExist>'
         )
         new_instance_content = (
@@ -479,7 +457,7 @@ And [a link](http://www.djangoproject.com), too!"""
         """
         lexer = TextPlusStuffLexer(self.tps_test_instance.content.raw_text)
         self.assertEqual(
-            lexer.tokenize()[0].__str__(),
+            lexer.tokenize()[0].__unicode__(),
             """<MARKDOWNTEXT token: "# I'm an H...">"""
         )
 
@@ -889,8 +867,7 @@ And [a link](http://www.djangoproject.com), too!"""
         )
         instance.save()
         constructed_json = JSONRenderer().render(instance.content_constructed)
-        if six.PY3:
-            constructed_json = str(constructed_json, encoding='utf8')
+        constructed_json = str(constructed_json, encoding='utf8')
         self.assertJSONEqual(
             constructed_json,
             {
@@ -955,8 +932,7 @@ And [a link](http://www.djangoproject.com), too!"""
         constructed_json_2 = JSONRenderer().render(
             TPSTestModel.objects.get(pk=1).content_constructed
         )
-        if six.PY3:
-            constructed_json_2 = str(constructed_json_2, encoding='utf8')
+        constructed_json_2 = str(constructed_json_2, encoding='utf8')
         self.assertJSONEqual(
             constructed_json_2,
             {

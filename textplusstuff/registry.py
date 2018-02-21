@@ -6,8 +6,6 @@ import copy
 from django.conf import settings
 from django.conf.urls import url, include
 from django.template.loader import get_template
-from django.utils import six
-from django.utils.encoding import force_text
 from django.utils.text import slugify
 
 from rest_framework.views import APIView
@@ -37,8 +35,6 @@ class Rendition(object):
 
     def __init__(self, short_name, verbose_name, description,
                  path_to_template, rendition_type='block'):
-        if six.PY2:
-            short_name = force_text(short_name)
 
         self.short_name = slugify(short_name)
         self.verbose_name = verbose_name
@@ -315,7 +311,7 @@ class StuffRegistry(object):
                         getattr(settings, 'TEXTPLUSSTUFF_STUFFGROUPS', {})
                     )
                     # Verifying the StuffGroups listed in settings
-                    for short_name, config in six.iteritems(stuffgroups):
+                    for short_name, config in stuffgroups.items():
                         if 'name' not in config or 'description' not in config:
                             raise ImproperlyConfigured(
                                 "The %s group is configured incorrectly. Each "
@@ -349,7 +345,7 @@ class StuffRegistry(object):
                         'must be set in your settings file.'
                     )
                 else:
-                    for model, tup in six.iteritems(self.registered_stuff):
+                    for model, tup in self.registered_stuff.items():
                         stuff_cls, groups = tup
                         for group in groups:
                             stuffgroups[group][
@@ -370,16 +366,12 @@ class StuffRegistry(object):
                                         'type': rendition.rendition_type,
                                         'short_name': rendition.short_name
                                     }
-                                    for short_name, rendition in six.iteritems(
-                                        stuff_cls._renditions
-                                    )
+                                    for short_name, rendition in stuff_cls._renditions.items()
                                 ])
                             ]))
                     return [
                         stuffgroup
-                        for short_name, stuffgroup in six.iteritems(
-                            stuffgroups
-                        )
+                        for short_name, stuffgroup in stuffgroups.items()
                     ]
 
             def get(self, request, format=None):
@@ -399,7 +391,7 @@ class StuffRegistry(object):
             ),
         ]
 
-        for model, tup in six.iteritems(self._registry):
+        for model, tup in self._registry.items():
             stuff_config, groups = tup
             urlpatterns += [
                 url(
@@ -414,7 +406,7 @@ class StuffRegistry(object):
 
     @property
     def urls(self):
-        return self.get_urls(), 'textplusstuff', 'textplusstuff'
+        return self.get_urls(), 'textplusstuff'
 
 
 stuff_registry = StuffRegistry()
@@ -449,7 +441,5 @@ def get_modelstuff_renditions(model_instance):
 
                 }
             )
-            for short_name, rendition in six.iteritems(
-                stuff_config._renditions
-            )
+            for short_name, rendition in stuff_config._renditions.items()
         )

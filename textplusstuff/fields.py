@@ -36,7 +36,7 @@ class TextPlusStuffField(TextField):
         """
         Prepare this field for serialization.
         """
-        value = self._get_val_from_obj(obj)
+        value = self.value_from_object(obj)
         return self.get_prep_value(value)
 
     def from_db_value(self, value, expression, connection, context):

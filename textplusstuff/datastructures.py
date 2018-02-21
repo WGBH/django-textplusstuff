@@ -3,7 +3,6 @@ import json
 
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
-from django.utils import six
 
 from .parser import (
     MarkdownFlavoredTextNode,
@@ -17,7 +16,7 @@ class TextPlusStuff(object):
 
     def __init__(self, raw_text, field=None):
         raw_text = raw_text or ""
-        if not isinstance(raw_text, six.string_types):
+        if not isinstance(raw_text, str):
             raise UnicodeError(
                 (
                     "TextPlusStuff can only be initialized with either "
