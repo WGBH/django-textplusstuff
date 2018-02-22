@@ -1,4 +1,4 @@
-beautifulsoup4==4.4.0
-djangorestframework>=3.6.4
+beautifulsoup4==4.6.0
+djangorestframework>=3.7.4
 markdown2>=2.3.0
 git+https://github.com/eyemyth/django-jsonfield.git#egg=jsonfield

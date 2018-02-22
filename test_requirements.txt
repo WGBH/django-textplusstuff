@@ -1,10 +1,10 @@
-beautifulsoup4==4.3.1
-coverage==4.0.1
-Django==1.11.10
+beautifulsoup4==4.6.0
+coverage==4.5.1
+Django==2.0.2
 djangorestframework==3.7.7
-flake8==2.5.0
-markdown2==2.3.0
+flake8==3.5.0
+markdown2==2.3.5
 mccabe==0.3.1
-pep8==1.5.7
+pep8==1.7.1
 pyflakes==1.0.0
-wheel==0.26.0
+wheel==0.30.0
