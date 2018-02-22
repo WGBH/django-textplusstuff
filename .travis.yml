@@ -6,38 +6,12 @@ language: python
 # List the versions of Python you'd like to test against
 matrix:
   include:
-    - python: "2.7"
-      env: DJANGO_VERSION=1.10.8 REST_FRAMEWORK_VERSION=3.6.4
-    - python: "2.7"
-      env: DJANGO_VERSION=1.10.8 REST_FRAMEWORK_VERSION=3.7.7
-    - python: "2.7"
-      env: DJANGO_VERSION=1.11.10 REST_FRAMEWORK_VERSION=3.6.4
-    - python: "2.7"
-      env: DJANGO_VERSION=1.11.10 REST_FRAMEWORK_VERSION=3.7.7
     - python: "3.4"
-      env: DJANGO_VERSION=1.10.8 REST_FRAMEWORK_VERSION=3.6.4
-    - python: "3.4"
-      env: DJANGO_VERSION=1.10.8 REST_FRAMEWORK_VERSION=3.7.7
-    - python: "3.4"
-      env: DJANGO_VERSION=1.11.10 REST_FRAMEWORK_VERSION=3.6.4
-    - python: "3.4"
-      env: DJANGO_VERSION=1.11.10 REST_FRAMEWORK_VERSION=3.7.7
+      env: DJANGO_VERSION=2.0.2 REST_FRAMEWORK_VERSION=3.7.7
     - python: "3.5"
-      env: DJANGO_VERSION=1.10.8 REST_FRAMEWORK_VERSION=3.6.4
-    - python: "3.5"
-      env: DJANGO_VERSION=1.10.8 REST_FRAMEWORK_VERSION=3.7.7
-    - python: "3.5"
-      env: DJANGO_VERSION=1.11.10 REST_FRAMEWORK_VERSION=3.6.4
-    - python: "3.5"
-      env: DJANGO_VERSION=1.11.10 REST_FRAMEWORK_VERSION=3.7.7
+      env: DJANGO_VERSION=2.0.2 REST_FRAMEWORK_VERSION=3.7.7
     - python: "3.6"
-      env: DJANGO_VERSION=1.10.8 REST_FRAMEWORK_VERSION=3.6.4
-    - python: "3.6"
-      env: DJANGO_VERSION=1.10.8 REST_FRAMEWORK_VERSION=3.7.7
-    - python: "3.6"
-      env: DJANGO_VERSION=1.11.10 REST_FRAMEWORK_VERSION=3.6.4
-    - python: "3.6"
-      env: DJANGO_VERSION=1.11.10 REST_FRAMEWORK_VERSION=3.7.7
+      env: DJANGO_VERSION=2.0.2 REST_FRAMEWORK_VERSION=3.7.7
 before_install:
   - export DJANGO_SETTINGS_MODULE=tests.test_settings
   - export PIP_USE_MIRRORS=true
