@@ -366,7 +366,8 @@ class StuffRegistry(object):
                                         'type': rendition.rendition_type,
                                         'short_name': rendition.short_name
                                     }
-                                    for short_name, rendition in stuff_cls._renditions.items()
+                                    for short_name, rendition in
+                                    stuff_cls._renditions.items()
                                 ])
                             ]))
                     return [
