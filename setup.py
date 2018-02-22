@@ -7,7 +7,7 @@ import uuid
 setup(
     name='django-textplusstuff',
     packages=find_packages(exclude=['tests*', 'docs*']),
-    version='0.8',
+    version='0.9',
     author='Jonathan Ellenberger et al',
     author_email='jay_thompson@wgbh.org',
     url='http://github.com/WGBH/django-textplusstuff/',
