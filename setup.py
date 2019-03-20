@@ -1,25 +1,21 @@
 # -*- coding: utf-8 -*-
 from distutils.core import setup
-from pip.req import parse_requirements
 from setuptools import find_packages
 import uuid
 
 setup(
     name='django-textplusstuff',
-    packages=find_packages(exclude=['tests*', 'docs*']),
+    packages=find_packages(exclude=['tests*',
+                                    'docs*']),
     version='0.2.1',
     author=u'Jonathan Ellenberger',
     author_email='jonathan_ellenberger@wgbh.org',
     url='http://github.com/WGBH/django-textplusstuff/',
     license='MIT License, see LICENSE',
     description="A django field that makes it easy to intersperse 'stuff' "
-                "into blocks of text.",
+    "into blocks of text.",
     long_description=open('README.rst').read(),
     zip_safe=False,
-    install_requires=[
-        str(ir.req)
-        for ir in parse_requirements('requirements.txt', session=uuid.uuid1())
-    ],
     package_data={
         'textplusstuff': [
             'static/textplusstuff/darkly/*.css',
