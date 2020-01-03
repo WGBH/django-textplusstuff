@@ -13,13 +13,12 @@ from .tokens import TextPlusStuffToken
 # {% textplusstuff 'carousel:carousel:4:full_width:content' %}
 
 textplusstuff_re = re.compile(
-    "\{\%\s*textplusstuff\s*.*?"
-    "(?P<textplusstuff_token>[a-z-A-Z-0-9:_]+).*?\s*\%\}"
+    r"\{\%\s*textplusstuff\s*.*?"
+    r"(?P<textplusstuff_token>[a-z-A-Z-0-9:_]+).*?\s*\%\}"
 )
 
 
 class TextPlusStuffLexer(object):
-
     def __init__(self, raw_val):
         self.raw_val = raw_val
         self.lineno = 1
@@ -62,12 +61,12 @@ class TextPlusStuffLexer(object):
             else:
                 token = TextPlusStuffToken(
                     token_type=token_type,
-                    contents=token_string
+                    contents=token_string,
                 )
         else:
             token = TextPlusStuffToken(
                 token_type='MARKDOWNTEXT',
-                contents=token_string
+                contents=token_string,
             )
         token.lineno = self.lineno
         self.lineno += token.contents.count('\n')

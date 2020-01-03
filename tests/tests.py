@@ -1,3 +1,5 @@
+# flake8: noqa
+
 from __future__ import unicode_literals
 from collections import OrderedDict
 
@@ -17,16 +19,9 @@ from rest_framework.renderers import JSONRenderer
 
 from textplusstuff.datastructures import TextPlusStuff
 from textplusstuff.exceptions import (
-    AlreadyRegistered,
-    AlreadyRegisteredRendition,
-    ImproperlyConfiguredStuff,
-    InvalidRenderOption,
-    InvalidRendition,
-    InvalidRenditionType,
-    MalformedToken,
-    MissingRendition,
-    NonExistentGroup,
-    NotRegistered
+    AlreadyRegistered, AlreadyRegisteredRendition, ImproperlyConfiguredStuff,
+    InvalidRenderOption, InvalidRendition, InvalidRenditionType, MalformedToken,
+    MissingRendition, NonExistentGroup, NotRegistered
 )
 from textplusstuff.models import TextPlusStuffLink
 from textplusstuff.parser.lexer import TextPlusStuffLexer
@@ -40,10 +35,7 @@ from textplusstuff.serializers import TextPlusStuffFieldSerializer
 from .models import TPSTestModel, RegisteredModel
 from .serializers import TPSTestModelSerializer, RegisteredModelSerializer
 
-rest_framework_version = [
-    int(seg)
-    for seg in rest_framework_version.split('.')
-]
+rest_framework_version = [int(seg) for seg in rest_framework_version.split('.')]
 
 
 class TextPlusStuffTestCase(TestCase):
@@ -55,19 +47,14 @@ class TextPlusStuffTestCase(TestCase):
     def setUp(self):
         password = '12345'
         user = User.objects.create_user(
-            username='test',
-            email='test@test.com',
-            password=password
+            username='test', email='test@test.com', password=password
         )
         user.is_active = True
         user.is_staff = True
         user.is_superuser = True
         user.save()
         client = Client()
-        login = client.login(
-            username='test',
-            password=password
-        )
+        login = client.login(username='test', password=password)
         self.assertTrue(login)
         self.user = user
         self.client = client
@@ -104,20 +91,16 @@ class TextPlusStuffTestCase(TestCase):
         <td>{% textplusstuff &#39;MODELSTUFF__tests:registeredmodel:1:test_rendition&#39; %}</td>
     </tr>
 </table>
-            """,
-            response_content
+            """, response_content
         )
-        response = self.client.get(
-            '/admin/tests/tpstestmodel/add/'
-        )
+        response = self.client.get('/admin/tests/tpstestmodel/add/')
         if six.PY2:
             response_content = response.content
         else:
             response_content = str(response.content, encoding='utf8')
         self.assertInHTML(
             '<textarea class="vLargeTextField textplusstuff" cols="40" '
-            'id="id_content" name="content" rows="10">',
-            response_content
+            'id="id_content" name="content" rows="10">', response_content
         )
         tps_admin_path = '/admin/tests/tpstestmodel/1/'
         if DJANGO_VERSION[0] == 1 and DJANGO_VERSION[1] > 8:
@@ -134,8 +117,7 @@ class TextPlusStuffTestCase(TestCase):
             'I&#39;m in a paragraph with **bold text** and _italic text_.\n\n'
             'And [a link](http://www.djangoproject.com), too!\n\n'
             '{% textplusstuff &#39;MODELSTUFF__tests:registeredmodel'
-            ':1:test_rendition&#39; %}</textarea>',
-            response_content
+            ':1:test_rendition&#39; %}</textarea>', response_content
         )
 
     def test_api_stuffgroup_list_response(self):
@@ -146,29 +128,22 @@ class TextPlusStuffTestCase(TestCase):
         else:
             response_content = str(response.content, encoding='utf8')
         self.assertJSONEqual(
-            response_content,
-            [
+            response_content, [
                 {
                     "stuff": [
                         {
                             "renditions": [
                                 {
-                                    "type": "block",
-                                    "name": "Test Rendition",
-                                    "short_name": "test_rendition",
-                                    "description": (
+                                    "type": "block", "name": "Test Rendition",
+                                    "short_name": "test_rendition", "description": (
                                         "Displays a Test Rendition rendered."
                                     )
                                 }
-                            ],
-                            "instance_list": "http://testserver/textplusstuff/"
-                                             "tests/registeredmodel/list/",
-                            "name": "Registered Model",
+                            ], "instance_list": "http://testserver/textplusstuff/"
+                            "tests/registeredmodel/list/", "name": "Registered Model",
                             "description": "Add an Registration Test Model"
                         }
-                    ],
-                    "name": "Testing!",
-                    "short_name": "test_group",
+                    ], "name": "Testing!", "short_name": "test_group",
                     "description": "For your test models!"
                 }
             ]
@@ -196,38 +171,29 @@ class TextPlusStuffTestCase(TestCase):
             )
 
         self.assertJSONEqual(
-            response_content,
-            [{
-                'url': response_url,
-                'id': 1,
-                'title': 'Test Title'
-            }]
+            response_content, [{'url': response_url, 'id': 1, 'title': 'Test Title'}]
         )
 
     def test_api_detail_response(self):
         """Tests the TextPlusStuff API's 'RetrieveStuffView' response"""
-        response = self.client.get(
-            '/textplusstuff/tests/registeredmodel/detail/1/'
-        )
+        response = self.client.get('/textplusstuff/tests/registeredmodel/detail/1/')
         if six.PY2:
             response_content = response.content
         else:
             response_content = str(response.content, encoding='utf8')
         self.assertJSONEqual(
-            response_content,
-            {
+            response_content, {
                 'renditions': {
                     'test_rendition': {
                         'verbose_name': 'Test Rendition',
                         'token': "{% textplusstuff 'MODELSTUFF__tests"
-                                 ":registeredmodel:1:test_rendition' %}",
+                        ":registeredmodel:1:test_rendition' %}",
                         'path_to_template': 'RegisteredModel_test_'
-                                            'rendition.html',
+                        'rendition.html',
                         'description': 'Displays a Test Rendition rendered.',
                         'type': 'block'
                     }
-                },
-                'context': {'title': 'Test Title', 'extra_context': {}}
+                }, 'context': {'title': 'Test Title', 'extra_context': {}}
             }
         )
 
@@ -239,10 +205,7 @@ class TextPlusStuffTestCase(TestCase):
             response_content = response.content
         else:
             response_content = str(response.content, encoding='utf8')
-        self.assertIn(
-            '<h1>Retrieve Registered Model Stuff</h1>',
-            response_content
-        )
+        self.assertIn('<h1>Retrieve Registered Model Stuff</h1>', response_content)
 
     def test_textplusstufffield_responses(self):
         """
@@ -250,15 +213,13 @@ class TextPlusStuffTestCase(TestCase):
         responses come back as expected.
         """
         self.assertEqual(
-            self.tps_test_instance.content.as_plaintext(),
-            (
+            self.tps_test_instance.content.as_plaintext(), (
                 "I'm an H1\nI'm an H2\nI'm an H3\nI'm in a paragraph "
                 "with bold text and italic text.\nAnd a link, too!\n"
             )
         )
         self.assertEqual(
-            self.tps_test_instance.content.as_markdown(),
-            """# I'm an H1
+            self.tps_test_instance.content.as_markdown(), """# I'm an H1
 
 ## I'm an H2
 
@@ -269,8 +230,7 @@ I'm in a paragraph with **bold text** and _italic text_.
 And [a link](http://www.djangoproject.com), too!"""
         )
         self.assertEqual(
-            self.tps_test_instance.content.as_html(),
-            (
+            self.tps_test_instance.content.as_html(), (
                 '<h1>I\'m an H1</h1>\n\n<h2>I\'m an H2</h2>\n\n'
                 '<h3>I\'m an H3</h3>\n\n<p>I\'m in a paragraph with '
                 '<strong>bold text</strong> and <em>italic text</em>.</p>\n\n'
@@ -279,10 +239,7 @@ And [a link](http://www.djangoproject.com), too!"""
             )
         )
         self.assertEqual(
-            self.tps_test_instance.content.as_html(
-                include_content_nodes=False
-            ),
-            (
+            self.tps_test_instance.content.as_html(include_content_nodes=False), (
                 '<h1>I\'m an H1</h1>\n\n<h2>I\'m an H2</h2>\n\n'
                 '<h3>I\'m an H3</h3>\n\n<p>I\'m in a paragraph with '
                 '<strong>bold text</strong> and <em>italic text</em>.</p>\n\n'
@@ -290,12 +247,9 @@ And [a link](http://www.djangoproject.com), too!"""
                 'too!</p>\n'
             )
         )
-        json_output = self.tps_test_instance.content.as_json(
-            convert_to_json_string=True
-        )
+        json_output = self.tps_test_instance.content.as_json(convert_to_json_string=True)
         self.assertJSONEqual(
-            json_output,
-            {
+            json_output, {
                 "text_as_html": (
                     "<h1>I'm an H1</h1>\n\n<h2>I'm an H2</h2>\n\n"
                     "<h3>I'm an H3</h3>\n\n<p>I'm in a paragraph with "
@@ -303,21 +257,15 @@ And [a link](http://www.djangoproject.com), too!"""
                     "\n\n<p>And <a href=\"http://www.djangoproject.com\">a "
                     "link</a>, too!</p>\n<span data-textplusstuff-contentnode-"
                     "arrayindex=\"0\"></span>"
-                ),
-                "text_as_markdown": (
+                ), "text_as_markdown": (
                     "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\nI'm in a "
                     "paragraph with **bold text** and _italic text_.\n\nAnd "
                     "[a link](http://www.djangoproject.com), too!"
                     "{{ NODE__0 }}"
-                ),
-                "content_nodes": [
+                ), "content_nodes": [
                     {
-                        "model": "tests:registeredmodel",
-                        "rendition": "test_rendition",
-                        "context": {
-                            "title": "Test Title",
-                            "extra_context": {}
-                        }
+                        "model": "tests:registeredmodel", "rendition": "test_rendition",
+                        "context": {"title": "Test Title", "extra_context": {}}
                     }
                 ]
             }
@@ -339,18 +287,9 @@ And [a link](http://www.djangoproject.com), too!"""
         x = __import__('tests')
         reload_module(x.stuff)
         x = TextPlusStuffLink.objects.get()
-        self.assertEqual(
-            x.parent_content_object,
-            self.tps_test_instance
-        )
-        self.assertEqual(
-            x.content_object,
-            self.registered_model_instance
-        )
-        self.assertEqual(
-            x.__str__(),
-            'tpstestmodel:1 -> registeredmodel:1'
-        )
+        self.assertEqual(x.parent_content_object, self.tps_test_instance)
+        self.assertEqual(x.content_object, self.registered_model_instance)
+        self.assertEqual(x.__str__(), 'tpstestmodel:1 -> registeredmodel:1')
         y = TextPlusStuffLink.objects.create(
             parent_content_type=x.parent_content_type,
             parent_object_id=2,
@@ -359,52 +298,35 @@ And [a link](http://www.djangoproject.com), too!"""
             field='foo'
         )
         y.save()
-        self.assertEqual(
-            y.__str__(),
-            '<DoesNotExist> -> <DoesNotExist>'
-        )
+        self.assertEqual(y.__str__(), '<DoesNotExist> -> <DoesNotExist>')
         new_instance_content = (
             "{% textplusstuff 'MODELSTUFF__tests:registeredmodel:"
             "1:test_rendition' %}"
         )
-        new_instance = TPSTestModel(
-            content=new_instance_content
-        )
+        new_instance = TPSTestModel(content=new_instance_content)
         tpstestmodel_ct = ContentType.objects.get_for_model(TPSTestModel)
         registered_model_ct = ContentType.objects.get_for_model(
             self.registered_model_instance.__class__
         )
         lookup_kwargs = {
-            'parent_content_type': tpstestmodel_ct,
-            'parent_object_id': 2,
+            'parent_content_type': tpstestmodel_ct, 'parent_object_id': 2,
             'content_type': registered_model_ct,
-            'object_id': self.registered_model_instance.pk,
-            'field': 'content'
+            'object_id': self.registered_model_instance.pk, 'field': 'content'
         }
         with self.assertRaises(TextPlusStuffLink.DoesNotExist):
-            x = TextPlusStuffLink.objects.get(
-                **lookup_kwargs
-            )
+            x = TextPlusStuffLink.objects.get(**lookup_kwargs)
         new_instance.save()
-        x = TextPlusStuffLink.objects.get(
-            **lookup_kwargs
-        )
+        x = TextPlusStuffLink.objects.get(**lookup_kwargs)
         new_instance.content = ''
         new_instance.save()
         with self.assertRaises(TextPlusStuffLink.DoesNotExist):
-            x = TextPlusStuffLink.objects.get(
-                **lookup_kwargs
-            )
+            x = TextPlusStuffLink.objects.get(**lookup_kwargs)
         new_instance.content = new_instance_content
         new_instance.save()
-        x = TextPlusStuffLink.objects.get(
-            **lookup_kwargs
-        )
+        x = TextPlusStuffLink.objects.get(**lookup_kwargs)
         new_instance.delete()
         with self.assertRaises(TextPlusStuffLink.DoesNotExist):
-            x = TextPlusStuffLink.objects.get(
-                **lookup_kwargs
-            )
+            x = TextPlusStuffLink.objects.get(**lookup_kwargs)
 
     def test_MalformedToken_exception(self):
         """
@@ -420,26 +342,22 @@ And [a link](http://www.djangoproject.com), too!"""
         Tests code found within the textplusstuff.parser.nodes module
         """
         with self.assertRaises(NotImplementedError):
+
             class NewNode(BaseNode):
                 pass
+
             x = NewNode('Test string')
             x.render()
 
         mftn = self.tps_test_instance.content.nodelist[0]
-        self.assertTrue(
-            isinstance(mftn, MarkdownFlavoredTextNode)
-        )
+        self.assertTrue(isinstance(mftn, MarkdownFlavoredTextNode))
         self.assertEqual(
-            mftn.__repr__(),
-            "<MarkdownFlavoredTextNode: '# I'm an H1## I'm an H2'>"
+            mftn.__repr__(), "<MarkdownFlavoredTextNode: '# I'm an H1## I'm an H2'>"
         )
         msn = self.tps_test_instance.content.nodelist[1]
-        self.assertTrue(
-            isinstance(msn, ModelStuffNode)
-        )
+        self.assertTrue(isinstance(msn, ModelStuffNode))
         self.assertEqual(
-            msn.__repr__(),
-            "<ModelStuffNode: 'tests:registeredmodel:1:test_rendition'>"
+            msn.__repr__(), "<ModelStuffNode: 'tests:registeredmodel:1:test_rendition'>"
         )
         with self.assertRaises(InvalidRenderOption):
             mftn.render('latex')
@@ -479,8 +397,7 @@ And [a link](http://www.djangoproject.com), too!"""
         """
         lexer = TextPlusStuffLexer(self.tps_test_instance.content.raw_text)
         self.assertEqual(
-            lexer.tokenize()[0].__str__(),
-            """<MARKDOWNTEXT token: "# I'm an H...">"""
+            lexer.tokenize()[0].__str__(), """<MARKDOWNTEXT token: "# I'm an H...">"""
         )
 
     def test_InvalidRenditionType(self):
@@ -488,6 +405,7 @@ And [a link](http://www.djangoproject.com), too!"""
         Tests the InvalidRenditionType exception
         """
         with self.assertRaises(InvalidRenditionType):
+
             class RegisteredModelStuff(ModelStuff):
                 queryset = RegisteredModel.objects.all()
                 description = 'Add an Registration Test Model'
@@ -504,9 +422,7 @@ And [a link](http://www.djangoproject.com), too!"""
                 list_display = ('id', 'title')
 
             stuff_registry.add_modelstuff(
-                RegisteredModel,
-                RegisteredModelStuff,
-                groups=['test_group']
+                RegisteredModel, RegisteredModelStuff, groups=['test_group']
             )
 
     def test_InvalidRendition(self):
@@ -514,19 +430,16 @@ And [a link](http://www.djangoproject.com), too!"""
         Tests the InvalidRendition exception
         """
         with self.assertRaises(InvalidRendition):
+
             class RegisteredModelStuff(ModelStuff):
                 queryset = RegisteredModel.objects.all()
                 description = 'Add an Registration Test Model'
                 serializer_class = RegisteredModelSerializer
-                renditions = [
-                    object()
-                ]
+                renditions = [object()]
                 list_display = ('id', 'title')
 
             stuff_registry.add_modelstuff(
-                RegisteredModel,
-                RegisteredModelStuff,
-                groups=['test_group']
+                RegisteredModel, RegisteredModelStuff, groups=['test_group']
             )
 
     def test_InvalidRendition_nonunique(self):
@@ -535,6 +448,7 @@ And [a link](http://www.djangoproject.com), too!"""
         same stuff have the same short_name value
         """
         with self.assertRaises(InvalidRendition):
+
             class RegisteredModelStuff(ModelStuff):
                 queryset = RegisteredModel.objects.all()
                 description = 'Add an Registration Test Model'
@@ -558,9 +472,7 @@ And [a link](http://www.djangoproject.com), too!"""
                 list_display = ('id', 'title')
 
             stuff_registry.add_modelstuff(
-                RegisteredModel,
-                RegisteredModelStuff,
-                groups=['test_group']
+                RegisteredModel, RegisteredModelStuff, groups=['test_group']
             )
 
     def test_ImproperlyConfiguredStuff_missing_renditions(self):
@@ -579,9 +491,7 @@ And [a link](http://www.djangoproject.com), too!"""
                 list_display = ('id', 'title')
 
             stuff_registry.add_modelstuff(
-                RegisteredModel,
-                RegisteredModelStuff,
-                groups=['test_group']
+                RegisteredModel, RegisteredModelStuff, groups=['test_group']
             )
 
     def test_NonExistentGroup(self):
@@ -589,6 +499,7 @@ And [a link](http://www.djangoproject.com), too!"""
         Ensures the NonExistentGroup exception fires when appropriate
         """
         with self.assertRaises(NonExistentGroup):
+
             class RegisteredModelStuff(ModelStuff):
                 queryset = RegisteredModel.objects.all()
                 description = 'Add an Registration Test Model'
@@ -605,9 +516,7 @@ And [a link](http://www.djangoproject.com), too!"""
                 list_display = ('id', 'title')
 
             stuff_registry.add_modelstuff(
-                RegisteredModel,
-                RegisteredModelStuff,
-                groups=['non_existent_group']
+                RegisteredModel, RegisteredModelStuff, groups=['non_existent_group']
             )
 
     def test_AlreadyRegistered(self):
@@ -615,26 +524,22 @@ And [a link](http://www.djangoproject.com), too!"""
         Ensures the AlreadyRegistered exception fires when appropriate
         """
         with self.assertRaises(AlreadyRegistered):
+
             class DummyModelStuff(ModelStuff):
                 renditions = [
                     Rendition(
                         short_name='foo',
                         verbose_name='foo',
                         description='foo',
-                        path_to_template='foo.html')
+                        path_to_template='foo.html'
+                    )
                 ]
 
             stuff_registry.add_modelstuff(
-                RegisteredModel,
-                DummyModelStuff,
-                groups=['test_group']
+                RegisteredModel, DummyModelStuff, groups=['test_group']
             )
 
-            stuff_registry.add_modelstuff(
-                RegisteredModel,
-                object,
-                groups=['test_group']
-            )
+            stuff_registry.add_modelstuff(RegisteredModel, object, groups=['test_group'])
 
     def test_NotRegistered(self):
         """
@@ -694,62 +599,53 @@ And [a link](http://www.djangoproject.com), too!"""
         autodiscover()
         serializer = TPSTestModelSerializer(TPSTestModel.objects.get(pk=1))
         self.assertEqual(
-            serializer.data,
-            {'content': {
-                'as_plaintext': "I'm an H1\nI'm an H2\nI'm an H3\nI'm in a "
-                                "paragraph with bold text and italic text.\n"
-                                "And a link, too!\n",
-                'as_html': (
-                    '<h1>I\'m an H1</h1>\n\n<h2>I\'m an H2</h2>\n\n<h3>I\'m '
-                    'an H3</h3>\n\n<p>I\'m in a paragraph with <strong>bold '
-                    'text</strong> and <em>italic text</em>.</p>\n\n<p>'
-                    'And <a href="http://www.djangoproject.com">a link</a>, '
-                    'too!</p>\n<h1>Test Title</h1>\n'
-                ),
-                'raw_text': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\n"
-                            "I'm in a paragraph with **bold text** and "
-                            "_italic text_.\n\nAnd [a link](http://www."
-                            "djangoproject.com), too!\n\n{% textplusstuff "
-                            "'MODELSTUFF__tests:registeredmodel:1:"
-                            "test_rendition' %}",
-                'as_html_no_tokens': (
-                    '<h1>I\'m an H1</h1>\n\n<h2>I\'m an H2</h2>\n\n<h3>I\'m '
-                    'an H3</h3>\n\n<p>I\'m in a paragraph with <strong>bold '
-                    'text</strong> and <em>italic text</em>.</p>\n\n<p>And <a '
-                    'href="http://www.djangoproject.com">a link</a>, '
-                    'too!</p>\n'
-                ),
-                'as_markdown': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3"
-                               "\n\nI'm in a paragraph with **bold text** and "
-                               "_italic text_.\n\nAnd [a link](http://www."
-                               "djangoproject.com), too!",
-                'as_json': {
-                    "text_as_html": (
-                        "<h1>I'm an H1</h1>\n\n<h2>I'm an H2</h2>\n\n<h3>I'm "
-                        "an H3</h3>\n\n<p>I'm in a paragraph with <strong>"
-                        "bold text</strong> and <em>italic text</em>.</p>\n\n"
-                        "<p>And <a href=\"http://www.djangoproject.com\">a "
-                        "link</a>, too!</p>\n<span data-textplusstuff-"
-                        "contentnode-arrayindex=\"0\"></span>"
-                    ),
-                    "text_as_markdown": (
-                        "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\nI'm "
-                        "in a paragraph with **bold text** and _italic text_."
-                        "\n\nAnd [a link](http://www.djangoproject.com), "
-                        "too!{{ NODE__0 }}"
-                    ),
-                    "content_nodes": [
-                        {
-                            "rendition": "test_rendition",
-                            "model": "tests:registeredmodel",
-                            "context": {
-                                "title": "Test Title",
-                                "extra_context": {}
+            serializer.data, {
+                'content': {
+                    'as_plaintext': "I'm an H1\nI'm an H2\nI'm an H3\nI'm in a "
+                    "paragraph with bold text and italic text.\n"
+                    "And a link, too!\n", 'as_html': (
+                        '<h1>I\'m an H1</h1>\n\n<h2>I\'m an H2</h2>\n\n<h3>I\'m '
+                        'an H3</h3>\n\n<p>I\'m in a paragraph with <strong>bold '
+                        'text</strong> and <em>italic text</em>.</p>\n\n<p>'
+                        'And <a href="http://www.djangoproject.com">a link</a>, '
+                        'too!</p>\n<h1>Test Title</h1>\n'
+                    ), 'raw_text': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\n"
+                    "I'm in a paragraph with **bold text** and "
+                    "_italic text_.\n\nAnd [a link](http://www."
+                    "djangoproject.com), too!\n\n{% textplusstuff "
+                    "'MODELSTUFF__tests:registeredmodel:1:"
+                    "test_rendition' %}", 'as_html_no_tokens': (
+                        '<h1>I\'m an H1</h1>\n\n<h2>I\'m an H2</h2>\n\n<h3>I\'m '
+                        'an H3</h3>\n\n<p>I\'m in a paragraph with <strong>bold '
+                        'text</strong> and <em>italic text</em>.</p>\n\n<p>And <a '
+                        'href="http://www.djangoproject.com">a link</a>, '
+                        'too!</p>\n'
+                    ), 'as_markdown': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3"
+                    "\n\nI'm in a paragraph with **bold text** and "
+                    "_italic text_.\n\nAnd [a link](http://www."
+                    "djangoproject.com), too!", 'as_json': {
+                        "text_as_html": (
+                            "<h1>I'm an H1</h1>\n\n<h2>I'm an H2</h2>\n\n<h3>I'm "
+                            "an H3</h3>\n\n<p>I'm in a paragraph with <strong>"
+                            "bold text</strong> and <em>italic text</em>.</p>\n\n"
+                            "<p>And <a href=\"http://www.djangoproject.com\">a "
+                            "link</a>, too!</p>\n<span data-textplusstuff-"
+                            "contentnode-arrayindex=\"0\"></span>"
+                        ), "text_as_markdown": (
+                            "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\nI'm "
+                            "in a paragraph with **bold text** and _italic text_."
+                            "\n\nAnd [a link](http://www.djangoproject.com), "
+                            "too!{{ NODE__0 }}"
+                        ), "content_nodes": [
+                            {
+                                "rendition": "test_rendition",
+                                "model": "tests:registeredmodel",
+                                "context": {"title": "Test Title", "extra_context": {}}
                             }
-                        }
-                    ]
+                        ]
+                    }
                 }
-            }}
+            }
         )
         with self.assertRaises(ValueError):
             # Ensuring only TextPlusStuffFields can be rendered by
@@ -761,13 +657,9 @@ And [a link](http://www.djangoproject.com), too!"""
         """
         Ensures TextPlusStuffField serializes correctly
         """
-        output = serializers.serialize(
-            'json',
-            TPSTestModel.objects.filter(pk=1)
-        )
+        output = serializers.serialize('json', TPSTestModel.objects.filter(pk=1))
         self.assertJSONEqual(
-            output,
-            [
+            output, [
                 {
                     "fields": {
                         "content": (
@@ -777,22 +669,17 @@ And [a link](http://www.djangoproject.com), too!"""
                             "[a link](http://www.djangoproject.com), too!\n\n"
                             "{% textplusstuff 'MODELSTUFF__tests:"
                             "registeredmodel:1:test_rendition' %}"
-                        ),
-                        "content_constructed": "{}"
-                    },
-                    "model": "tests.tpstestmodel",
-                    "pk": 1
+                        ), "content_constructed": "{}"
+                    }, "model": "tests.tpstestmodel", "pk": 1
                 }
             ]
         )
 
-    @override_settings(
-        INSTALLED_APPS=(
-            "rest_framework",
-            'textplusstuff',
-            'tests',
-        )
-    )
+    @override_settings(INSTALLED_APPS=(
+        "rest_framework",
+        'textplusstuff',
+        'tests',
+    ))
     def test_noncore_rendition_registration(self):
         """
         Test to see if 'non-core' Rendition registration works.
@@ -804,33 +691,21 @@ And [a link](http://www.djangoproject.com), too!"""
             path_to_template='baz.html'
         )
 
-        stuff_registry.add_noncore_modelstuff_rendition(
-            RegisteredModel,
-            rendition
-        )
+        stuff_registry.add_noncore_modelstuff_rendition(RegisteredModel, rendition)
 
         self.assertTrue(
-            2,
-            len(
-                stuff_registry._registry.get(
-                    RegisteredModel
-                )[0]._renditions
-            )
+            2, len(stuff_registry._registry.get(RegisteredModel)[0]._renditions)
         )
         self.assertNotEqual(
             None,
-            stuff_registry._registry.get(
-                RegisteredModel
-            )[0]._renditions.get('baz', None)
+            stuff_registry._registry.get(RegisteredModel)[0]._renditions.get('baz', None)
         )
 
-    @override_settings(
-        INSTALLED_APPS=(
-            "rest_framework",
-            'textplusstuff',
-            'tests',
-        )
-    )
+    @override_settings(INSTALLED_APPS=(
+        "rest_framework",
+        'textplusstuff',
+        'tests',
+    ))
     def test_add_dupe_noncore_rendition_registration(self):
         """
         Should raise AlreadyRegisteredRendition
@@ -844,16 +719,13 @@ And [a link](http://www.djangoproject.com), too!"""
                 rendition_type='block'
             )
             stuff_registry.add_noncore_modelstuff_rendition(
-                RegisteredModel,
-                dupe_rendition
+                RegisteredModel, dupe_rendition
             )
 
-    @override_settings(
-        INSTALLED_APPS=(
-            "rest_framework",
-            'textplusstuff',
-        )
-    )
+    @override_settings(INSTALLED_APPS=(
+        "rest_framework",
+        'textplusstuff',
+    ))
     def test_noncore_rendition_registration_to_notregistered_model(self):
         """
         Should raise NotRegistered
@@ -876,53 +748,41 @@ And [a link](http://www.djangoproject.com), too!"""
         as_html_with_extra_context = self.tps_test_instance.content.as_html(
             extra_context={'foo': 'bar'}
         )
-        self.assertInHTML(
-            "<h2>bar</h2>",
-            as_html_with_extra_context
-        )
+        self.assertInHTML("<h2>bar</h2>", as_html_with_extra_context)
 
     def test_constructed_field(self):
         """Tests the 'constructed_field' functionality."""
         instance = self.tps_test_instance
-        self.assertEqual(
-            instance.content_constructed,
-            OrderedDict()
-        )
+        self.assertEqual(instance.content_constructed, OrderedDict())
         instance.save()
         constructed_json = JSONRenderer().render(instance.content_constructed)
         if six.PY3:
             constructed_json = str(constructed_json, encoding='utf8')
         self.assertJSONEqual(
-            constructed_json,
-            {
+            constructed_json, {
                 'as_plaintext': "I'm an H1\nI'm an H2\nI'm an H3\nI'm in a "
-                                "paragraph with bold text and italic text.\n"
-                                "And a link, too!\n",
-                'as_html': (
+                "paragraph with bold text and italic text.\n"
+                "And a link, too!\n", 'as_html': (
                     '<h1>I\'m an H1</h1>\n\n<h2>I\'m an H2</h2>\n\n<h3>I\'m '
                     'an H3</h3>\n\n<p>I\'m in a paragraph with <strong>bold '
                     'text</strong> and <em>italic text</em>.</p>\n\n<p>'
                     'And <a href="http://www.djangoproject.com">a link</a>, '
                     'too!</p>\n<h1>Test Title</h1>\n'
-                ),
-                'raw_text': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\n"
-                            "I'm in a paragraph with **bold text** and "
-                            "_italic text_.\n\nAnd [a link](http://www."
-                            "djangoproject.com), too!\n\n{% textplusstuff "
-                            "'MODELSTUFF__tests:registeredmodel:1:"
-                            "test_rendition' %}",
-                'as_html_no_tokens': (
+                ), 'raw_text': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\n"
+                "I'm in a paragraph with **bold text** and "
+                "_italic text_.\n\nAnd [a link](http://www."
+                "djangoproject.com), too!\n\n{% textplusstuff "
+                "'MODELSTUFF__tests:registeredmodel:1:"
+                "test_rendition' %}", 'as_html_no_tokens': (
                     '<h1>I\'m an H1</h1>\n\n<h2>I\'m an H2</h2>\n\n<h3>I\'m '
                     'an H3</h3>\n\n<p>I\'m in a paragraph with <strong>bold '
                     'text</strong> and <em>italic text</em>.</p>\n\n<p>And <a '
                     'href="http://www.djangoproject.com">a link</a>, '
                     'too!</p>\n'
-                ),
-                'as_markdown': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3"
-                               "\n\nI'm in a paragraph with **bold text** and "
-                               "_italic text_.\n\nAnd [a link](http://www."
-                               "djangoproject.com), too!",
-                'as_json': {
+                ), 'as_markdown': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3"
+                "\n\nI'm in a paragraph with **bold text** and "
+                "_italic text_.\n\nAnd [a link](http://www."
+                "djangoproject.com), too!", 'as_json': {
                     "text_as_html": (
                         "<h1>I'm an H1</h1>\n\n<h2>I'm an H2</h2>\n\n<h3>I'm "
                         "an H3</h3>\n\n<p>I'm in a paragraph with <strong>"
@@ -930,21 +790,16 @@ And [a link](http://www.djangoproject.com), too!"""
                         "<p>And <a href=\"http://www.djangoproject.com\">a "
                         "link</a>, too!</p>\n<span data-textplusstuff-"
                         "contentnode-arrayindex=\"0\"></span>"
-                    ),
-                    "text_as_markdown": (
+                    ), "text_as_markdown": (
                         "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\nI'm "
                         "in a paragraph with **bold text** and _italic text_."
                         "\n\nAnd [a link](http://www.djangoproject.com), "
                         "too!{{ NODE__0 }}"
-                    ),
-                    "content_nodes": [
+                    ), "content_nodes": [
                         {
                             "rendition": "test_rendition",
                             "model": "tests:registeredmodel",
-                            "context": {
-                                "title": "Test Title",
-                                "extra_context": {}
-                            }
+                            "context": {"title": "Test Title", "extra_context": {}}
                         }
                     ]
                 }
@@ -959,36 +814,30 @@ And [a link](http://www.djangoproject.com), too!"""
         if six.PY3:
             constructed_json_2 = str(constructed_json_2, encoding='utf8')
         self.assertJSONEqual(
-            constructed_json_2,
-            {
+            constructed_json_2, {
                 'as_plaintext': "I'm an H1\nI'm an H2\nI'm an H3\nI'm in a "
-                                "paragraph with bold text and italic text.\n"
-                                "And a link, too!\n",
-                'as_html': (
+                "paragraph with bold text and italic text.\n"
+                "And a link, too!\n", 'as_html': (
                     '<h1>I\'m an H1</h1>\n\n<h2>I\'m an H2</h2>\n\n<h3>I\'m '
                     'an H3</h3>\n\n<p>I\'m in a paragraph with <strong>bold '
                     'text</strong> and <em>italic text</em>.</p>\n\n<p>'
                     'And <a href="http://www.djangoproject.com">a link</a>, '
                     'too!</p>\n<h1>Test Title UPDATED</h1>\n'
-                ),
-                'raw_text': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\n"
-                            "I'm in a paragraph with **bold text** and "
-                            "_italic text_.\n\nAnd [a link](http://www."
-                            "djangoproject.com), too!\n\n{% textplusstuff "
-                            "'MODELSTUFF__tests:registeredmodel:1:"
-                            "test_rendition' %}",
-                'as_html_no_tokens': (
+                ), 'raw_text': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\n"
+                "I'm in a paragraph with **bold text** and "
+                "_italic text_.\n\nAnd [a link](http://www."
+                "djangoproject.com), too!\n\n{% textplusstuff "
+                "'MODELSTUFF__tests:registeredmodel:1:"
+                "test_rendition' %}", 'as_html_no_tokens': (
                     '<h1>I\'m an H1</h1>\n\n<h2>I\'m an H2</h2>\n\n<h3>I\'m '
                     'an H3</h3>\n\n<p>I\'m in a paragraph with <strong>bold '
                     'text</strong> and <em>italic text</em>.</p>\n\n<p>And <a '
                     'href="http://www.djangoproject.com">a link</a>, '
                     'too!</p>\n'
-                ),
-                'as_markdown': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3"
-                               "\n\nI'm in a paragraph with **bold text** and "
-                               "_italic text_.\n\nAnd [a link](http://www."
-                               "djangoproject.com), too!",
-                'as_json': {
+                ), 'as_markdown': "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3"
+                "\n\nI'm in a paragraph with **bold text** and "
+                "_italic text_.\n\nAnd [a link](http://www."
+                "djangoproject.com), too!", 'as_json': {
                     "text_as_html": (
                         "<h1>I'm an H1</h1>\n\n<h2>I'm an H2</h2>\n\n<h3>I'm "
                         "an H3</h3>\n\n<p>I'm in a paragraph with <strong>"
@@ -996,20 +845,16 @@ And [a link](http://www.djangoproject.com), too!"""
                         "<p>And <a href=\"http://www.djangoproject.com\">a "
                         "link</a>, too!</p>\n<span data-textplusstuff-"
                         "contentnode-arrayindex=\"0\"></span>"
-                    ),
-                    "text_as_markdown": (
+                    ), "text_as_markdown": (
                         "# I'm an H1\n\n## I'm an H2\n\n###I'm an H3\n\nI'm "
                         "in a paragraph with **bold text** and _italic text_."
                         "\n\nAnd [a link](http://www.djangoproject.com), "
                         "too!{{ NODE__0 }}"
-                    ),
-                    "content_nodes": [
+                    ), "content_nodes": [
                         {
                             "rendition": "test_rendition",
-                            "model": "tests:registeredmodel",
-                            "context": {
-                                "title": "Test Title UPDATED",
-                                "extra_context": {}
+                            "model": "tests:registeredmodel", "context": {
+                                "title": "Test Title UPDATED", "extra_context": {}
                             }
                         }
                     ]
