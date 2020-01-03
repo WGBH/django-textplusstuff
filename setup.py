@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from distutils.core import setup
 from setuptools import find_packages
-import uuid
 
 with open('requirements.txt') as f:
     install_requires = f.read().strip().split('\n')
@@ -14,8 +13,10 @@ setup(
     author_email='jay_thompson@wgbh.org',
     url='http://github.com/WGBH/django-textplusstuff/',
     license='MIT License, see LICENSE',
-    description="A django field that makes it easy to intersperse 'stuff' "
-    "into blocks of text.",
+    description=(
+        "A django field that makes it easy to intersperse 'stuff' "
+        "into blocks of text."
+    ),
     long_description=open('README.rst').read(),
     zip_safe=False,
     install_requires=install_requires,
