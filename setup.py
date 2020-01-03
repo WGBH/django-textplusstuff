@@ -5,7 +5,7 @@ from setuptools import find_packages
 setup(
     name='django-textplusstuff',
     packages=find_packages(exclude=['tests*', 'docs*']),
-    version='0.7',
+    version='0.7.1',
     author='Jonathan Ellenberger et al',
     author_email='jay_thompson@wgbh.org',
     url='http://github.com/WGBH/django-textplusstuff/',
