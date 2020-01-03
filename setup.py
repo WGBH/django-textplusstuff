@@ -4,6 +4,9 @@ from setuptools import find_packages
 
 with open('requirements.txt') as f:
     install_requires = f.read().strip().split('\n')
+    install_requires += [
+        'git+https://github.com/eyemyth/django-jsonfield.git#egg=jsonfield',
+    ]
 
 setup(
     name='django-textplusstuff',
@@ -35,8 +38,8 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Text Processing :: Markup',
         'Development Status :: 4 - Beta',
     ]
