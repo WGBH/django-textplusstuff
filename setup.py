@@ -20,7 +20,6 @@ setup(
         'beautifulsoup4==4.4.0',
         'djangorestframework>=2.4.8',
         'markdown2>=2.3.0',
-        'git+https://github.com/eyemyth/django-jsonfield.git#egg=jsonfield',
     ],
     package_data={
         'textplusstuff': [
