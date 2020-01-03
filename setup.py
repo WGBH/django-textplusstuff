@@ -2,12 +2,6 @@
 from distutils.core import setup
 from setuptools import find_packages
 
-with open('requirements.txt') as f:
-    install_requires = f.read().strip().split('\n')
-    install_requires += [
-        'git+https://github.com/eyemyth/django-jsonfield.git#egg=jsonfield',
-    ]
-
 setup(
     name='django-textplusstuff',
     packages=find_packages(exclude=['tests*', 'docs*']),
@@ -22,7 +16,12 @@ setup(
     ),
     long_description=open('README.rst').read(),
     zip_safe=False,
-    install_requires=install_requires,
+    install_requires=[
+        'beautifulsoup4==4.4.0',
+        'djangorestframework>=2.4.8',
+        'markdown2>=2.3.0',
+        'git+https://github.com/eyemyth/django-jsonfield.git#egg=jsonfield',
+    ],
     package_data={
         'textplusstuff': [
             'static/textplusstuff/darkly/*.css',
