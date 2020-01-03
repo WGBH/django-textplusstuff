@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from distutils.core import setup
-from pip.req import parse_requirements
 from setuptools import find_packages
 import uuid
+
+with open('requirements.txt') as f:
+    install_requires = f.read().strip().split('\n')
 
 setup(
     name='django-textplusstuff',
@@ -13,18 +15,15 @@ setup(
     url='http://github.com/WGBH/django-textplusstuff/',
     license='MIT License, see LICENSE',
     description="A django field that makes it easy to intersperse 'stuff' "
-                "into blocks of text.",
+    "into blocks of text.",
     long_description=open('README.rst').read(),
     zip_safe=False,
-    install_requires=[
-        str(ir.req)
-        for ir in parse_requirements('requirements.txt', session=uuid.uuid1())
-    ],
+    install_requires=install_requires,
     package_data={
         'textplusstuff': [
             'static/textplusstuff/darkly/*.css',
             'static/textplusstuff/fonts/*.*',
-            'templates/textplusstuff/*.html'
+            'templates/textplusstuff/*.html',
         ]
     },
     classifiers=[
@@ -38,6 +37,6 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Topic :: Text Processing :: Markup',
-        'Development Status :: 4 - Beta'
+        'Development Status :: 4 - Beta',
     ]
 )
