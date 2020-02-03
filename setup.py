@@ -5,7 +5,7 @@ from setuptools import find_packages
 setup(
     name='django-textplusstuff',
     packages=find_packages(exclude=['tests*', 'docs*']),
-    version='0.7.1',
+    version='0.7.2',
     author='Jonathan Ellenberger et al',
     author_email='jay_thompson@wgbh.org',
     url='http://github.com/WGBH/django-textplusstuff/',
@@ -17,8 +17,8 @@ setup(
     long_description=open('README.rst').read(),
     zip_safe=False,
     install_requires=[
-        'beautifulsoup4==4.4.0',
-        'djangorestframework>=2.4.8',
+        'beautifulsoup4~=4.4.0',
+        'djangorestframework~=3.3.3',
         'markdown2>=2.3.0',
     ],
     package_data={
