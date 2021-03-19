@@ -1,7 +1,7 @@
 beautifulsoup4==4.6.0
 coverage==4.5.1
 Django==2.0.12
-djangorestframework==3.7.7
+djangorestframework==3.11.2
 flake8==3.5.0
 markdown2==2.3.5
 mccabe==0.3.1
