@@ -3,7 +3,7 @@ coverage==4.5.1
 Django==2.0.12
 djangorestframework==3.7.7
 flake8==3.5.0
-markdown2==2.3.5
+markdown2==2.4.0
 mccabe==0.3.1
 pep8==1.7.1
 pyflakes==1.0.0
