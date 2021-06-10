@@ -1,6 +1,6 @@
 beautifulsoup4==4.6.0
 coverage==4.5.1
-Django==2.0.12
+Django==2.2.24
 djangorestframework==3.7.7
 flake8==3.5.0
 markdown2==2.3.5
