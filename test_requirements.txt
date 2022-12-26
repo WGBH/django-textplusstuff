@@ -7,4 +7,4 @@ markdown2==2.3.5
 mccabe==0.3.1
 pep8==1.7.1
 pyflakes==1.0.0
-wheel==0.30.0
+wheel==0.38.1
